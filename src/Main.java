@@ -1,4 +1,7 @@
 import ast.*;
+import symbolTable.Symbol;
+import symbolTable.FlowUtils;
+import symbolTable.SymbolTableUtils;
 
 import java.io.*;
 
@@ -23,6 +26,7 @@ public class Main {
 
             var outFile = new PrintWriter(outfilename);
             try {
+                SymbolTableUtils.buildSymbolTables(prog);
 
                 if (action.equals("marshal")) {
                     AstXMLSerializer xmlSerializer = new AstXMLSerializer();
@@ -53,7 +57,20 @@ public class Main {
                         throw new IllegalArgumentException("unknown rename type " + type);
                     }
 
-                    throw new UnsupportedOperationException("TODO - Ex. 1");
+                    try {
+                        Symbol symbol = SymbolTableUtils.findSymbol(prog, originalName, originalLine);
+                        if (isMethod) {
+                            FlowUtils.renameMethod(symbol);
+                        } else {
+                            FlowUtils.renameVariable(symbol.getProperties());
+                        }
+                    } catch (UnsupportedOperationException e) {
+                        throw new UnsupportedOperationException(e.getMessage());
+                    } catch (Exception e) {
+                        // TODO error handling
+                        throw new UnsupportedOperationException(e.getMessage());
+                    }
+
 
                 } else {
                     throw new IllegalArgumentException("unknown command line action " + action);
