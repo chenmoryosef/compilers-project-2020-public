@@ -3,28 +3,18 @@ package ast;
 
 import symbolTable.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AstVisitor implements Visitor {
-    private StringBuilder builder = new StringBuilder();
 
-    private int indent = 0;
-
-    public String getString() {
-        return builder.toString();
-    }
-
-    private void appendWithIndent(String str) {
-        builder.append("\t".repeat(indent));
-        builder.append(str);
-    }
-
-    private void visitBinaryExpr(BinaryExpr e, String infixSymbol) {
-        builder.append("(");
-        e.e1().accept(this);
-        builder.append(")");
-        builder.append(" " + infixSymbol + " ");
-        builder.append("(");
-        e.e2().accept(this);
-        builder.append(")");
+    private List<String> prepareDecl(List<FormalArg> list, AstType returnType) {
+        ArrayList<String> decl = new ArrayList<>();
+        decl.add(returnType.id());
+        for (var formal : list) {
+            decl.add(formal.type().id());
+        }
+        return decl;
     }
 
 
@@ -36,31 +26,40 @@ public class AstVisitor implements Visitor {
         program.mainClass().accept(this);
         for (ClassDecl classdecl : program.classDecls()) {
             SymbolTableUtils.setCurrSymTable(root);
+            // TODO - we were here!
             classdecl.accept(this);
         }
     }
 
     @Override
     public void visit(ClassDecl classDecl) {
-        appendWithIndent("class ");
-        builder.append(classDecl.name());
+        SymbolTable parentSymbolTable = SymbolTableUtils.getCurrSymTable();
         if (classDecl.superName() != null) {
-            builder.append(" extends ");
-            builder.append(classDecl.superName());
+            parentSymbolTable = SymbolTableUtils.getSymbolTable(classDecl.superName());
+            // TODO - error handling
         }
-        builder.append(" {\n");
+        SymbolTable classSymbolTable = new SymbolTable(parentSymbolTable);
+        SymbolTableUtils.addSymbolTable(classDecl.name(), classSymbolTable);
 
-        indent++;
         for (var fieldDecl : classDecl.fields()) {
-            fieldDecl.accept(this);
-            builder.append("\n");
+            ArrayList<String> decl = new ArrayList<>();
+            decl.add(fieldDecl.type().id());
+            classSymbolTable.addSymbol(fieldDecl, fieldDecl.name(), Type.VARIABLE, decl);
         }
+
         for (var methodDecl : classDecl.methoddecls()) {
+            List<String> decl = prepareDecl(methodDecl.formals(), methodDecl.returnType());
+            Symbol methodSymbol = classSymbolTable.addSymbol(methodDecl, methodDecl.name(), Type.METHOD, decl);
+            Symbol rootMethodSymbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(methodDecl.name(), Type.METHOD));
+            if (rootMethodSymbol != null) {
+                rootMethodSymbol.addProperty(methodDecl, methodSymbol);
+            } else {
+                methodSymbol.enableRootMethod();
+            }
+
+            SymbolTableUtils.setCurrSymTable(classSymbolTable);
             methodDecl.accept(this);
-            builder.append("\n");
         }
-        indent--;
-        appendWithIndent("}\n");
     }
 
     @Override
@@ -69,124 +68,92 @@ public class AstVisitor implements Visitor {
         SymbolTable symbolTable = new SymbolTable(SymbolTableUtils.getRoot());
         SymbolTableUtils.addSymbolTable(mainClass.name(), symbolTable);
         // MainClass has argsName parameter only - create symbol
-        SymbolTableUtils.getCurrSymTable().addSymbol(mainClass, mainClass.argsName(), Type.VARIABLE, "String[]");
+        ArrayList<String> decl = new ArrayList<>();
+        decl.add("String[]");
+        SymbolTableUtils.getCurrSymTable().addSymbol(mainClass, mainClass.argsName(), Type.VARIABLE, decl);
         mainClass.mainStatement().accept(this);
     }
 
     @Override
     public void visit(MethodDecl methodDecl) {
-        appendWithIndent("");
-        methodDecl.returnType().accept(this);
-        builder.append(" ");
-        builder.append(methodDecl.name());
-        builder.append("(");
+        SymbolTable methodSymbolTable = new SymbolTable(SymbolTableUtils.getCurrSymTable());
+        SymbolTableUtils.addSymbolTable(methodDecl.name(), methodSymbolTable);
 
-        String delim = "";
         for (var formal : methodDecl.formals()) {
-            builder.append(delim);
-            formal.accept(this);
-            delim = ", ";
+            ArrayList<String> decl = new ArrayList<>();
+            decl.add(formal.type().id());
+            methodSymbolTable.addSymbol(formal, formal.name(), Type.VARIABLE, decl);
         }
-        builder.append(") {\n");
-
-        indent++;
 
         for (var varDecl : methodDecl.vardecls()) {
-            varDecl.accept(this);
+            ArrayList<String> decl = new ArrayList<>();
+            decl.add(varDecl.type().id());
+            methodSymbolTable.addSymbol(varDecl, varDecl.name(), Type.VARIABLE, decl);
         }
+
         for (var stmt : methodDecl.body()) {
             stmt.accept(this);
         }
-
-        appendWithIndent("return ");
-        methodDecl.ret().accept(this);
-        builder.append(";");
-        builder.append("\n");
-
-        indent--;
-        appendWithIndent("}\n");
     }
 
     @Override
     public void visit(FormalArg formalArg) {
-        formalArg.type().accept(this);
-        builder.append(" ");
-        builder.append(formalArg.name());
+        // Note - left empty - TODO - check if this is correct behaviour
     }
 
     @Override
     public void visit(VarDecl varDecl) {
-        appendWithIndent("");
         varDecl.type().accept(this);
-        builder.append(" ");
-        builder.append(varDecl.name());
-        builder.append(";\n");
     }
 
     @Override
     public void visit(BlockStatement blockStatement) {
-        appendWithIndent("{");
-        indent++;
+        SymbolTable blockSymbolTable = new SymbolTable(SymbolTableUtils.getCurrSymTable());
+        SymbolTableUtils.addSymbolTable(String.valueOf(blockStatement.lineNumber), blockSymbolTable);
         for (var s : blockStatement.statements()) {
-            builder.append("\n");
             s.accept(this);
         }
-        indent--;
-        builder.append("\n");
-        appendWithIndent("}\n");
     }
 
     @Override
     public void visit(IfStatement ifStatement) {
-        appendWithIndent("if (");
         ifStatement.cond().accept(this);
-        builder.append(")\n");
-        indent++;
         ifStatement.thencase().accept(this);
-        indent--;
-        appendWithIndent("else\n");
-        indent++;
         ifStatement.elsecase().accept(this);
-        indent--;
     }
 
     @Override
     public void visit(WhileStatement whileStatement) {
-        appendWithIndent("while (");
         whileStatement.cond().accept(this);
-        builder.append(") {");
-        indent++;
         whileStatement.body().accept(this);
-        indent--;
-        builder.append("\n");
-        appendWithIndent("}\n");
     }
 
     @Override
     public void visit(SysoutStatement sysoutStatement) {
         sysoutStatement.arg().accept(this);
-        builder.append(");\n");
     }
 
     @Override
     public void visit(AssignStatement assignStatement) {
-        appendWithIndent("");
-        builder.append(assignStatement.lv());
-        builder.append(" = ");
+        Symbol rootSymbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(assignStatement.lv(), Type.VARIABLE));
+        if (rootSymbol != null) {
+            rootSymbol.addProperty(assignStatement);
+        } else {
+            // TODO - error handling
+        }
         assignStatement.rv().accept(this);
-        builder.append(";\n");
     }
 
     @Override
     public void visit(AssignArrayStatement assignArrayStatement) {
-        appendWithIndent("");
-        builder.append(assignArrayStatement.lv());
-        builder.append("[");
+        Symbol rootSymbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(assignArrayStatement.lv(), Type.VARIABLE));
+        if (rootSymbol != null) {
+            rootSymbol.addProperty(assignArrayStatement);
+        } else {
+            // TODO - error handling
+        }
         assignArrayStatement.index().accept(this);
-        builder.append("]");
-        builder.append(" = ");
         assignArrayStatement.rv().accept(this);
-        builder.append(";\n");
     }
 
     @Override
@@ -195,8 +162,6 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(LtExpr e) {
-        visitBinaryExpr(e, "<");
-        ;
     }
 
     @Override
@@ -224,7 +189,7 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(MethodCallExpr e) {
-        Symbol symbol = SymbolTableUtils.getCurrSymTable().resolveKey(SymbolTable.createKey(e.methodId(), Type.METHOD));
+        Symbol symbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(e.methodId(), Type.METHOD));
         if (symbol == null) {
             // TODO - handle error
             return;
@@ -250,7 +215,7 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(IdentifierExpr e) {
-        Symbol symbol = SymbolTableUtils.getCurrSymTable().resolveKey(SymbolTable.createKey(e.id(), Type.VARIABLE));
+        Symbol symbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(e.id(), Type.VARIABLE));
         // TODO - handle null symbol
         symbol.addProperty(e);
     }
@@ -265,34 +230,32 @@ public class AstVisitor implements Visitor {
     @Override
     public void visit(NewObjectExpr e) {
         // TODO - do we neeed to pay attention to this?
-        builder.append(e.classId());
-
     }
 
     @Override
     public void visit(NotExpr e) {
-        builder.append("!(");
         e.e().accept(this);
-        builder.append(")");
     }
 
     @Override
     public void visit(IntAstType t) {
-        builder.append("int");
     }
 
     @Override
     public void visit(BoolAstType t) {
-        builder.append("boolean");
     }
 
     @Override
     public void visit(IntArrayAstType t) {
-        builder.append("int[]");
     }
 
     @Override
     public void visit(RefType t) {
-        builder.append(t.id());
+        Symbol symbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(t.id(), Type.METHOD));
+        if (symbol == null) {
+            // TODO - handle error
+            return;
+        }
+        symbol.addProperty(t);
     }
 }
