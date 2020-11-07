@@ -45,4 +45,7 @@ public class SymbolTableUtils {
         return null;
     }
 
+    public static SymbolTable getSymbolTable(String key) {
+        return symbolTableMap.get(key);
+    }
 }
