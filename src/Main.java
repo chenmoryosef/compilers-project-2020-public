@@ -23,8 +23,7 @@ public class Main {
             } else {
                 throw new UnsupportedOperationException("unknown input method " + inputMethod);
             }
-            System.out.println(outfilename);
-//            var outFile = new PrintWriter(outfilename);
+            var outFile = new PrintWriter(outfilename);
             try {
                 SymbolTableUtils.buildSymbolTables(prog);
 
@@ -34,7 +33,7 @@ public class Main {
                 } else if (action.equals("print")) {
                     AstPrintVisitor astPrinter = new AstPrintVisitor();
                     astPrinter.visit(prog);
-//                    outFile.write(astPrinter.getString());
+                    outFile.write(astPrinter.getString());
 
                 } else if (action.equals("semantic")) {
                     throw new UnsupportedOperationException("TODO - Ex. 3");
@@ -74,8 +73,8 @@ public class Main {
                     throw new IllegalArgumentException("unknown command line action " + action);
                 }
             } finally {
-//                outFile.flush();
-//                outFile.close();
+                outFile.flush();
+                outFile.close();
             }
 
         } catch (FileNotFoundException e) {
