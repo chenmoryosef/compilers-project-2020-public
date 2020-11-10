@@ -19,6 +19,12 @@ public class FlowUtils {
                 ((AssignArrayStatement) astNode).setName(newName);
             } else if (astNode instanceof AssignStatement) {
                 ((AssignStatement) astNode).setName(newName);
+            } else if (astNode instanceof RefType) {
+                ((RefType) astNode).setId(newName);
+            } else if (astNode instanceof IdentifierExpr) {
+                ((IdentifierExpr) astNode).setId(newName);
+            } else if (astNode instanceof MethodCallExpr) {
+                ((MethodCallExpr) astNode).setMethodId(newName);
             } else {
                 throw new UnsupportedOperationException("Bug in the code");
             }
