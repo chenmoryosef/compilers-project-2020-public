@@ -204,18 +204,27 @@ public class AstVisitor implements Visitor {
         AstNode ownerExp = e.ownerExpr();
         Symbol symbol;
         String symbolKey = SymbolTable.createKey(e.methodId(), Type.METHOD);
+        String classId = null;
+        SymbolTable symbolTable;
         if (ownerExp instanceof ThisExpr) {
-            symbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(symbolKey);
+            symbolTable = SymbolTableUtils.getCurrSymTable();
         } else if (ownerExp instanceof NewObjectExpr) {
-            symbol = SymbolTableUtils.getSymbolTable(((NewObjectExpr) ownerExp).classId()).resolveSymbol(symbolKey);
+            classId = ((NewObjectExpr) ownerExp).classId();
+            symbolTable = SymbolTableUtils.getSymbolTable(classId);
         } else {
             Symbol ownerSymbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(((IdentifierExpr) ownerExp).id(), Type.VARIABLE));
-            symbol = SymbolTableUtils.getSymbolTable(ownerSymbol.getDecl().get(0)).resolveSymbol(symbolKey);
+            classId = ownerSymbol.getDecl().get(0);
+            symbolTable = SymbolTableUtils.getSymbolTable(classId);
         }
-        if (symbol == null) {
+        if (symbolTable == null) {
+            if (classId != null) {
+                SymbolTableUtils.addUnresolvedParam(classId, e.methodId(), e);
+                return;
+            }
             // TODO - handle error
             return;
         }
+        symbol = symbolTable.resolveSymbol(symbolKey);
         symbol.addProperty(e);
         for (Expr arg : e.actuals()) {
             arg.accept(this);

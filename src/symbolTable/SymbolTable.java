@@ -15,6 +15,10 @@ public class SymbolTable {
         this.parentSymbolTable = parentSymbolTable;
     }
 
+    public static String createKey(String name, String name2) {
+        return name + " " + name2;
+    }
+
     public static String createKey(String name, Type type) {
         return name + type.getName();
     }
