@@ -6,6 +6,9 @@ import java.io.*;
 public class AstXMLSerializer {
     public void serialize(AstNode ast, String outfilename) throws IOException {
         try {
+            System.out.print("seralize");
+            System.out.print(outfilename);
+
             JAXBContext jc = JAXBContext.newInstance(Program.class);
 
 
@@ -28,6 +31,8 @@ public class AstXMLSerializer {
 
     public Program deserialize(File file) {
         try {
+            System.out.print("deseralize");
+            System.out.print(file.getName());
             JAXBContext jc = JAXBContext.newInstance(Program.class);
 
             Unmarshaller unmarshaller = jc.createUnmarshaller();

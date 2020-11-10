@@ -1,15 +1,17 @@
 package symbolTable;
 
+import ast.AstNode;
 import ast.AstVisitor;
 import ast.Program;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class SymbolTableUtils {
     private static SymbolTable root;
     // Example - if we define Class A and then Class B and afterwords Class C extends A
     // we need to know to connect C symbol table to A
-    private static Map<String, SymbolTable> symbolTableMap;
+    private static Map<String, SymbolTable> symbolTableClassMap = new HashMap<>();
     private static SymbolTable currSymTable;
 
     public static SymbolTable getCurrSymTable() {
@@ -30,7 +32,7 @@ public class SymbolTableUtils {
     }
 
     public static void addSymbolTable(String name, SymbolTable symbolTable) {
-        symbolTableMap.put(name, symbolTable);
+        symbolTableClassMap.put(name, symbolTable);
         currSymTable = symbolTable;
     }
 
@@ -39,13 +41,7 @@ public class SymbolTableUtils {
         program.accept(visitor);
     }
 
-    public static Symbol findSymbol(Program program, String originalName, String originalLine) {
-        Symbol symbol;
-        // code which finds reference symbol
-        return null;
-    }
-
     public static SymbolTable getSymbolTable(String key) {
-        return symbolTableMap.get(key);
+        return symbolTableClassMap.get(key);
     }
 }

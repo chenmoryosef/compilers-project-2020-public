@@ -20,8 +20,9 @@ public class SymbolTable {
     }
 
     public Symbol addSymbol(AstNode astNode, String name, Type type, List<String> decl) {
-        Symbol symbol = new Symbol(name, type, decl, astNode);
+        Symbol symbol = new Symbol(name, type, decl, astNode, this);
         this.entries.put(createKey(name, type), symbol);
+        FlowUtils.addSymbolLineNumber(symbol, astNode.lineNumber);
         return symbol;
     }
 

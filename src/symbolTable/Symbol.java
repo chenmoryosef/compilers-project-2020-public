@@ -34,18 +34,24 @@ class Properties {
 }
 
 public class Symbol {
-    private String varName;
+    private String symbolName;
     private Type type;
     private List<String> decl;
     private Properties properties;
     private boolean isRootMethod;
+    private SymbolTable enclosingSymbolTable;
 
-    public Symbol(String varName, Type type, List<String> decl, AstNode astNode) {
-        this.varName = varName;
+    public Symbol(String varName, Type type, List<String> decl, AstNode astNode, SymbolTable enclosingSymbolTable) {
+        this.symbolName = varName;
         this.type = type;
         this.decl = decl;
         this.properties = new Properties(astNode);
         this.isRootMethod = false;
+        this.enclosingSymbolTable = enclosingSymbolTable;
+    }
+
+    public SymbolTable getEnclosingSymbolTable() {
+        return enclosingSymbolTable;
     }
 
     public void enableRootMethod() {
@@ -56,12 +62,12 @@ public class Symbol {
         return isRootMethod;
     }
 
-    public String getVarName() {
-        return varName;
+    public String getSymbolName() {
+        return symbolName;
     }
 
-    public void setVarName(String varName) {
-        this.varName = varName;
+    public void setSymbolName(String symbolName) {
+        this.symbolName = symbolName;
     }
 
     public Type getType() {
