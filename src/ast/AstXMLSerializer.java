@@ -8,7 +8,6 @@ public class AstXMLSerializer {
         try {
             JAXBContext jc = JAXBContext.newInstance(Program.class);
 
-
             Marshaller marshaller = jc.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             var outWriter = new FileOutputStream(new File(outfilename));

@@ -23,12 +23,13 @@ public class AstVisitor implements Visitor {
         SymbolTable root = new SymbolTable(null);
         SymbolTableUtils.setRoot(root);
 
-        program.mainClass().accept(this);
         for (ClassDecl classdecl : program.classDecls()) {
             SymbolTableUtils.setCurrSymTable(root);
             // TODO - we were here!
             classdecl.accept(this);
         }
+
+        program.mainClass().accept(this);
     }
 
     @Override
@@ -94,6 +95,7 @@ public class AstVisitor implements Visitor {
         for (var stmt : methodDecl.body()) {
             stmt.accept(this);
         }
+        methodDecl.ret().accept(this);
     }
 
     @Override
@@ -158,22 +160,32 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(AndExpr e) {
+        e.e1().accept(this);
+        e.e2().accept(this);
     }
 
     @Override
     public void visit(LtExpr e) {
+        e.e1().accept(this);
+        e.e2().accept(this);
     }
 
     @Override
     public void visit(AddExpr e) {
+        e.e1().accept(this);
+        e.e2().accept(this);
     }
 
     @Override
     public void visit(SubtractExpr e) {
+        e.e1().accept(this);
+        e.e2().accept(this);
     }
 
     @Override
     public void visit(MultExpr e) {
+        e.e1().accept(this);
+        e.e2().accept(this);
     }
 
     @Override
@@ -189,11 +201,30 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(MethodCallExpr e) {
-        Symbol symbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(e.methodId(), Type.METHOD));
-        if (symbol == null) {
+        AstNode ownerExp = e.ownerExpr();
+        Symbol symbol;
+        String symbolKey = SymbolTable.createKey(e.methodId(), Type.METHOD);
+        String classId = null;
+        SymbolTable symbolTable;
+        if (ownerExp instanceof ThisExpr) {
+            symbolTable = SymbolTableUtils.getCurrSymTable();
+        } else if (ownerExp instanceof NewObjectExpr) {
+            classId = ((NewObjectExpr) ownerExp).classId();
+            symbolTable = SymbolTableUtils.getSymbolTable(classId);
+        } else {
+            Symbol ownerSymbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(((IdentifierExpr) ownerExp).id(), Type.VARIABLE));
+            classId = ownerSymbol.getDecl().get(0);
+            symbolTable = SymbolTableUtils.getSymbolTable(classId);
+        }
+        if (symbolTable == null) {
+            if (classId != null) {
+                SymbolTableUtils.addUnresolvedParam(classId, e.methodId(), e);
+                return;
+            }
             // TODO - handle error
             return;
         }
+        symbol = symbolTable.resolveSymbol(symbolKey);
         symbol.addProperty(e);
         for (Expr arg : e.actuals()) {
             arg.accept(this);
@@ -251,7 +282,7 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(RefType t) {
-        Symbol symbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(t.id(), Type.METHOD));
+        Symbol symbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(t.id(), Type.VARIABLE));
         if (symbol == null) {
             // TODO - handle error
             return;

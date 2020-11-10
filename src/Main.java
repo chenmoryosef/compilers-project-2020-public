@@ -23,7 +23,6 @@ public class Main {
             } else {
                 throw new UnsupportedOperationException("unknown input method " + inputMethod);
             }
-
             var outFile = new PrintWriter(outfilename);
             try {
                 SymbolTableUtils.buildSymbolTables(prog);
@@ -58,12 +57,10 @@ public class Main {
                     }
 
                     try {
-                        Symbol symbol = SymbolTableUtils.findSymbol(prog, originalName, originalLine);
-                        if (isMethod) {
-                            FlowUtils.renameMethod(symbol);
-                        } else {
-                            FlowUtils.renameVariable(symbol.getProperties());
-                        }
+                        Symbol symbol = FlowUtils.findSymbolToRename(Integer.parseInt(originalLine), isMethod);
+                        FlowUtils.rename(symbol.getProperties(), newName);
+                        AstXMLSerializer xmlSerializer = new AstXMLSerializer();
+                        xmlSerializer.serialize(prog, outfilename);
                     } catch (UnsupportedOperationException e) {
                         throw new UnsupportedOperationException(e.getMessage());
                     } catch (Exception e) {

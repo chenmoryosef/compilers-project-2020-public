@@ -29,7 +29,7 @@ public class AssignArrayStatement extends Statement {
         return lv;
     }
 
-    public void setLv(String lv) {
+    public void setName(String lv) {
         this.lv = lv;
     }
 

@@ -15,13 +15,18 @@ public class SymbolTable {
         this.parentSymbolTable = parentSymbolTable;
     }
 
+    public static String createKey(String name, String name2) {
+        return name + " " + name2;
+    }
+
     public static String createKey(String name, Type type) {
         return name + type.getName();
     }
 
     public Symbol addSymbol(AstNode astNode, String name, Type type, List<String> decl) {
-        Symbol symbol = new Symbol(name, type, decl, astNode);
+        Symbol symbol = new Symbol(name, type, decl, astNode, this);
         this.entries.put(createKey(name, type), symbol);
+        FlowUtils.addSymbolLineNumber(symbol, astNode.lineNumber);
         return symbol;
     }
 
