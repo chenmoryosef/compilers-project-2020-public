@@ -16,6 +16,16 @@ public class SymbolTableUtils {
     private static Map<String, SymbolTable> symbolTableClassMap = new HashMap<>();
     private static Map<String, List<AstNode>> unresolvedParams = new HashMap<>();
     private static SymbolTable currSymTable;
+    private static String currClassID;
+
+
+    public static void setCurrClassID(String currClassID) {
+        SymbolTableUtils.currClassID = currClassID;
+    }
+
+    public static String getCurrClassId() {
+        return currClassID;
+    }
 
     public static SymbolTable getCurrSymTable() {
         return currSymTable;

@@ -25,7 +25,7 @@ public class AstVisitor implements Visitor {
 
         for (ClassDecl classdecl : program.classDecls()) {
             SymbolTableUtils.setCurrSymTable(root);
-            // TODO - we were here!
+            SymbolTableUtils.setCurrClassID(classdecl.name());
             classdecl.accept(this);
         }
 
@@ -204,9 +204,14 @@ public class AstVisitor implements Visitor {
         AstNode ownerExp = e.ownerExpr();
         Symbol symbol;
         String symbolKey = SymbolTable.createKey(e.methodId(), Type.METHOD);
-        String classId = null;
+        String classId;
         SymbolTable symbolTable;
+        for (Expr arg : e.actuals()) {
+            arg.accept(this);
+        }
+
         if (ownerExp instanceof ThisExpr) {
+            classId = SymbolTableUtils.getCurrClassId();
             symbolTable = SymbolTableUtils.getCurrSymTable();
         } else if (ownerExp instanceof NewObjectExpr) {
             classId = ((NewObjectExpr) ownerExp).classId();
@@ -225,10 +230,11 @@ public class AstVisitor implements Visitor {
             return;
         }
         symbol = symbolTable.resolveSymbol(symbolKey);
-        symbol.addProperty(e);
-        for (Expr arg : e.actuals()) {
-            arg.accept(this);
+        if(symbol == null) {
+            SymbolTableUtils.addUnresolvedParam(classId, e.methodId(), e);
+            return;
         }
+        symbol.addProperty(e);
     }
 
     @Override
