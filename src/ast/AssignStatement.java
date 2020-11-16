@@ -26,7 +26,7 @@ public class AssignStatement extends Statement {
         return lv;
     }
 
-    public void setName(String lv) {
+    public void setLv(String lv) {
         this.lv = lv;
     }
 

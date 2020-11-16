@@ -16,9 +16,9 @@ public class FlowUtils {
             } else if (astNode instanceof MethodDecl) {
                 ((MethodDecl) astNode).setName(newName);
             } else if (astNode instanceof AssignArrayStatement) {
-                ((AssignArrayStatement) astNode).setName(newName);
+                ((AssignArrayStatement) astNode).setLv(newName);
             } else if (astNode instanceof AssignStatement) {
-                ((AssignStatement) astNode).setName(newName);
+                ((AssignStatement) astNode).setLv(newName);
             } else if (astNode instanceof RefType) {
                 ((RefType) astNode).setId(newName);
             } else if (astNode instanceof IdentifierExpr) {
