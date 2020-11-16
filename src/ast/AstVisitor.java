@@ -262,6 +262,7 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(NewIntArrayExpr e) {
+        e.lengthExpr().accept(this);
     }
 
     @Override
