@@ -57,7 +57,7 @@ public class Main {
                     }
 
                     try {
-                        Symbol symbol = FlowUtils.findSymbolToRename(Integer.parseInt(originalLine), isMethod);
+                        Symbol symbol = FlowUtils.findSymbolToRename(Integer.parseInt(originalLine), originalName, isMethod);
                         FlowUtils.rename(symbol.getProperties(), newName);
                         AstXMLSerializer xmlSerializer = new AstXMLSerializer();
                         xmlSerializer.serialize(prog, outfilename);
