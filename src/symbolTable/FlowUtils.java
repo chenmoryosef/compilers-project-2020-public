@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FlowUtils {
-    private static Map<Integer, Symbol> lineNumberToSymbol = new HashMap<>();
+    private static Map<String, Symbol> lineNumberToSymbol = new HashMap<>();
 
     public static void rename(Properties properties, String newName) throws UnsupportedOperationException {
         // TODO - raise error handling
@@ -36,11 +36,11 @@ public class FlowUtils {
     }
 
     public static void addSymbolLineNumber(Symbol symbol, Integer lineNumber) {
-        lineNumberToSymbol.put(lineNumber, symbol);
+        lineNumberToSymbol.put(lineNumber + symbol.getSymbolName(), symbol);
     }
 
-    public static Symbol findSymbolToRename(Integer originalLine, boolean isMethod) {
-        Symbol symbol = lineNumberToSymbol.get(originalLine);
+    public static Symbol findSymbolToRename(Integer originalLine, String name, boolean isMethod) {
+        Symbol symbol = lineNumberToSymbol.get(originalLine + name);
         symbol = isMethod ?
                 symbol.getEnclosingSymbolTable().resolveSymbol(SymbolTable.createKey(symbol.getSymbolName(), Type.METHOD))
                 : symbol;
