@@ -39,6 +39,8 @@ public class Main {
                     throw new UnsupportedOperationException("TODO - Ex. 3");
 
                 } else if (action.equals("compile")) {
+                    // Pre-Ex2 Visitor - create vtables + Class->data-structure(vtable-method/field -> offset) and probably more...
+                    // LLVM Print Visitor
                     throw new UnsupportedOperationException("TODO - Ex. 2");
 
                 } else if (action.equals("rename")) {
