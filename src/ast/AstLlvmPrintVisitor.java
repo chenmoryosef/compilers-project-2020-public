@@ -44,7 +44,9 @@ public class AstLlvmPrintVisitor implements Visitor {
     @Override
     public void visit(Program program) {
         // TODO EX2 - concat vtable to llvm code output  string
+
         // TODO EX2 - concat mandatory string (@throw_oob, print_int)
+
         program.mainClass().accept(this);
         for (ClassDecl classdecl : program.classDecls()) {
             classdecl.accept(this);
@@ -81,6 +83,7 @@ public class AstLlvmPrintVisitor implements Visitor {
     @Override
     public void visit(MethodDecl methodDecl) {
         // TODO EX2 - print declaration
+        builder.append(methodDecl);
         appendWithIndent("");
         methodDecl.returnType().accept(this);
         builder.append(" ");
@@ -112,6 +115,10 @@ public class AstLlvmPrintVisitor implements Visitor {
         indent--;
         appendWithIndent("}\n");
         // TODO EX2 - Reset ifCnt and regCnt
+        ifCnt=0;
+        regCnt=0;
+
+
     }
 
     @Override
@@ -124,10 +131,25 @@ public class AstLlvmPrintVisitor implements Visitor {
     @Override
     public void visit(VarDecl varDecl) {
         // TODO EX2 - %varDecl.name = alloca varDecl.type().accept(this);
+
         appendWithIndent("");
-        varDecl.type().accept(this);
-        builder.append(" ");
-        builder.append(varDecl.name());
+        builder.append("%"+varDecl.name());
+        builder.append("alloca ");
+        builder.append("=");
+        if(varDecl.type() instanceof IntAstType){
+            builder.append("i32");
+        }
+        if(varDecl.type() instanceof BoolAstType ){
+            builder.append("i1");
+        }
+        if(varDecl.type() instanceof IntArrayAstType){
+            builder.append("i32*");
+        }
+        if(varDecl.type() instanceof RefType){
+            builder.append("i8*");
+        }
+
+
         builder.append(";\n");
     }
 
@@ -148,15 +170,37 @@ public class AstLlvmPrintVisitor implements Visitor {
     public void visit(IfStatement ifStatement) {
         // TODO EX2 - cond accept writes the bool result to a register
         ifStatement.cond().accept(this);
+        builder.append("br ");
+        builder.append("i1 ");
+        builder.append("%_"+getLastRegisterCount()+", ");
+        builder.append("label ");
+        ifCnt++;
+        int firstLabel=ifCnt;
+        builder.append("%if"+ifCnt+", ");
+        builder.append("label ");
+        ifCnt++;
+        int secondLabel= ifCnt;
+        builder.append("%if"+ifCnt+" ");
+        builder.append("\n");
+        ifCnt++;
+        int thirdLabel= ifCnt;
+
+        builder.append("%if"+firstLabel+":");
+        builder.append("\n");
         // TODO EX2 - label #0
-        builder.append(")\n");
-        indent++;
         ifStatement.thencase().accept(this);
-        indent--;
+        builder.append("br ");
+        builder.append("%if"+thirdLabel);
+        builder.append("\n");
         appendWithIndent("else\n");
-        indent++;
+        builder.append("%if"+secondLabel+":");
+        builder.append("\n");
         ifStatement.elsecase().accept(this);
-        indent--;
+        builder.append("br ");
+        builder.append("%if"+thirdLabel);
+        builder.append("\n");
+        builder.append("%if"+thirdLabel+":");
+        builder.append("\n");
     }
 
     @Override
@@ -165,10 +209,34 @@ public class AstLlvmPrintVisitor implements Visitor {
         // TODO EX2 - create whileBody label
         // TODO EX2 - compute condition
         // TODO EX2 - branch over condition value
-        whileStatement.cond().accept(this);
-        builder.append(") {");
-        indent++;
+
+        ifCnt++;
+        int whileLabel=ifCnt;
+        builder.append("%if"+ifCnt+":");
+        builder.append("\n");
         whileStatement.body().accept(this);
+        ifCnt++;
+        int outLabel=ifCnt;
+        builder.append("%if"+ifCnt+":");
+        builder.append("\n");
+        whileStatement.cond().accept(this);
+        if(whileStatement.cond() instanceof TrueExpr){
+            builder.append("br label %if"+whileLabel);
+            builder.append("\n");
+        }
+
+        if(whileStatement.cond() instanceof FalseExpr){
+
+            builder.append("br label %if"+whileLabel);
+            builder.append("\n");
+
+        }
+        else{
+            whileStatement.cond().accept(this);
+            builder.append("br i1 %_"+ getLastRegisterCount()+", label %if"+whileLabel+", label %if"+outLabel);
+        }
+        indent++;
+        //whileStatement.body().accept(this);
         indent--;
         builder.append("\n");
         appendWithIndent("}\n");
@@ -179,6 +247,34 @@ public class AstLlvmPrintVisitor implements Visitor {
         appendWithIndent("System.out.println(");
         // TODO EX2 - handle ref-id or int-literal
         sysoutStatement.arg().accept(this);
+        if( sysoutStatement.arg() instanceof  IntegerLiteralExpr) {
+            //print-int(sysoutStatement.arg());
+            builder.append("call i32 @print-int(i32 " +sysoutStatement.arg()+")");
+            builder.append("\n");
+        }
+        if( sysoutStatement.arg() instanceof  LtExpr) {
+            builder.append("call i32 @puts(i8* " + "%_"+getLastRegisterCount()+")");
+            builder.append("\n");
+        }
+        if( sysoutStatement.arg() instanceof  AddExpr || sysoutStatement.arg() instanceof  SubtractExpr ||  sysoutStatement.arg() instanceof  MultExpr || sysoutStatement.arg() instanceof ArrayAccessExpr) {
+            builder.append("call i32 @puts(i32 " + "%_"+getLastRegisterCount()+")");
+            builder.append("\n");
+        }
+        if( sysoutStatement.arg() instanceof  MethodCallExpr) {
+            //Todo : access symboltable to get type
+        }
+
+        if( sysoutStatement.arg() instanceof  TrueExpr ) {
+            builder.append("call i32 @puts(i1 " + "true");
+            builder.append("\n");
+        }
+        if( sysoutStatement.arg() instanceof FalseExpr) {
+            builder.append("call i32 @puts(i1 " + "false");
+            builder.append("\n");
+        }
+        // TODO: type variable for objects
+
+
         builder.append(");\n");
     }
 
@@ -186,18 +282,73 @@ public class AstLlvmPrintVisitor implements Visitor {
     public void visit(AssignStatement assignStatement) {
         appendWithIndent("");
         // TODO EX2 - handle ref-id or int-literal
-        builder.append(assignStatement.lv());
-        builder.append(" = ");
+
+        //Todo : update currentlvalue
         assignStatement.rv().accept(this);
+        if(assignStatement.rv() instanceof AddExpr || assignStatement.rv() instanceof  SubtractExpr || assignStatement.rv() instanceof  MultExpr || assignStatement.rv() instanceof ArrayAccessExpr  ){
+            builder.append("store i32 %_" +getLastRegisterCount()+", i32* %"+assignStatement.lv());
+            builder.append("\n");
+        }
+        if( assignStatement.rv() instanceof  IntegerLiteralExpr) {
+            //print-int(sysoutStatement.arg());
+            builder.append("store i32 %_" +assignStatement.rv()+", i32* %"+assignStatement.lv());
+            builder.append("\n");
+        }
+        if( assignStatement.rv() instanceof  LtExpr) {
+            builder.append("store i1 %_" +getLastRegisterCount()+", i1 %"+assignStatement.lv());
+            builder.append("\n");
+        }
+        if( assignStatement.rv() instanceof  TrueExpr ) {
+            builder.append("store 1 " + ", i1 %"+assignStatement.lv());
+            builder.append("\n");
+        }
+        if( assignStatement.rv() instanceof FalseExpr) {
+            builder.append("store 0 " + ", i1 %"+assignStatement.lv());
+            builder.append("\n");
+        }
+
+
         builder.append(";\n");
     }
 
     @Override
     public void visit(AssignArrayStatement assignArrayStatement) {
         appendWithIndent("");
-        builder.append(assignArrayStatement.lv());
-        builder.append("[");
-        // TODO EX2 - compute index - handle ref-id or int-literal
+        assignArrayStatement.index().accept(this);
+        if(assignArrayStatement.index() instanceof  IntegerLiteralExpr) {
+
+
+            // TODO EX2 - compute index - handle ref-id or int-literal
+            regCnt++;
+            builder.append("%_" + regCnt + " = load i32*, i32** %" + assignArrayStatement.lv());
+            builder.append("\n");
+            // %_5 = icmp slt i32 0, 0
+            regCnt++;
+            int IsPositive= regCnt;
+            ifCnt++;
+            int bad_index=ifCnt;
+            ifCnt++;
+            int goodindex=ifCnt;
+
+            builder.append("%_" + regCnt + " = icmp slt i32 " + assignArrayStatement.index() + ", 0");
+            builder.append("\n");
+            // br i1 %_5, label %arr_alloc2, label %arr_alloc3
+
+            builder.append("br i1 %_" +IsPositive+", label %if"+bad_index+ ", label %if"+goodindex);
+            builder.append("\n");
+            builder.append("if"+bad_index+":");
+            builder.append("\n");
+            builder.append("call void @throw_oob()");
+            builder.append("br label %if"+goodindex);
+            builder.append("\n");
+            builder.append("if"+goodindex+":");
+            builder.append("\n");
+
+
+
+
+        }
+
         assignArrayStatement.index().accept(this);
         builder.append("]");
         // TODO EX2 - validate index - make sure it is not OOB
@@ -213,7 +364,65 @@ public class AstLlvmPrintVisitor implements Visitor {
     @Override
     public void visit(AndExpr e) {
         // TODO EX2 - straight forward according to SCE example
-        visitBinaryExpr(e, "&&");
+        int assignedval;
+        ifCnt++;
+        int andcond1= ifCnt;
+        ifCnt++;
+        int andcond2= ifCnt;
+        ifCnt++;
+        int andcond3= ifCnt;
+
+        e.e1().accept(this);
+
+        if(e.e1() instanceof  TrueExpr){
+            builder.append("br i1 1 label %if"+andcond1+", label %if"+andcond3);
+        }
+        else if (e.e1() instanceof  FalseExpr){
+
+            builder.append("br i1 0 label %if"+andcond1+", label %if"+andcond3);
+        }
+        else{
+            builder.append("br i1 %_"+getLastRegisterCount()+" label %if"+andcond1+", label %if"+andcond3);
+
+        }
+        builder.append("\n");
+        builder.append("if"+andcond1+":");
+        builder.append("\n");
+        e.e2().accept(this);
+        if(e.e2() instanceof  TrueExpr){
+            regCnt++;
+            assignedval=regCnt;
+            builder.append("%_"+getLastRegisterCount() +"= 1");
+            builder.append("\n");
+            builder.append("br  label %if"+andcond3);
+        }
+        else if (e.e2() instanceof  FalseExpr){
+            regCnt++;
+            assignedval=regCnt;
+            builder.append("%_"+getLastRegisterCount() +"= 0");
+            builder.append("\n");
+            builder.append("br  label %if"+andcond3);
+        }
+        else{
+            int lastval=getLastRegisterCount();
+            regCnt++;
+            assignedval=regCnt;
+            builder.append("%_"+getLastRegisterCount() +"= "+lastval);
+            builder.append("\n");
+            builder.append("br i1 %_"+getLastRegisterCount()+" label %if"+andcond1+", label %if"+andcond3);
+
+        }
+        builder.append("\n");
+        builder.append("if"+andcond2+":");
+        builder.append("\n");
+        builder.append("br  label %if"+andcond3);
+        builder.append("\n");
+        builder.append("if"+andcond3+":");
+        builder.append("\n");
+        invokeRegisterCount();
+        builder.append("%_"+getLastRegisterCount() +"= phi i1 ["+assignedval+",%if"+andcond1+"], [0, %"+andcond2);
+        builder.append("\n");
+
     }
 
     @Override
