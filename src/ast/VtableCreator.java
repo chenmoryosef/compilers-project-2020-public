@@ -34,10 +34,12 @@ public class VtableCreator {
                     Field field = new Field();
                     extractFieldFields(field, symbol,allFields);
                 }
-                countMethods++;
-                MethodeRow methodeRow = new MethodeRow();
-                extractMethodFileds(symbol,methodeRow,allClassMethods,methodsNames);
-                methodeRow.setClassName(className);
+                else {
+                    countMethods++;
+                    MethodeRow methodeRow = new MethodeRow();
+                    extractMethodFileds(symbol, methodeRow, allClassMethods, methodsNames);
+                    methodeRow.setClassName(className);
+                }
             }
             //look for methods the class inherits
             countMethods+= findAllmethodsAndFields(symbolTable,allClassMethods,methodsNames,allFields);
@@ -132,8 +134,6 @@ public class VtableCreator {
                 return 1;
             case "int":
                 return 4;
-            case "intArray":
-                return 8;
             default:
                 return 8;
         }
