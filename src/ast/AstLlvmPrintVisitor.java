@@ -83,7 +83,44 @@ public class AstLlvmPrintVisitor implements Visitor {
     @Override
     public void visit(MethodDecl methodDecl) {
         // TODO EX2 - print declaration
-        builder.append(methodDecl);
+        String returntype;
+        String formaltype;
+        if(methodDecl.returnType() instanceof  IntAstType){
+            returntype="132";
+        }
+        else if(methodDecl.returnType() instanceof BoolAstType){
+            returntype="i1";
+        }
+
+        else if(methodDecl.returnType() instanceof IntArrayAstType){
+            returntype="i32*";
+        }
+        else if(methodDecl.returnType() instanceof RefType){
+            returntype="i8*";
+        }
+        else{
+            returntype="void";
+        }
+        builder.append("define i8* @"+returntype+"(");
+        builder.append("\n");
+        for(FormalArg formal:methodDecl.formals()){
+            if(formal.type() instanceof IntAstType){
+                formaltype ="i32";
+            }
+            else if(formal.type() instanceof BoolAstType){
+                formaltype ="i1";
+            }
+            else if(formal.type() instanceof IntArrayAstType){
+                formaltype ="i32*";
+            }
+            else{
+                formaltype ="i82*";
+            }
+            builder.append(formaltype+" %"+formal.name()+", ");
+        }
+        builder.append(")");
+        builder.append("\n");
+        builder.append("define "+methodDecl.returnType());
         appendWithIndent("");
         methodDecl.returnType().accept(this);
         builder.append(" ");
@@ -134,8 +171,8 @@ public class AstLlvmPrintVisitor implements Visitor {
 
         appendWithIndent("");
         builder.append("%"+varDecl.name());
-        builder.append("alloca ");
         builder.append("=");
+        builder.append("alloca ");
         if(varDecl.type() instanceof IntAstType){
             builder.append("i32");
         }
@@ -220,23 +257,16 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append("%if"+ifCnt+":");
         builder.append("\n");
         whileStatement.cond().accept(this);
-        if(whileStatement.cond() instanceof TrueExpr){
+        if(whileStatement.cond() instanceof TrueExpr ||whileStatement.cond() instanceof FalseExpr){
             builder.append("br label %if"+whileLabel);
             builder.append("\n");
         }
 
-        if(whileStatement.cond() instanceof FalseExpr){
-
-            builder.append("br label %if"+whileLabel);
-            builder.append("\n");
-
-        }
         else{
             whileStatement.cond().accept(this);
             builder.append("br i1 %_"+ getLastRegisterCount()+", label %if"+whileLabel+", label %if"+outLabel);
         }
         indent++;
-        //whileStatement.body().accept(this);
         indent--;
         builder.append("\n");
         appendWithIndent("}\n");
@@ -265,11 +295,11 @@ public class AstLlvmPrintVisitor implements Visitor {
         }
 
         if( sysoutStatement.arg() instanceof  TrueExpr ) {
-            builder.append("call i32 @puts(i1 " + "true");
+            builder.append("call i32 @puts(i1 " + "1");
             builder.append("\n");
         }
         if( sysoutStatement.arg() instanceof FalseExpr) {
-            builder.append("call i32 @puts(i1 " + "false");
+            builder.append("call i32 @puts(i1 " + "0");
             builder.append("\n");
         }
         // TODO: type variable for objects
@@ -291,7 +321,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         }
         if( assignStatement.rv() instanceof  IntegerLiteralExpr) {
             //print-int(sysoutStatement.arg());
-            builder.append("store i32 %_" +assignStatement.rv()+", i32* %"+assignStatement.lv());
+            builder.append("store i32 %_" +((IntegerLiteralExpr) assignStatement.rv()).num()+", i32* %"+assignStatement.lv());
             builder.append("\n");
         }
         if( assignStatement.rv() instanceof  LtExpr) {
@@ -299,11 +329,11 @@ public class AstLlvmPrintVisitor implements Visitor {
             builder.append("\n");
         }
         if( assignStatement.rv() instanceof  TrueExpr ) {
-            builder.append("store 1 " + ", i1 %"+assignStatement.lv());
+            builder.append("store i1 1 " + ", i1 %"+assignStatement.lv());
             builder.append("\n");
         }
         if( assignStatement.rv() instanceof FalseExpr) {
-            builder.append("store 0 " + ", i1 %"+assignStatement.lv());
+            builder.append("store i1 0 " + ", i1 %"+assignStatement.lv());
             builder.append("\n");
         }
 
@@ -392,14 +422,14 @@ public class AstLlvmPrintVisitor implements Visitor {
         if(e.e2() instanceof  TrueExpr){
             regCnt++;
             assignedval=regCnt;
-            builder.append("%_"+getLastRegisterCount() +"= 1");
+            builder.append("%_"+getLastRegisterCount() +"= i1 1");
             builder.append("\n");
             builder.append("br  label %if"+andcond3);
         }
         else if (e.e2() instanceof  FalseExpr){
             regCnt++;
             assignedval=regCnt;
-            builder.append("%_"+getLastRegisterCount() +"= 0");
+            builder.append("%_"+getLastRegisterCount() +"= i1 0");
             builder.append("\n");
             builder.append("br  label %if"+andcond3);
         }
