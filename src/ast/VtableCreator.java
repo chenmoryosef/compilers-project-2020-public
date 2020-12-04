@@ -16,13 +16,18 @@ public class VtableCreator {
     private static Map<SymbolTable, String> symbolTableClassesMap;
     private static Map<String, ObjectStruct> objectStructMap;
 
+
+    public static Map<String, ObjectStruct> getObjectStructMap() {
+        return objectStructMap;
+    }
+
     public String createVtableAndObjectsStruct() {
         objectStructMap = new HashMap<>();
-        inverseMap(symbolTable.SymbolTableUtils.getSymbolTableClassMap());
+        inverseMap(symbolTable.SymbolTableUtils.getSymbolTableClassMap_real());
         StringBuilder stringBuilder = new StringBuilder();
         int countMethods = 0;
         //for each class in the program
-        for (Map.Entry<String, SymbolTable> entry : symbolTable.SymbolTableUtils.getSymbolTableClassMap().entrySet()) {
+        for (Map.Entry<String, SymbolTable> entry : symbolTable.SymbolTableUtils.getSymbolTableClassMap_real().entrySet()) {
             String className = entry.getKey();
             SymbolTable symbolTable = entry.getValue();
             List<MethodeRow> allClassMethods = new ArrayList<MethodeRow>();
@@ -70,8 +75,6 @@ public class VtableCreator {
             objectStruct.addField(field.getFieldName(), field.getType(), field.getSize());
         }
         objectStructMap.put(className, objectStruct);
-
-
     }
 
     public void vtableContent(List<MethodeRow> methodeRowList, StringBuilder stringBuilder) {
@@ -196,7 +199,7 @@ public class VtableCreator {
 
         public void createArgsString() {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("(" + retType);
+            stringBuilder.append("(" + refPointerString);
             for (String argType : argsType) {
                 stringBuilder.append(", " + argType);
             }
@@ -227,33 +230,35 @@ public class VtableCreator {
 
         public String toString() {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(retType + "bitcast (" + retType + "(" + retType);
+            stringBuilder.append(refPointerString + " bitcast (" + retType + "(" + refPointerString);
             for (String argType : argsType) {
                 stringBuilder.append(", " + argType);
             }
-            stringBuilder.append(")* @" + className + "." + methodeName + " to " + retType + ")");
+            stringBuilder.append(")* @" + className + "." + methodeName + " to " + refPointerString + ")");
             return stringBuilder.toString();
         }
 
     }
 
 
-    public int findAllmethodsAndFields(SymbolTable symbolTable, List<MethodeRow> methodsList, Set<String> methodesNames,List<Field> fieldList) {
+    public int findAllmethodsAndFields(SymbolTable symbolTable, List<MethodeRow> methodsList, Set<String> methodesNames, List<Field> fieldList) {
         SymbolTable parentSymbolTable = symbolTable.getParentSymbolTable();
         int countMethodes = 0;
         while (parentSymbolTable != null) {
             for (Map.Entry<String, Symbol> symbolTableRow : symbolTable.getEntries().entrySet()) {
                 Symbol symbol = symbolTableRow.getValue();
-                if (!symbol.getType().equals(Type.METHOD)){
+                if (!symbol.getType().equals(Type.METHOD)) {
                     Field field = new Field();
                     field.setType(convertAstTypeToLLVMRepresention(symbol.getDecl().get(0)));
                     field.setFieldName(symbol.getSymbolName());
                     fieldList.add(field);
                 }
-                if(methodesNames.contains(symbol.getSymbolName())){continue;}
+                if (methodesNames.contains(symbol.getSymbolName())) {
+                    continue;
+                }
                 countMethodes++;
                 MethodeRow methodeRow = new MethodeRow();
-                extractMethodFileds(symbol,methodeRow,methodsList,methodesNames);
+                extractMethodFileds(symbol, methodeRow, methodsList, methodesNames);
                 methodeRow.setMethodeName(symbolTableClassesMap.get(symbolTable));
 
             }

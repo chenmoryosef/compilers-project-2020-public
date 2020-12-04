@@ -41,6 +41,7 @@ public class AstVisitor implements Visitor {
         }
         SymbolTable classSymbolTable = new SymbolTable(parentSymbolTable);
         SymbolTableUtils.addSymbolTable(classDecl.name(), classSymbolTable);
+        SymbolTableUtils.addClassSymbolTable(classDecl.name(), classSymbolTable);
 
         for (var fieldDecl : classDecl.fields()) {
             ArrayList<String> decl = new ArrayList<>();

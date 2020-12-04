@@ -1,10 +1,5 @@
 package ast;
 
-import symbolTable.Symbol;
-import symbolTable.SymbolTable;
-import symbolTable.SymbolTableUtils;
-import symbolTable.Type;
-
 public class AstLlvmPrintVisitor implements Visitor {
     private StringBuilder builder = new StringBuilder();
 
@@ -12,12 +7,15 @@ public class AstLlvmPrintVisitor implements Visitor {
     private int ifCnt = 0;
     private int regCnt = 0;
     private String currentClass;
-    private String currentLv;
+    private String currentRegisterToAssign;
 
     private String astNodeToLlvmType(AstNode node) {
-        if (node instanceof IntAstType) {
+        if (node instanceof IntAstType ||
+                node instanceof SubtractExpr ||
+                node instanceof AddExpr ||
+                node instanceof MultExpr || node instanceof IntegerLiteralExpr) {
             return "i32";
-        } else if (node instanceof BoolAstType) {
+        } else if (node instanceof BoolAstType || node instanceof AndExpr || node instanceof LtExpr) {
             return "i1";
         } else if (node instanceof IntArrayAstType) {
             return "i32*";
@@ -69,6 +67,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(resultRegister);
         builder.append(" = ");
         builder.append(infixSymbol);
+        builder.append(" ");
         builder.append(firstArg);
         builder.append(",");
         builder.append(secondArg);
@@ -76,10 +75,29 @@ public class AstLlvmPrintVisitor implements Visitor {
     }
 
 
+    String verbatim = "declare i8* @calloc(i32, i32)\n" +
+            "declare i32 @printf(i8*, ...)\n" +
+            "declare void @exit(i32)\n" +
+            "\n" +
+            "@_cint = constant [4 x i8] c\"%d\\0a\\00\"\n" +
+            "@_cOOB = constant [15 x i8] c\"Out of bounds\\0a\\00\"\n" +
+            "define void @print_int(i32 %i) {\n" +
+            "\t%_str = bitcast [4 x i8]* @_cint to i8*\n" +
+            "\tcall i32 (i8*, ...) @printf(i8* %_str, i32 %i)\n" +
+            "\tret void\n" +
+            "}\n" +
+            "\n" +
+            "define void @throw_oob() {\n" +
+            "\t%_str = bitcast [15 x i8]* @_cOOB to i8*\n" +
+            "\tcall i32 (i8*, ...) @printf(i8* %_str)\n" +
+            "\tcall void @exit(i32 1)\n" +
+            "\tret void\n" +
+            "}\n\n";
+
     @Override
     public void visit(Program program) {
         // TODO EX2 - concat vtable to llvm code output  string
-
+        builder.append(verbatim);
         // TODO EX2 - concat mandatory string (@throw_oob, print_int)
 
         program.mainClass().accept(this);
@@ -99,20 +117,12 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     @Override
     public void visit(MainClass mainClass) {
-        appendWithIndent("class ");
-        builder.append(mainClass.name());
-        builder.append(" {\n");
-        indent++;
-        appendWithIndent("public static void main(String[] ");
-        builder.append(mainClass.argsName());
-        builder.append(") {");
-        builder.append("\n");
-        indent++;
+        builder.append("define i32 @main() {\n");
         mainClass.mainStatement().accept(this);
-        indent--;
-        appendWithIndent("}\n");
-        indent--;
-        appendWithIndent("}\n");
+        builder.append("ret i32 0\n");
+        builder.append("}\n\n");
+        ifCnt = 0;
+        regCnt = 0;
     }
 
     @Override
@@ -122,7 +132,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         String formaltype;
         String delim = ", ";
         // define i32 @Base.set(i8* %this, i32 %.x) {
-        builder.append("define " + returntype + " @" + this.currentClass + "." + methodDecl.name() + "(i8* this");
+        builder.append("define " + returntype + " @" + this.currentClass + "." + methodDecl.name() + "(i8* %this");
         for (FormalArg formal : methodDecl.formals()) {
             builder.append(delim);
             if (formal.type() instanceof IntAstType) {
@@ -150,16 +160,23 @@ public class AstLlvmPrintVisitor implements Visitor {
         returntype = astNodeToLlvmType(methodDecl.ret());
         methodDecl.ret().accept(this);
         builder.append("ret ");
-        builder.append(returntype + " ");
-        builder.append(this.getLastRegisterCount());
-        builder.append(";");
-        builder.append("\n");
+        builder.append(returntype);
+        if (methodDecl.ret() instanceof IntegerLiteralExpr) {
+            builder.append(" ");
+            builder.append(((IntegerLiteralExpr) methodDecl.ret()).num());
+        } else if (methodDecl.ret() instanceof TrueExpr) {
+            builder.append(" 1");
+        } else if (methodDecl.ret() instanceof FalseExpr) {
+            builder.append(" 0");
+        } else {
+            builder.append(" %_");
+            builder.append(this.getLastRegisterCount());
+        }
+        builder.append("\n}\n");
 
         // TODO EX2 - Reset ifCnt and regCnt
         ifCnt = 0;
         regCnt = 0;
-
-
     }
 
     @Override
@@ -175,7 +192,7 @@ public class AstLlvmPrintVisitor implements Visitor {
 
         appendWithIndent("");
         builder.append("%" + varDecl.name());
-        builder.append("=");
+        builder.append(" = ");
         builder.append("alloca ");
         if (varDecl.type() instanceof IntAstType) {
             builder.append("i32");
@@ -189,9 +206,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         if (varDecl.type() instanceof RefType) {
             builder.append("i8*");
         }
-
-
-        builder.append(";\n");
+        builder.append("\n");
     }
 
     @Override
@@ -276,7 +291,6 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     @Override
     public void visit(SysoutStatement sysoutStatement) {
-        appendWithIndent("System.out.println(");
         // TODO EX2 - handle ref-id or int-literal
         sysoutStatement.arg().accept(this);
         if (sysoutStatement.arg() instanceof IntegerLiteralExpr) {
@@ -304,15 +318,17 @@ public class AstLlvmPrintVisitor implements Visitor {
             builder.append("call i32 @puts(i1 " + "0");
             builder.append("\n");
         }
-        // TODO: type variable for objects
+        if (sysoutStatement.arg() instanceof IdentifierExpr) {
+            // TODO: type variable for objects
+            // Resolve Variable Type
+            // Load that variable into register
 
-
-        builder.append(");\n");
+        }
+        builder.append("\n");
     }
 
     @Override
     public void visit(AssignStatement assignStatement) {
-        appendWithIndent("");
         // TODO EX2 - handle ref-id or int-literal
 
         //Todo : update currentlvalue
@@ -323,7 +339,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         }
         if (assignStatement.rv() instanceof IntegerLiteralExpr) {
             //print-int(sysoutStatement.arg());
-            builder.append("store i32 %_" + ((IntegerLiteralExpr) assignStatement.rv()).num() + ", i32* %" + assignStatement.lv());
+            builder.append("store i32 " + ((IntegerLiteralExpr) assignStatement.rv()).num() + ", i32* %" + assignStatement.lv());
             builder.append("\n");
         }
         if (assignStatement.rv() instanceof LtExpr) {
@@ -338,9 +354,21 @@ public class AstLlvmPrintVisitor implements Visitor {
             builder.append("store i1 0 " + ", i1 %" + assignStatement.lv());
             builder.append("\n");
         }
-
-
-        builder.append(";\n");
+        if(assignStatement.rv() instanceof NewObjectExpr) {
+            // store i8* %_0, i8** %b
+            builder.append("store i8* %_");
+            builder.append(this.currentRegisterToAssign);
+            builder.append(", i8** %_");
+            builder.append(assignStatement.lv());
+            builder.append("\n");
+        }
+        if (assignStatement.rv() instanceof NewIntArrayExpr) {
+            // store i32* %_3, i32** %x
+            builder.append("store i32* %_");
+            builder.append(this.currentRegisterToAssign);
+            builder.append(", i32** %");
+            builder.append(assignStatement.lv());
+        }
     }
 
     @Override
@@ -388,7 +416,6 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(" = ");
         assignArrayStatement.rv().accept(this);
         // TODO EX2 - put rv in lv - store value in array
-        builder.append(";\n");
     }
 
     @Override
@@ -601,7 +628,6 @@ public class AstLlvmPrintVisitor implements Visitor {
         String classId;
         // TODO EX2 - resolve class of owner (this, new, ref-id)  -> class
         if (ownerExp instanceof ThisExpr) {
-
             classId = this.currentClass;
         } else if (ownerExp instanceof NewObjectExpr) {
             classId = ((NewObjectExpr) ownerExp).classId();
@@ -609,12 +635,11 @@ public class AstLlvmPrintVisitor implements Visitor {
             // TODO EX2 - think how to resolve class id of this case....
             classId = "";
         }
-        // TODO EX2 - replace with Gali's code to resolve vtable
         // Assume this was done in accept:
         // %_6 = load i8*, i8** %b
         e.ownerExpr().accept(this);
         // %_7 = bitcast i8* %_6 to i8***
-        int loadedRegister = this.getLastRegisterCount();
+        String loadedRegister = this.currentRegisterToAssign;
         int bitcastRegister = this.invokeRegisterCount();
         builder.append("%_");
         builder.append(bitcastRegister);
@@ -630,9 +655,9 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append("\n");
         // %_9 = getelementptr i8*, i8** %_8, i32 0
         int methodRegister = this.invokeRegisterCount();
-        // TODO EX2 - fill with Gali's value
-        // TODO EX2 - resolve method offset according to map
-        int methodOffset = 17;
+        // Resolve method offset according object struct to map
+        MethodeInfo methodeInfo = VtableCreator.getObjectStructMap().get(classId).getMethodeInfoMap().get(e.methodId());
+        int methodOffset = methodeInfo.getOffset();
         builder.append("%_");
         builder.append(methodRegister);
         builder.append(" = getelementptr i8*, i8** %_");
@@ -648,19 +673,16 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(methodRegister);
         builder.append("\n");
         //	%_11 = bitcast i8* %_10 to i32 (i8*, i32)*
-        // TODO EX2 - get from Gali
-        String returnTypeValue = "i32";
-        String args = "i8*, i32";
+        String returnTypeValue = methodeInfo.getRet();
+        String args = methodeInfo.getArgs();
         bitcastRegister = this.invokeRegisterCount();
         builder.append("%_");
         builder.append(bitcastRegister);
-        builder.append(" = bitcast i8*, %_");
+        builder.append(" = bitcast i8* %_");
         builder.append(actualFunctionPointerRegister);
         builder.append(" to ");
         builder.append(returnTypeValue);
-        builder.append(" (");
         builder.append(args);
-        builder.append(" )");
         builder.append("*\n");
 
         String delim = "";
@@ -694,7 +716,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(returnTypeValue);
         builder.append(" %_");
         builder.append(bitcastRegister);
-        builder.append("i8* ");
+        builder.append(" (i8* %_");
         builder.append(loadedRegister);
         builder.append(arguments);
         builder.append(")\n");
@@ -702,27 +724,39 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     @Override
     public void visit(IntegerLiteralExpr e) {
-        builder.append(e.num());
+
     }
 
     @Override
     public void visit(TrueExpr e) {
-        builder.append("true");
+
     }
 
     @Override
     public void visit(FalseExpr e) {
-        builder.append("false");
+
     }
 
     @Override
     public void visit(IdentifierExpr e) {
-        // TODO EX2 - verify nothing to do here
+        // TODO EX2 -   %_3 = load i32, i32* %e.id()
+        int register = this.invokeRegisterCount();
+        builder.append("%_");
+        builder.append(register);
+        builder.append(" = load ");
+        // TODO - resolve type from symbol table
+        // String type = resolveType(symbol);
+        String type = "i32";
+        builder.append(type);
+        builder.append(", ");
+        builder.append(type);
+        builder.append("* %");
         builder.append(e.id());
+        builder.append("\n");
     }
 
     public void visit(ThisExpr e) {
-        builder.append("this");
+
     }
 
     @Override
@@ -790,11 +824,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(lengthValue);
         builder.append(", i32* %_");
         builder.append(bitcastRegister);
-        // store i32* %_3, i32** %x
-        builder.append("store i32* %_");
-        builder.append(bitcastRegister);
-        builder.append(", i32** %");
-        builder.append(this.currentLv);
+        this.currentRegisterToAssign = "" + bitcastRegister;
     }
 
     @Override
@@ -803,13 +833,12 @@ public class AstLlvmPrintVisitor implements Visitor {
         int objectReg = this.invokeRegisterCount();
         int vTable = this.invokeRegisterCount();
         int vTableFirstElement = this.invokeRegisterCount();
-        int sizeOfObject = 17;
-        int methodsCount = 17;
+        ObjectStruct objectStruct = VtableCreator.getObjectStructMap().get(e.classId());
+        int sizeOfObject = objectStruct.getSizeInBytes();
+        int methodsCount = objectStruct.getMethodeInfoMap().size();
         builder.append("%_");
         builder.append(objectReg);
-        builder.append("= call i8* @calloc(i32 1, i32 ");
-        // TODO EX2 - integration with Gali
-        //           builder.append(e.classId());
+        builder.append(" = call i8* @calloc(i32 1, i32 ");
         builder.append(sizeOfObject);
         builder.append(")\n");
         builder.append("%_");
@@ -833,12 +862,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(", i8*** %_");
         builder.append(vTable);
         builder.append("\n");
-        // store i8* %_0, i8** %b
-        builder.append("store i8* %_");
-        builder.append(objectReg);
-        builder.append(", i8** %_");
-        builder.append(this.currentLv);
-        builder.append("\n");
+        this.currentRegisterToAssign = "" + objectReg;
     }
 
     @Override

@@ -15,11 +15,13 @@ public class SymbolTableUtils {
 
     // Example - if we define Class A and then Class B and afterwords Class C extends A
     // we need to know to connect C symbol table to A
+    private static Map<String, SymbolTable> symbolTableClassMap_real = new HashMap<>();
     private static Map<String, SymbolTable> symbolTableClassMap = new HashMap<>();
     private static Map<String, List<AstNode>> unresolvedParams = new HashMap<>();
     private static SymbolTable currSymTable;
     private static String currClassID;
 
+    public static Map<String, SymbolTable> getSymbolTableClassMap_real() { return symbolTableClassMap_real; }
     public static Map<String, SymbolTable> getSymbolTableClassMap() { return symbolTableClassMap; }
     public static void setCurrClassID(String currClassID) {
         SymbolTableUtils.currClassID = currClassID;
@@ -49,6 +51,10 @@ public class SymbolTableUtils {
     public static void addSymbolTable(String name, SymbolTable symbolTable) {
         symbolTableClassMap.put(name, symbolTable);
         currSymTable = symbolTable;
+    }
+
+    public static void addClassSymbolTable(String name, SymbolTable symbolTable) {
+        symbolTableClassMap_real.put(name, symbolTable);
     }
 
     public static void buildSymbolTables(Program program) {
