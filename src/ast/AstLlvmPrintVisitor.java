@@ -281,7 +281,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         sysoutStatement.arg().accept(this);
         if (sysoutStatement.arg() instanceof IntegerLiteralExpr) {
             //print-int(sysoutStatement.arg());
-            builder.append("call i32 @print-int(i32 " + sysoutStatement.arg() + ")");
+            builder.append("call i32 @print_int(i32 " + sysoutStatement.arg() + ")");
             builder.append("\n");
         }
         if (sysoutStatement.arg() instanceof LtExpr) {

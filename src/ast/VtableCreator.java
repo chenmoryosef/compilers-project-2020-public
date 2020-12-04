@@ -1,4 +1,5 @@
 package ast;
+
 import symbolTable.Symbol;
 import symbolTable.SymbolTableUtils;
 import symbolTable.SymbolTable;
@@ -12,29 +13,28 @@ public class VtableCreator {
     final String intString = "i32";
     final String intPointerString = "i32*";
     final String boolString = "i1";
-    private static Map<SymbolTable,String> symbolTableClassesMap;
-    private static Map<String,ObjectStruct> objectStructMap;
+    private static Map<SymbolTable, String> symbolTableClassesMap;
+    private static Map<String, ObjectStruct> objectStructMap;
 
-    public String createVtableAndObjectsSruct(){
+    public String createVtableAndObjectsStruct() {
         objectStructMap = new HashMap<>();
         inverseMap(symbolTable.SymbolTableUtils.getSymbolTableClassMap());
         StringBuilder stringBuilder = new StringBuilder();
         int countMethods = 0;
         //for each class in the program
-        for (Map.Entry<String,SymbolTable> entry :symbolTable.SymbolTableUtils.getSymbolTableClassMap().entrySet()){
+        for (Map.Entry<String, SymbolTable> entry : symbolTable.SymbolTableUtils.getSymbolTableClassMap().entrySet()) {
             String className = entry.getKey();
             SymbolTable symbolTable = entry.getValue();
             List<MethodeRow> allClassMethods = new ArrayList<MethodeRow>();
             List<Field> allFields = new ArrayList<>();
             Set<String> methodsNames = new HashSet<>();
             //for each methode in this class
-            for (Map.Entry<String,Symbol> symbolTableRow : symbolTable.getEntries().entrySet()){
+            for (Map.Entry<String, Symbol> symbolTableRow : symbolTable.getEntries().entrySet()) {
                 Symbol symbol = symbolTableRow.getValue();
-                if(!symbol.getType().equals(Type.METHOD)){
+                if (!symbol.getType().equals(Type.METHOD)) {
                     Field field = new Field();
-                    extractFieldFields(field, symbol,allFields);
-                }
-                else {
+                    extractFieldFields(field, symbol, allFields);
+                } else {
                     countMethods++;
                     MethodeRow methodeRow = new MethodeRow();
                     extractMethodFileds(symbol, methodeRow, allClassMethods, methodsNames);
@@ -42,12 +42,12 @@ public class VtableCreator {
                 }
             }
             //look for methods the class inherits
-            countMethods+= findAllmethodsAndFields(symbolTable,allClassMethods,methodsNames,allFields);
-            addToObjectsStructMap(className,allClassMethods,allFields);
+            countMethods += findAllmethodsAndFields(symbolTable, allClassMethods, methodsNames, allFields);
+            addToObjectsStructMap(className, allClassMethods, allFields);
 
-        //concatenate the vtable of this class
-        vtableHeader(countMethods,className,stringBuilder);
-        vtableContent(allClassMethods,stringBuilder);
+            //concatenate the vtable of this class
+            vtableHeader(countMethods, className, stringBuilder);
+            vtableContent(allClassMethods, stringBuilder);
         }
 
         return stringBuilder.toString();
@@ -60,53 +60,58 @@ public class VtableCreator {
         allFields.add(field);
     }
 
-    public void addToObjectsStructMap(String className, List<MethodeRow> methodeRowList,List<Field> fieldList){
+    public void addToObjectsStructMap(String className, List<MethodeRow> methodeRowList, List<Field> fieldList) {
         ObjectStruct objectStruct = new ObjectStruct();
-        for(MethodeRow methodeRow: methodeRowList){
+        for (MethodeRow methodeRow : methodeRowList) {
             methodeRow.createArgsString();
-            objectStruct.addMethode(methodeRow.getMethodeName(),methodeRow.getArgs(),methodeRow.getRetType());
+            objectStruct.addMethode(methodeRow.getMethodeName(), methodeRow.getArgs(), methodeRow.getRetType());
         }
-        for(Field field :fieldList){
-            objectStruct.addField(field.getFieldName(), field.getType(),field.getSize());
+        for (Field field : fieldList) {
+            objectStruct.addField(field.getFieldName(), field.getType(), field.getSize());
         }
-        objectStructMap.put(className,objectStruct);
+        objectStructMap.put(className, objectStruct);
 
 
     }
-    public void vtableContent(List<MethodeRow> methodeRowList,StringBuilder stringBuilder){
+
+    public void vtableContent(List<MethodeRow> methodeRowList, StringBuilder stringBuilder) {
         int i;
-        for(i = 0;i<methodeRowList.size()-1;i++){
+        for (i = 0; i < methodeRowList.size() - 1; i++) {
             stringBuilder.append(methodeRowList.get(i).toString());
             stringBuilder.append(",\n");
         }
-        stringBuilder.append(methodeRowList.get(i).toString());
+        if (methodeRowList.size() > 0) {
+            stringBuilder.append(methodeRowList.get(methodeRowList.size() - 1).toString());
+        }
         stringBuilder.append("\n]");
     }
-    public void vtableHeader(int num_of_funcs,String className,StringBuilder stringBuilder){
-        stringBuilder.append("@."+className+"_vtable = global ["+ num_of_funcs+" x "+ refPointerString+"] [\n");
+
+    public void vtableHeader(int funcsNum, String className, StringBuilder stringBuilder) {
+        stringBuilder.append("@." + className + "_vtable = global [" + funcsNum + " x " + refPointerString + "] [\n");
     }
 
-    public void extractMethodFileds(Symbol symbol,MethodeRow methodeRow,List<MethodeRow> methodsList ,Set<String> methodsNames){
-        extractArgsTypes(symbol,methodeRow);
-        extractRetType(symbol,methodeRow);
-        extractMethodeName(symbol,methodeRow);
+    public void extractMethodFileds(Symbol symbol, MethodeRow methodeRow, List<MethodeRow> methodsList, Set<String> methodsNames) {
+        extractArgsTypes(symbol, methodeRow);
+        extractRetType(symbol, methodeRow);
+        extractMethodeName(symbol, methodeRow);
         methodsList.add(methodeRow);
         methodsNames.add(symbol.getSymbolName());
     }
-    public void extractMethodeName(Symbol symbol, MethodeRow methodeRow){
+
+    public void extractMethodeName(Symbol symbol, MethodeRow methodeRow) {
         String methodName = symbol.getSymbolName();
         methodeRow.setMethodeName(methodName);
     }
 
-    public void extractRetType(Symbol symbol, MethodeRow row){
+    public void extractRetType(Symbol symbol, MethodeRow row) {
         String ret = symbol.getDecl().get(0);
         String retType = convertAstTypeToLLVMRepresention(ret);
         row.setRetType(retType);
     }
 
-    public void extractArgsTypes(Symbol symbol, MethodeRow row){
+    public void extractArgsTypes(Symbol symbol, MethodeRow row) {
         List<String> decl = symbol.getDecl();
-        for(int i = 1;i<decl.size();i++){
+        for (int i = 1; i < decl.size(); i++) {
             String arg = decl.get(i);
             String argType = convertAstTypeToLLVMRepresention(arg);
             row.addToArgsType(argType);
@@ -114,8 +119,8 @@ public class VtableCreator {
 
     }
 
-    public String convertAstTypeToLLVMRepresention(String astType){
-        switch (astType){
+    public String convertAstTypeToLLVMRepresention(String astType) {
+        switch (astType) {
             case "boolean":
                 return boolString;
             case "int":
@@ -138,7 +143,8 @@ public class VtableCreator {
                 return 8;
         }
     }
-    public class Field{
+
+    public class Field {
         private String fieldName;
         private String type;
         private int size;
@@ -148,7 +154,7 @@ public class VtableCreator {
             return size;
         }
 
-        public void  setSize(int size) {
+        public void setSize(int size) {
             this.size = size;
         }
 
@@ -169,16 +175,17 @@ public class VtableCreator {
         }
     }
 
-    public class MethodeRow{
+    public class MethodeRow {
         String retType;
         List<String> argsType;
         String className;
         String methodeName;
         String args;
 
-        public MethodeRow(){
+        public MethodeRow() {
             this.argsType = new ArrayList<String>();
         }
+
         public String getMethodeName() {
             return methodeName;
         }
@@ -186,11 +193,12 @@ public class VtableCreator {
         public String getArgs() {
             return args;
         }
-        public void createArgsString(){
+
+        public void createArgsString() {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("("+ retType);
-            for(String argType : argsType){
-                stringBuilder.append(", "+argType);
+            stringBuilder.append("(" + retType);
+            for (String argType : argsType) {
+                stringBuilder.append(", " + argType);
             }
             stringBuilder.append(")");
             args = stringBuilder.toString();
@@ -204,7 +212,7 @@ public class VtableCreator {
             this.retType = retType;
         }
 
-        public void addToArgsType(String arg){
+        public void addToArgsType(String arg) {
             argsType.add(arg);
         }
 
@@ -217,45 +225,47 @@ public class VtableCreator {
             this.methodeName = methodeName;
         }
 
-        public String toString(){
+        public String toString() {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(retType+"bitcast ("+retType+"("+ retType);
-            for(String argType : argsType){
-                stringBuilder.append(", "+argType);
+            stringBuilder.append(retType + "bitcast (" + retType + "(" + retType);
+            for (String argType : argsType) {
+                stringBuilder.append(", " + argType);
             }
-            stringBuilder.append(")* @"+className+"."+methodeName+" to "+ retType+")");
+            stringBuilder.append(")* @" + className + "." + methodeName + " to " + retType + ")");
             return stringBuilder.toString();
         }
 
     }
 
-    public int findAllmethodsAndFields(SymbolTable symbolTable, List<MethodeRow> methodsList, Set<String> methodesNames,List<Field> fieldList) {
+    public int findAllmethodsAndFields(SymbolTable symbolTable, List<MethodeRow> methodsList, Set<String> methodesNames, List<Field> fieldList) {
         SymbolTable parentSymbolTable = symbolTable.getParentSymbolTable();
         int countMethodes = 0;
         while (parentSymbolTable != null) {
             for (Map.Entry<String, Symbol> symbolTableRow : symbolTable.getEntries().entrySet()) {
                 Symbol symbol = symbolTableRow.getValue();
-                if (!symbol.getType().equals(Type.METHOD)){
+                if (symbol.getType().equals(Type.VARIABLE)) {
                     Field field = new Field();
                     field.setType(convertAstTypeToLLVMRepresention(symbol.getDecl().get(0)));
                     field.setFieldName(symbol.getSymbolName());
                     fieldList.add(field);
+                } else if (symbol.getType().equals(Type.METHOD) && !(methodesNames.contains(symbol.getSymbolName()))) {
+                    countMethodes++;
+                    MethodeRow methodeRow = new MethodeRow();
+                    extractMethodFileds(symbol, methodeRow, methodsList, methodesNames);
+                    methodeRow.setMethodeName(symbolTableClassesMap.get(symbolTable));
                 }
-                if(methodesNames.contains(symbol.getSymbolName())){continue;}
-                countMethodes++;
-                MethodeRow methodeRow = new MethodeRow();
-                extractMethodFileds(symbol,methodeRow,methodsList,methodesNames);
-                methodeRow.setMethodeName(symbolTableClassesMap.get(symbolTable));
-                parentSymbolTable = parentSymbolTable.getParentSymbolTable();
+//                if(methodesNames.contains(symbol.getSymbolName())){continue;}
             }
+            symbolTable = parentSymbolTable;
+            parentSymbolTable = parentSymbolTable.getParentSymbolTable();
         }
         return countMethodes;
     }
 
-    public void inverseMap(Map<String,SymbolTable> map){
-        Map<SymbolTable,String> inverseMap = new HashMap<>();
-        for(String className: map.keySet()){
-            inverseMap.put(map.get(className),className);
+    public void inverseMap(Map<String, SymbolTable> map) {
+        Map<SymbolTable, String> inverseMap = new HashMap<>();
+        for (String className : map.keySet()) {
+            inverseMap.put(map.get(className), className);
         }
         symbolTableClassesMap = inverseMap;
 
