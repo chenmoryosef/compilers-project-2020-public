@@ -46,9 +46,8 @@ public class Main {
                     AstLlvmPrintVisitor astLlvmPrintVisitor = new AstLlvmPrintVisitor();
                     astLlvmPrintVisitor.visit(prog);
                     // Concat v tables and visitor's result
-                    outFile.write(llvmVtables + "\n" + astLlvmPrintVisitor.getString());
-                    throw new UnsupportedOperationException("TODO - Ex. 2");
-
+                    String llvmOutput = astLlvmPrintVisitor.getString();
+                    outFile.write(llvmVtables + "\n" + llvmOutput);
                 } else if (action.equals("rename")) {
                     var type = args[2];
                     var originalName = args[3];

@@ -237,26 +237,26 @@ public class VtableCreator {
 
     }
 
-    public int findAllmethodsAndFields(SymbolTable symbolTable, List<MethodeRow> methodsList, Set<String> methodesNames, List<Field> fieldList) {
+
+    public int findAllmethodsAndFields(SymbolTable symbolTable, List<MethodeRow> methodsList, Set<String> methodesNames,List<Field> fieldList) {
         SymbolTable parentSymbolTable = symbolTable.getParentSymbolTable();
         int countMethodes = 0;
         while (parentSymbolTable != null) {
             for (Map.Entry<String, Symbol> symbolTableRow : symbolTable.getEntries().entrySet()) {
                 Symbol symbol = symbolTableRow.getValue();
-                if (symbol.getType().equals(Type.VARIABLE)) {
+                if (!symbol.getType().equals(Type.METHOD)){
                     Field field = new Field();
                     field.setType(convertAstTypeToLLVMRepresention(symbol.getDecl().get(0)));
                     field.setFieldName(symbol.getSymbolName());
                     fieldList.add(field);
-                } else if (symbol.getType().equals(Type.METHOD) && !(methodesNames.contains(symbol.getSymbolName()))) {
-                    countMethodes++;
-                    MethodeRow methodeRow = new MethodeRow();
-                    extractMethodFileds(symbol, methodeRow, methodsList, methodesNames);
-                    methodeRow.setMethodeName(symbolTableClassesMap.get(symbolTable));
                 }
-//                if(methodesNames.contains(symbol.getSymbolName())){continue;}
+                if(methodesNames.contains(symbol.getSymbolName())){continue;}
+                countMethodes++;
+                MethodeRow methodeRow = new MethodeRow();
+                extractMethodFileds(symbol,methodeRow,methodsList,methodesNames);
+                methodeRow.setMethodeName(symbolTableClassesMap.get(symbolTable));
+
             }
-            symbolTable = parentSymbolTable;
             parentSymbolTable = parentSymbolTable.getParentSymbolTable();
         }
         return countMethodes;
