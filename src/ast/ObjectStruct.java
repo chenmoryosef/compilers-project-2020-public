@@ -11,15 +11,19 @@ public class ObjectStruct {
     private Map<String, MethodeInfo> methodeInfoMap;
 
     //maps between field and it's offset
+
     private Map<String, FieldInfo> fieldInfoMap;
     private int lastOffsetFields = 0;
     private int lastOffsetMethodes = 0;
     public int getSizeInBytes() {
         return sizeInBytes;
     }
-
     public Map<String, MethodeInfo> getMethodeInfoMap() {
         return methodeInfoMap;
+    }
+
+    public Map<String, FieldInfo> getFieldInfoMap() {
+        return fieldInfoMap;
     }
 
     public ObjectStruct() {

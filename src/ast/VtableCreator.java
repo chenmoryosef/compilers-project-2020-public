@@ -13,6 +13,11 @@ public class VtableCreator {
     final String intString = "i32";
     final String intPointerString = "i32*";
     final String boolString = "i1";
+
+    public static Map<SymbolTable, String> getSymbolTableClassesMap() {
+        return symbolTableClassesMap;
+    }
+
     private static Map<SymbolTable, String> symbolTableClassesMap;
     private static Map<String, ObjectStruct> objectStructMap;
 
