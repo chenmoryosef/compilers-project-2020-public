@@ -11,6 +11,8 @@ import java.util.Map;
 
 public class SymbolTableUtils {
     private static SymbolTable root;
+
+
     // Example - if we define Class A and then Class B and afterwords Class C extends A
     // we need to know to connect C symbol table to A
     private static Map<String, SymbolTable> symbolTableClassMap = new HashMap<>();
@@ -18,7 +20,7 @@ public class SymbolTableUtils {
     private static SymbolTable currSymTable;
     private static String currClassID;
 
-
+    public static Map<String, SymbolTable> getSymbolTableClassMap() { return symbolTableClassMap; }
     public static void setCurrClassID(String currClassID) {
         SymbolTableUtils.currClassID = currClassID;
     }
