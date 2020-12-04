@@ -21,6 +21,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         String type;
         type = isVariableInSymbolTable(variableName, currentSymbolTable);
         boolean isField = type == null;
+        String classId = "";
 
         if (isField) {
             SymbolTable parentSymbolTable = currentSymbolTable.getParentSymbolTable();
@@ -31,7 +32,6 @@ public class AstLlvmPrintVisitor implements Visitor {
                 parentSymbolTable = parentSymbolTable.getParentSymbolTable();
             }
 
-            String classId = "";
             if (foundField) {
                 classId = VtableCreator.getSymbolTableClassesMap().get(parentSymbolTable);
             } else {
@@ -40,9 +40,21 @@ public class AstLlvmPrintVisitor implements Visitor {
             }
             retrieveField(classId, variableName);
         } else {
-
+            // TODO - move load variable here
+            // %_3 = load i32, i32* %e.id()
+            int register = this.invokeRegisterCount();
+            builder.append("%_");
+            builder.append(register);
+            builder.append(" = load ");
+            builder.append(type);
+            builder.append(", ");
+            builder.append(type);
+            builder.append("* %");
+            builder.append(variableName);
+            builder.append("\n");
+            classId = currentClass;
         }
-        return type;
+        return classId;
     }
 
     private String isVariableInSymbolTable(String variableName, SymbolTable currentSymbolTable) {
@@ -133,15 +145,22 @@ public class AstLlvmPrintVisitor implements Visitor {
         e.e1().accept(this);
         if (e.e1() instanceof IntegerLiteralExpr) {
             firstArg = "i32 " + ((IntegerLiteralExpr) e.e1()).num();
+        } else if (e.e1() instanceof IdentifierExpr) {
+            resolveVariable(((IdentifierExpr) e.e1()).id(), currentMethod);
+            firstArg = "i32 %_" + this.getLastRegisterCount();
         } else {
             firstArg = "i32 %_" + this.getLastRegisterCount();
         }
         e.e2().accept(this);
         if (e.e2() instanceof IntegerLiteralExpr) {
             secondArg = "" + ((IntegerLiteralExpr) e.e2()).num();
+        } else if (e.e2() instanceof IdentifierExpr) {
+            resolveVariable(((IdentifierExpr) e.e1()).id(), currentMethod);
+            secondArg = "%_" + this.getLastRegisterCount();
         } else {
             secondArg = "%_" + this.getLastRegisterCount();
         }
+
         int resultRegister = this.invokeRegisterCount();
         builder.append("%_");
         builder.append(resultRegister);
@@ -491,36 +510,43 @@ public class AstLlvmPrintVisitor implements Visitor {
         if (e.e1() instanceof TrueExpr) {
             builder.append("br i1 1 label %if" + andcond1 + ", label %if" + andcond3);
         } else if (e.e1() instanceof FalseExpr) {
-
             builder.append("br i1 0 label %if" + andcond1 + ", label %if" + andcond3);
+        } else if (e.e1() instanceof IdentifierExpr) {
+            resolveVariable(((IdentifierExpr) e.e1()).id(), currentMethod);
+            builder.append("br i1 %_" + getLastRegisterCount() + " label %if" + andcond1 + ", label %if" + andcond3);
         } else {
             builder.append("br i1 %_" + getLastRegisterCount() + " label %if" + andcond1 + ", label %if" + andcond3);
-
         }
         builder.append("\n");
         builder.append("if" + andcond1 + ":");
         builder.append("\n");
         e.e2().accept(this);
         if (e.e2() instanceof TrueExpr) {
-            regCnt++;
-            assignedval = regCnt;
+            assignedval = this.invokeRegisterCount();
             builder.append("%_" + getLastRegisterCount() + "= i1 1");
             builder.append("\n");
             builder.append("br  label %if" + andcond3);
         } else if (e.e2() instanceof FalseExpr) {
-            regCnt++;
-            assignedval = regCnt;
+            assignedval = this.invokeRegisterCount();
+            ;
             builder.append("%_" + getLastRegisterCount() + "= i1 0");
             builder.append("\n");
             builder.append("br  label %if" + andcond3);
-        } else {
+        } else if (e.e2() instanceof IdentifierExpr) {
+            resolveVariable(((IdentifierExpr) e.e2()).id(), currentMethod);
             int lastval = getLastRegisterCount();
-            regCnt++;
-            assignedval = regCnt;
+            assignedval = this.invokeRegisterCount();
+            ;
             builder.append("%_" + getLastRegisterCount() + "= " + lastval);
             builder.append("\n");
             builder.append("br i1 %_" + getLastRegisterCount() + " label %if" + andcond1 + ", label %if" + andcond3);
-
+        } else {
+            int lastval = getLastRegisterCount();
+            assignedval = this.invokeRegisterCount();
+            ;
+            builder.append("%_" + getLastRegisterCount() + "= " + lastval);
+            builder.append("\n");
+            builder.append("br i1 %_" + getLastRegisterCount() + " label %if" + andcond1 + ", label %if" + andcond3);
         }
         builder.append("\n");
         builder.append("if" + andcond2 + ":");
@@ -682,15 +708,14 @@ public class AstLlvmPrintVisitor implements Visitor {
     @Override
     public void visit(MethodCallExpr e) {
         AstNode ownerExp = e.ownerExpr();
-        String classId;
+        String classId = "";
         // TODO EX2 - resolve class of owner (this, new, ref-id)  -> class
         if (ownerExp instanceof ThisExpr) {
             classId = this.currentClass;
         } else if (ownerExp instanceof NewObjectExpr) {
             classId = ((NewObjectExpr) ownerExp).classId();
-        } else {
-            // TODO EX2 - think how to resolve class id of this case....
-            classId = "";
+        } else if (ownerExp instanceof IdentifierExpr) {
+            classId = resolveVariable(((IdentifierExpr) ownerExp).id(), e.methodId());
         }
         // Assume this was done in accept:
         // %_6 = load i8*, i8** %b
@@ -796,20 +821,7 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     @Override
     public void visit(IdentifierExpr e) {
-        // TODO EX2 -   %_3 = load i32, i32* %e.id()
-        int register = this.invokeRegisterCount();
-        builder.append("%_");
-        builder.append(register);
-        builder.append(" = load ");
-        // TODO - resolve type from symbol table
-        // String type = resolveType(symbol);
-        String type = "i32";
-        builder.append(type);
-        builder.append(", ");
-        builder.append(type);
-        builder.append("* %");
-        builder.append(e.id());
-        builder.append("\n");
+
     }
 
     public void visit(ThisExpr e) {
@@ -832,6 +844,9 @@ public class AstLlvmPrintVisitor implements Visitor {
         // TODO EX2 - notice to handle %refId.name separately and int-literal
         if (e.lengthExpr() instanceof IntegerLiteralExpr) {
             lengthValue = "i32 " + ((IntegerLiteralExpr) e.lengthExpr()).num();
+        } else if (e.lengthExpr() instanceof IdentifierExpr) {
+            resolveVariable(((IdentifierExpr) e.lengthExpr()).id(), currentMethod);
+            lengthValue = "i32 %_" + this.getLastRegisterCount();
         } else {
             lengthValue = "i32 %_" + this.getLastRegisterCount();
         }
@@ -973,25 +988,17 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     @Override
     public void visit(IntAstType t) {
-        builder.append("int");
     }
 
     @Override
     public void visit(BoolAstType t) {
-        builder.append("boolean");
     }
 
     @Override
     public void visit(IntArrayAstType t) {
-        builder.append("int[]");
     }
 
     @Override
     public void visit(RefType t) {
-        builder.append(t.id());
-    }
-
-    private void printCheckIndex() {
-
     }
 }
