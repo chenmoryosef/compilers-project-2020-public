@@ -859,6 +859,11 @@ public class AstLlvmPrintVisitor implements Visitor {
         // validate index - make sure it is not OOB
         indexValue = printIsOutOfBoundary(e, oobLegalAccessIndex, oobIlLegalAccessIndex, lengthRegister);
 
+        // if2:
+        builder.append("if");
+        builder.append(oobLegalAccessIndex);
+        builder.append(":\n");
+
         // %_9 = add i32 0, 1
         int indexRegister = invokeRegisterCount("i32");
         builder.append("%_");
@@ -940,7 +945,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(lengthRegister);
         builder.append(" = ");
         builder.append("load i32, i32* %_");
-        builder.append(lengthRegister);
+        builder.append(register);
         builder.append("\n");
     }
 
@@ -1093,7 +1098,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(bitcastRegister);
         builder.append(" = bitcast i8* %_");
         builder.append(callocRegister);
-        builder.append(" to i32*)\n");
+        builder.append(" to i32*\n");
         // store i32 2, i32* %_3
         builder.append("store i32 ");
         builder.append(lengthValue);
