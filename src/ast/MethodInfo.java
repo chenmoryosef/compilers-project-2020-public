@@ -1,12 +1,12 @@
 package ast;
 
-public class MethodeInfo {
+public class MethodInfo {
 
     private String args;
     private String ret;
     private int offset;
 
-    public MethodeInfo(String args, String ret, int offset) {
+    public MethodInfo(String args, String ret, int offset) {
         this.args = args;
         this.ret = ret;
         this.offset = offset;

@@ -14,25 +14,136 @@ public class AstLlvmPrintVisitor implements Visitor {
     private String currentClass;
     private String currentMethod;
     private String currentRegisterToAssign;
+    private String currentRegisterToStoreTo;
 
-    private String resolveVariable(String variableName, String methodName) {
-        SymbolTable currentSymbolTable = SymbolTableUtils.getSymbolTableClassWithMethodMap().get(methodName + currentClass);
+    private String printIsOutOfBoundary(AstNode astNode, int labelLegal, int labelIllegal, int lengthRegister) {
+        // %_8 = icmp sle i32 %_7, 0
+        int resultRegister = invokeRegisterCount("i1");
+        builder.append("%_");
+        builder.append(resultRegister);
+        builder.append(" = icmp sle i32 %_");
+        builder.append(lengthRegister);
+        builder.append(", ");
+        // handle %refId.name separately and int-literal
+        AstNode exp = null;
+        if (astNode instanceof ArrayAccessExpr) {
+            exp = ((ArrayAccessExpr) astNode).indexExpr();
+        } else if (astNode instanceof AssignArrayStatement) {
+            exp = ((AssignArrayStatement) astNode).index();
+        } else {
+            System.out.println("Errorrrr");
+        }
+
+        String index;
+        if (exp instanceof IntegerLiteralExpr) {
+            index = "" + ((IntegerLiteralExpr) exp).num();
+        } else if (exp instanceof IdentifierExpr) {
+            resolveVariable(((IdentifierExpr) exp).id(), currentMethod);
+            index = "%_" + getLastRegisterCount();
+        } else {
+            exp.accept(this);
+            index = "%_" + getLastRegisterCount();
+        }
+        builder.append(index);
+        builder.append("\n");
+
+        //	br i1 %_0, label %arr_alloc0, label %arr_alloc1
+        builder.append("br i1 %_");
+        builder.append(resultRegister);
+        builder.append(", label %if");
+        builder.append(labelIllegal);
+        builder.append(", label %if");
+        builder.append(labelLegal);
+        builder.append("\n");
+        builder.append("if");
+        builder.append(labelIllegal);
+        builder.append(":\n");
+        builder.append("call void @throw_oob()\n");
+        builder.append("br label %if");
+        builder.append(labelLegal);
+        builder.append("\n");
+
+        return index;
+    }
+
+    private String printIsNegativeNumberLlvm(AstNode astNode, int labelLegal, int labelIllegal) {
+        // %_0 = icmp slt i32 %_2, 0
+        int resultRegister = invokeRegisterCount("i1");
+        builder.append("%_");
+        builder.append(resultRegister);
+        builder.append(" = icmp slt i32 ");
+        // handle %refId.name separately and int-literal
+        AstNode exp = null;
+        if (astNode instanceof NewIntArrayExpr) {
+            exp = ((NewIntArrayExpr) astNode).lengthExpr();
+        } else if (astNode instanceof ArrayAccessExpr) {
+            exp = ((ArrayAccessExpr) astNode).indexExpr();
+        } else if (astNode instanceof AssignArrayStatement) {
+            exp = ((AssignArrayStatement) astNode).index();
+        } else {
+            System.out.println("Errorrrr");
+        }
+
+        String lengthValue;
+        if (exp instanceof IntegerLiteralExpr) {
+            lengthValue = "" + ((IntegerLiteralExpr) exp).num();
+        } else if (exp instanceof IdentifierExpr) {
+            resolveVariable(((IdentifierExpr) exp).id(), currentMethod);
+            lengthValue = "%_" + getLastRegisterCount();
+        } else {
+            exp.accept(this);
+            lengthValue = "%_" + getLastRegisterCount();
+        }
+        builder.append(lengthValue);
+        builder.append(", 0\n");
+
+        //	br i1 %_0, label %arr_alloc0, label %arr_alloc1
+        builder.append("br i1 %_");
+        builder.append(resultRegister);
+        builder.append(", label %if");
+        builder.append(labelIllegal);
+        builder.append(", label %if");
+        builder.append(labelLegal);
+        builder.append("\n");
+        builder.append("if");
+        builder.append(labelIllegal);
+        builder.append(":\n");
+        builder.append("call void @throw_oob()\n");
+        builder.append("br label %if");
+        builder.append(labelLegal);
+        builder.append("\n");
+
+        return lengthValue;
+    }
+
+    private String resolveMethodCallVariable(String variableName) {
+        SymbolTable currentSymbolTable = SymbolTableUtils.getSymbolTableClassWithMethodMap().get(currentMethod + currentClass);
+        return commonResolveVariable(currentSymbolTable, variableName, true);
+    }
+
+
+    private String commonResolveVariable(SymbolTable currentSymbolTable, String variableName, boolean methodFlag) {
         String type;
         type = isVariableInSymbolTable(variableName, currentSymbolTable);
         boolean isField = type == null;
         String classId = "";
-
+        SymbolTable symbolTable = null;
         if (isField) {
             SymbolTable parentSymbolTable = currentSymbolTable.getParentSymbolTable();
             boolean foundField = false;
             while (parentSymbolTable != null && !foundField) {
-                type = isVariableInSymbolTable(variableName, currentSymbolTable);
+                type = isVariableInSymbolTable(variableName, parentSymbolTable);
                 foundField = type != null;
+                symbolTable = parentSymbolTable;
                 parentSymbolTable = parentSymbolTable.getParentSymbolTable();
             }
 
             if (foundField) {
-                classId = VtableCreator.getSymbolTableClassesMap().get(parentSymbolTable);
+                if (methodFlag) {
+                    classId = type;
+                } else {
+                    classId = VtableCreator.getSymbolTableClassesMap().get(symbolTable);
+                }
             } else {
                 // TODO handle error
                 System.out.println("ERRORRRRRRRR");
@@ -40,7 +151,10 @@ public class AstLlvmPrintVisitor implements Visitor {
             retrieveField(classId, variableName);
         } else {
             // %_3 = load i32, i32* %e.id()
+            classId = type;
+            type = VtableCreator.convertAstTypeToLLVMRepresention(type);
             int register = invokeRegisterCount(type);
+            currentRegisterToStoreTo = "%" + variableName;
             builder.append("%_");
             builder.append(register);
             builder.append(" = load ");
@@ -50,15 +164,21 @@ public class AstLlvmPrintVisitor implements Visitor {
             builder.append("* %");
             builder.append(variableName);
             builder.append("\n");
-            classId = currentClass;
+            regType = type;
+            currentRegisterToAssign = "%_" + register;
         }
         return classId;
+    }
+
+    private void resolveVariable(String variableName, String methodName) {
+        SymbolTable currentSymbolTable = SymbolTableUtils.getSymbolTableClassWithMethodMap().get(methodName + currentClass);
+        commonResolveVariable(currentSymbolTable, variableName, false);
     }
 
     private String isVariableInSymbolTable(String variableName, SymbolTable currentSymbolTable) {
         for (Map.Entry<String, Symbol> entry : currentSymbolTable.getEntries().entrySet()) {
             if (entry.getValue().getSymbolName().equals(variableName)) {
-                return VtableCreator.convertAstTypeToLLVMRepresention(entry.getValue().getDecl().get(0));
+                return entry.getValue().getDecl().get(0);
             }
         }
         return null;
@@ -86,6 +206,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(" to ");
         builder.append(type);
         builder.append("*\n");
+        currentRegisterToStoreTo = "%_" + bitcastRegister;
         //	%_5 = load i32, i32* %_4
         int loadRegister = invokeRegisterCount(type);
         builder.append("%_");
@@ -97,6 +218,8 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append("* %_");
         builder.append(bitcastRegister);
         builder.append("\n");
+        regType = type;
+        currentRegisterToAssign = "%_" + loadRegister;
     }
 
     private String astNodeToLlvmType(AstNode node) {
@@ -180,7 +303,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(infixSymbol);
         builder.append(" ");
         builder.append(firstArg);
-        builder.append(",");
+        builder.append(", ");
         builder.append(secondArg);
         builder.append("\n");
     }
@@ -232,7 +355,6 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append("define i32 @main() {\n");
         // main statements
         mainClass.mainStatement().accept(this);
-        // TODO - can main returns value
         builder.append("ret i32 0\n");
         builder.append("}\n\n");
         resetIfRegisterCount();
@@ -241,7 +363,8 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     @Override
     public void visit(MethodDecl methodDecl) {
-        String returntype = astNodeToLlvmType(methodDecl.returnType());
+        MethodInfo methodInfo = VtableCreator.getObjectStructMap().get(currentClass).getMethodeInfoMap().get(currentMethod);
+        String returntype = methodInfo.getRet();
         String formaltype;
         String delim = ", ";
         // define i32 @Base.set(i8* %this, i32 %.x) {
@@ -283,40 +406,58 @@ public class AstLlvmPrintVisitor implements Visitor {
         // return value can be:
         // ret i1 1
         // ret i32 %_3
-        returntype = astNodeToLlvmType(methodDecl.ret());
-        builder.append("ret ");
-        builder.append(returntype);
+        StringBuilder tmpBuilder = new StringBuilder();
         if (methodDecl.ret() instanceof IntegerLiteralExpr) {
-            builder.append(" ");
-            builder.append(((IntegerLiteralExpr) methodDecl.ret()).num());
+            tmpBuilder.append(" ");
+            tmpBuilder.append(((IntegerLiteralExpr) methodDecl.ret()).num());
         } else if (methodDecl.ret() instanceof TrueExpr) {
-            builder.append(" 1");
+            tmpBuilder.append(" 1");
         } else if (methodDecl.ret() instanceof FalseExpr) {
-            builder.append(" 0");
+            tmpBuilder.append(" 0");
         } else if (methodDecl.ret() instanceof IdentifierExpr) {
             // Resolve Variable Type
             // Load that variable into register
             this.resolveVariable(((IdentifierExpr) methodDecl.ret()).id(), this.currentMethod);
+            tmpBuilder.append(currentRegisterToAssign);
         } else {
-            builder.append(" %_");
-            builder.append(getLastRegisterCount());
+            tmpBuilder.append(" %_");
+            tmpBuilder.append(getLastRegisterCount());
         }
+
+
+        builder.append("ret ");
+        builder.append(returntype);
+        builder.append(" ");
+        builder.append(tmpBuilder);
         builder.append("\n}\n");
 
         // Reset ifCnt and regCnt
         resetIfRegisterCount();
-        resetIfRegisterCount();
+        resetRegisterCount();
     }
 
     @Override
     public void visit(FormalArg formalArg) {
-        // %varDecl.name = alloca varDecl.type()
+        // %formalArg.name = alloca formalArg.type()
+        String type = astNodeToLlvmType(formalArg.type());
+        // %x = alloca i32
         builder.append("%");
         builder.append(formalArg.name());
         builder.append(" = ");
         builder.append("alloca ");
-        builder.append(astNodeToLlvmType(formalArg.type()));
+        builder.append(type);
         builder.append("\n");
+        // store i32 %.x, i32* %x
+        builder.append("store ");
+        builder.append(type);
+        builder.append(" %.");
+        builder.append(formalArg.name());
+        builder.append(", ");
+        builder.append(type);
+        builder.append("* %");
+        builder.append(formalArg.name());
+        builder.append("\n");
+
     }
 
     @Override
@@ -442,14 +583,14 @@ public class AstLlvmPrintVisitor implements Visitor {
         sysoutStatement.arg().accept(this);
         if (sysoutStatement.arg() instanceof IntegerLiteralExpr) {
             builder.append("call void (i32) @print_int(i32 ").append(sysoutStatement.arg()).append(")");
-        }
-        if (sysoutStatement.arg() instanceof MethodCallExpr) {
+        } else if (sysoutStatement.arg() instanceof MethodCallExpr) {
             builder.append("call void (i32) @print_int(i32 %_").append(getLastRegisterCount()).append(")");
-        }
-        if (sysoutStatement.arg() instanceof IdentifierExpr) {
+        } else if (sysoutStatement.arg() instanceof IdentifierExpr) {
             // Resolve Variable Type
             // Load that variable into register
             this.resolveVariable(((IdentifierExpr) sysoutStatement.arg()).id(), this.currentMethod);
+            builder.append("call void (i32) @print_int(i32 %_").append(getLastRegisterCount()).append(")");
+        } else {
             builder.append("call void (i32) @print_int(i32 %_").append(getLastRegisterCount()).append(")");
         }
         builder.append("\n");
@@ -457,92 +598,138 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     @Override
     public void visit(AssignStatement assignStatement) {
+        // resolve lv variable
+        resolveVariable(assignStatement.lv(), currentMethod);
+        String lvReg = currentRegisterToStoreTo;
+
         // handle ref-id or int-literal
         assignStatement.rv().accept(this);
         if (assignStatement.rv() instanceof AddExpr || assignStatement.rv() instanceof SubtractExpr || assignStatement.rv() instanceof MultExpr || assignStatement.rv() instanceof ArrayAccessExpr) {
             // store i32 %_4, i32* %x
             builder.append("store i32 %_");
             builder.append(getLastRegisterCount());
-            builder.append(", i32* %");
+            builder.append(", i32* ");
         }
-        if (assignStatement.rv() instanceof IntegerLiteralExpr) {
+        else if (assignStatement.rv() instanceof IntegerLiteralExpr) {
             // store i32 4, i32* %x
             builder.append("store i32 ");
             builder.append(((IntegerLiteralExpr) assignStatement.rv()).num());
-            builder.append(", i32* %");
+            builder.append(", i32* ");
         }
-        if (assignStatement.rv() instanceof LtExpr) {
+        else if (assignStatement.rv() instanceof LtExpr) {
             // store i1 %_4, i1* %x
             builder.append("store i1 %_");
             builder.append(getLastRegisterCount());
-            builder.append(", i1* %");
+            builder.append(", i1* ");
         }
-        if (assignStatement.rv() instanceof TrueExpr) {
+        else if (assignStatement.rv() instanceof TrueExpr) {
             // store i1 1, i1* %x
-            builder.append("store i1 1, i1* %");
+            builder.append("store i1 1, i1* ");
         }
-        if (assignStatement.rv() instanceof FalseExpr) {
+        else if (assignStatement.rv() instanceof FalseExpr) {
             // store i1 0, i1* %x
-            builder.append("store i1 0, i1* %");
+            builder.append("store i1 0, i1* ");
         }
-        if (assignStatement.rv() instanceof NewObjectExpr) {
+        else if (assignStatement.rv() instanceof NewObjectExpr) {
             // store i8* %_0, i8** %b
-            builder.append("store i8* %_");
+            builder.append("store i8* ");
             builder.append(this.currentRegisterToAssign);
-            builder.append(", i8** %_");
+            builder.append(", i8** ");
         }
-        if (assignStatement.rv() instanceof NewIntArrayExpr) {
+        else if (assignStatement.rv() instanceof NewIntArrayExpr) {
             // store i32* %_3, i32** %x
-            builder.append("store i32* %_");
+            builder.append("store i32* ");
             builder.append(this.currentRegisterToAssign);
-            builder.append(", i32** %");
+            builder.append(", i32** ");
         }
-        builder.append(assignStatement.lv());
+        else if(assignStatement.rv() instanceof IdentifierExpr){
+            // store i32 %_3, i32* %x
+            resolveVariable(((IdentifierExpr) assignStatement.rv()).id(), currentMethod);
+            builder.append("store ");
+            builder.append(getLastRegisterType());
+            builder.append(" ");
+            builder.append(this.currentRegisterToAssign);
+            builder.append(", ");
+            builder.append(getLastRegisterType());
+            builder.append("* ");
+        }
+
+        builder.append(lvReg);
+//        builder.append(assignStatement.lv());
         builder.append("\n");
     }
 
     @Override
     public void visit(AssignArrayStatement assignArrayStatement) {
-        assignArrayStatement.index().accept(this);
-        if (assignArrayStatement.index() instanceof IntegerLiteralExpr) {
-            // TODO EX2 - compute index - handle ref-id or int-literal
-            regCnt++;
-            builder.append("%_" + regCnt + " = load i32*, i32** %" + assignArrayStatement.lv());
-            builder.append("\n");
-            // %_5 = icmp slt i32 0, 0
-            regCnt++;
-            int IsPositive = regCnt;
-            ifCnt++;
-            int bad_index = ifCnt;
-            ifCnt++;
-            int goodindex = ifCnt;
+        int legalAccessIndex = invokeIfRegisterCount();
+        int ilLegalAccessIndex = invokeIfRegisterCount();
+        int oobLegalAccessIndex = invokeIfRegisterCount();
+        int oobIlLegalAccessIndex = invokeIfRegisterCount();
+        String value;
+        // check len size is not negative
+        // %_0 = icmp slt i32 %_2, 0
+        //	br i1 %_0, label %arr_alloc0, label %arr_alloc1
+        // assignArrayStatement.index().accept(this);
+        value = printIsNegativeNumberLlvm(assignArrayStatement, legalAccessIndex, ilLegalAccessIndex);
 
-            builder.append("%_" + regCnt + " = icmp slt i32 " + assignArrayStatement.index() + ", 0");
-            builder.append("\n");
-            // br i1 %_5, label %arr_alloc2, label %arr_alloc3
+        // if2:
+        builder.append("if");
+        builder.append(legalAccessIndex);
+        builder.append(":\n");
 
-            builder.append("br i1 %_" + IsPositive + ", label %if" + bad_index + ", label %if" + goodindex);
-            builder.append("\n");
-            builder.append("if" + bad_index + ":");
-            builder.append("\n");
-            builder.append("call void @throw_oob()");
-            builder.append("br label %if" + goodindex);
-            builder.append("\n");
-            builder.append("if" + goodindex + ":");
-            builder.append("\n");
+        // Load array
+        resolveVariable(assignArrayStatement.lv(), currentMethod);
 
+        // Retrieve length of array
+        int lengthRegister = invokeRegisterCount("i32");
+        getLengthOfArray(lengthRegister, currentRegisterToAssign);
 
+        // validate index - make sure it is not OOB
+        value = printIsOutOfBoundary(assignArrayStatement, oobLegalAccessIndex, oobIlLegalAccessIndex, lengthRegister);
+
+        // if4:
+        builder.append("if");
+        builder.append(oobLegalAccessIndex);
+        builder.append(":\n");
+
+        // compute l value - make sure to add 1 (due to index 0 - size) to index
+        //	%_9 = add i32 0, 1
+        int indexRegister = invokeRegisterCount("i32");
+        builder.append("%_");
+        builder.append(indexRegister);
+        builder.append(" = add i32 1, ");
+        builder.append(value);
+        builder.append("\n");
+
+        //	%_10 = getelementptr i32, i32* %_4, i32 %_9
+        int elementPtrRegister = invokeRegisterCount("i32*");
+        builder.append("%_");
+        builder.append(elementPtrRegister);
+        builder.append(" = getelementptr i32, i32* ");
+        builder.append(currentRegisterToAssign);
+        builder.append(", i32 %_");
+        builder.append(indexRegister);
+        builder.append("\n");
+
+        // compute rv
+        String valueToStore = "i32 ";
+        assignArrayStatement.rv().accept(this);
+        if (assignArrayStatement.rv() instanceof IntegerLiteralExpr) {
+            valueToStore += ((IntegerLiteralExpr) assignArrayStatement.rv()).num();
+        } else if (assignArrayStatement.rv() instanceof IdentifierExpr) {
+            resolveVariable(((IdentifierExpr) assignArrayStatement.rv()).id(), currentMethod);
+            valueToStore += "%_" + getLastRegisterCount();
+        } else {
+            valueToStore += "%_" + getLastRegisterCount();
         }
 
-        assignArrayStatement.index().accept(this);
-        builder.append("]");
-        // TODO EX2 - validate index - make sure it is not OOB
-
-        // TODO EX2 - compute l value - make sure to add 1 (due to index 0 - size) to index
-        // TODO EX2 - see example
-        builder.append(" = ");
-        assignArrayStatement.rv().accept(this);
-        // TODO EX2 - put rv in lv - store value in array
+        // put rv in lv - store value in array
+        // store i32 1, i32* %_10
+        builder.append("store ");
+        builder.append(valueToStore);
+        builder.append(", i32* %_");
+        builder.append(elementPtrRegister);
+        builder.append("\n");
     }
 
     @Override
@@ -640,79 +827,52 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     @Override
     public void visit(ArrayAccessExpr e) {
-        // TODO EX2 - %_reg = get element name of array in 1+e.indexExpr().accept index
-        int arrayRegister = invokeRegisterCount("i32*");
-        // TODO EX2 - store array to array register
+        // load array
+        String arrayRegister;
         if (e.arrayExpr() instanceof IdentifierExpr) {
-            // %_1 = load i32*, i32** %x
-            builder.append("%_");
-            builder.append(arrayRegister);
-            builder.append(" = load i32*, i32** %");
-            builder.append(((IdentifierExpr) e.arrayExpr()).id());
-            builder.append("\n");
+            resolveVariable(((IdentifierExpr) e.arrayExpr()).id(), currentMethod);
         } else {
-            // TODO EX2 - think of how to get array register
+            // if it is new int we handle it inside
             e.arrayExpr().accept(this);
         }
+        arrayRegister = currentRegisterToAssign;
 
-
-        // TODO EX2 - make sure to handle int-literal
-        int indexResultRegister = invokeRegisterCount("i1");
+        // check index is not negative
         int labelIllegalIndex = invokeIfRegisterCount();
         int labelLegalIndex = invokeIfRegisterCount();
+        int oobLegalAccessIndex = invokeIfRegisterCount();
+        int oobIlLegalAccessIndex = invokeIfRegisterCount();
         String indexValue;
-        e.indexExpr().accept(this);
-        // check len size is not negative
         // %_0 = icmp slt i32 %_2, %_size
-        builder.append("%_");
-        builder.append(indexResultRegister);
-        builder.append(" = icmp slt i32 ");
-        // TODO EX2 - notice to handle %refId.name separately and int-literal
-        if (e.indexExpr() instanceof IntegerLiteralExpr) {
-            indexValue = "i32 " + ((IntegerLiteralExpr) e.indexExpr()).num();
-        } else {
-            indexValue = "i32 %_" + getLastRegisterCount();
-        }
-        builder.append(indexValue);
-        builder.append(", 0\n");
-        //	br i1 %_0, label %arr_alloc0, label %arr_alloc1
-        builder.append("br i1 %_");
-        builder.append(indexResultRegister);
-        builder.append(", label %if");
-        builder.append(labelIllegalIndex);
-        builder.append(", label %if");
-        builder.append(labelLegalIndex);
-        builder.append("\n");
-        builder.append("if");
-        builder.append(labelIllegalIndex);
-        builder.append(":\n");
-        builder.append("call void @throw_oob()\n");
-        builder.append("br label %if");
-        builder.append(labelLegalIndex);
-        builder.append("\n");
+        //br i1 %_0, label %arr_alloc0, label %arr_alloc1
+        // e.indexExpr().accept(this);
+        indexValue = printIsNegativeNumberLlvm(e, labelLegalIndex, labelIllegalIndex);
+        // if2:
         builder.append("if");
         builder.append(labelLegalIndex);
         builder.append(":\n");
 
-        // TODO EX2 - make sure index is not OOB
+        // Retrieve length of array
+        int lengthRegister = invokeRegisterCount("i32");
+        getLengthOfArray(lengthRegister, arrayRegister);
 
-
-        // TODO EX2 - check array access is valid
+        // validate index - make sure it is not OOB
+        indexValue = printIsOutOfBoundary(e, oobLegalAccessIndex, oobIlLegalAccessIndex, lengthRegister);
 
         // %_9 = add i32 0, 1
         int indexRegister = invokeRegisterCount("i32");
         builder.append("%_");
         builder.append(indexRegister);
-        builder.append(" = add ");
+        builder.append(" = add i32 ");
         builder.append(indexValue);
         builder.append(", 1\n");
         // %_10 = getelementptr i32, i32* %_4, i32 %_9
         int valueRegister = invokeRegisterCount("i32*");
         builder.append("%_");
         builder.append(valueRegister);
-        builder.append(" = getelementptr i32, i32* %_");
+        builder.append(" = getelementptr i32, i32* ");
         builder.append(arrayRegister);
-        builder.append(", %_");
+        builder.append(", i32 %_");
         builder.append(indexRegister);
         builder.append("\n");
         // %_11 = load i32, i32* %_10
@@ -726,40 +886,62 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     @Override
     public void visit(ArrayLengthExpr e) {
-        // TODO EX2 - %_reg = get element name of array in 0 index
         int lengthRegister = invokeRegisterCount("i32");
         String lengthValue;
+        // new int[x].length();
         if (e.arrayExpr() instanceof NewIntArrayExpr) {
             AstNode lengthAst = ((NewIntArrayExpr) e.arrayExpr()).lengthExpr();
             if (lengthAst instanceof IntegerLiteralExpr) {
                 lengthValue = "i32 " + ((IntegerLiteralExpr) lengthAst).num();
             } else {
                 lengthAst.accept(this);
+                if (lengthAst instanceof IdentifierExpr) {
+                    resolveVariable(((IdentifierExpr) lengthAst).id(), currentMethod);
+                }
                 lengthValue = "i32 %_" + getLastRegisterCount();
             }
+            // %_1 = i32 7
             builder.append("%_");
             builder.append(lengthRegister);
             builder.append(" = ");
             builder.append(lengthValue);
             builder.append("\n");
         } else if (e.arrayExpr() instanceof IdentifierExpr) {
-            // %_4 = load i32*, i32** %x
-            int arrayRegister = invokeRegisterCount("i32*");
-            builder.append("%_");
-            builder.append(arrayRegister);
-            builder.append(" = ");
-            builder.append("load i32*, i32** %");
-            builder.append(((IdentifierExpr) e.arrayExpr()).id());
-            builder.append("\n");
-            // %_10 = getelementptr i32, i32* %_4, i32 0
-            builder.append("%_");
-            builder.append(lengthRegister);
-            builder.append(" = ");
-            builder.append("getelementptr i32, i32* %_");
-            builder.append(arrayRegister);
-            builder.append(", i32 0");
-            builder.append("\n");
+            // %_reg = get element name of array in 0 index
+            resolveVariable(((IdentifierExpr) e.arrayExpr()).id(), currentMethod);
+            getLengthOfArray(lengthRegister, currentRegisterToAssign);
         }
+    }
+
+    private int loadArray(String arrayId) {
+        // %_4 = load i32*, i32** %x
+        int arrayRegister = invokeRegisterCount("i32*");
+        builder.append("%_");
+        builder.append(arrayRegister);
+        builder.append(" = ");
+        builder.append("load i32*, i32** %");
+        builder.append(arrayId);
+        builder.append("\n");
+        return arrayRegister;
+    }
+
+    private void getLengthOfArray(int lengthRegister, String arrayRegister) {
+        int register = invokeRegisterCount("i32");
+        // %_10 = getelementptr i32, i32* %_4, i32 0
+        builder.append("%_");
+        builder.append(register);
+        builder.append(" = ");
+        builder.append("getelementptr i32, i32* ");
+        builder.append(arrayRegister);
+        builder.append(", i32 0");
+        builder.append("\n");
+        // 	%_7 = load i32, i32* %_10
+        builder.append("%_");
+        builder.append(lengthRegister);
+        builder.append(" = ");
+        builder.append("load i32, i32* %_");
+        builder.append(lengthRegister);
+        builder.append("\n");
     }
 
     @Override
@@ -772,7 +954,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         } else if (ownerExp instanceof NewObjectExpr) {
             classId = ((NewObjectExpr) ownerExp).classId();
         } else if (ownerExp instanceof IdentifierExpr) {
-            classId = resolveVariable(((IdentifierExpr) ownerExp).id(), e.methodId());
+            classId = resolveMethodCallVariable(((IdentifierExpr) ownerExp).id());
         }
         // Assume this was done in accept:
         // %_6 = load i8*, i8** %b
@@ -782,7 +964,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         int bitcastRegister = invokeRegisterCount("i8*");
         builder.append("%_");
         builder.append(bitcastRegister);
-        builder.append(" = bitcast i8* %_");
+        builder.append(" = bitcast i8* ");
         builder.append(loadedRegister);
         builder.append(" to i8***\n");
         //	%_8 = load i8**, i8*** %_7
@@ -795,8 +977,8 @@ public class AstLlvmPrintVisitor implements Visitor {
         // %_9 = getelementptr i8*, i8** %_8, i32 0
         int methodRegister = invokeRegisterCount("i8*");
         // Resolve method offset according object struct to map
-        MethodeInfo methodeInfo = VtableCreator.getObjectStructMap().get(classId).getMethodeInfoMap().get(e.methodId());
-        int methodOffset = methodeInfo.getOffset();
+        MethodInfo methodInfo = VtableCreator.getObjectStructMap().get(classId).getMethodeInfoMap().get(e.methodId());
+        int methodOffset = methodInfo.getOffset();
         builder.append("%_");
         builder.append(methodRegister);
         builder.append(" = getelementptr i8*, i8** %_");
@@ -812,8 +994,8 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(methodRegister);
         builder.append("\n");
         //	%_11 = bitcast i8* %_10 to i32 (i8*, i32)*
-        String returnTypeValue = methodeInfo.getRet();
-        String args = methodeInfo.getArgs();
+        String returnTypeValue = methodInfo.getRet();
+        String args = methodInfo.getArgs();
         bitcastRegister = invokeRegisterCount("i32 ()");
         builder.append("%_");
         builder.append(bitcastRegister);
@@ -824,7 +1006,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(args);
         builder.append("*\n");
 
-        String delim = "";
+        String delim = ", ";
         StringBuilder arguments = new StringBuilder();
         for (Expr arg : e.actuals()) {
             arguments.append(delim);
@@ -842,7 +1024,6 @@ public class AstLlvmPrintVisitor implements Visitor {
                 arguments.append("%_");
                 arguments.append(getLastRegisterCount());
             }
-            delim = ", ";
         }
         // %_12 = call i32 %_11(i8* %_6, i32 1)
         int callRegister = invokeRegisterCount("i32");
@@ -852,7 +1033,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(returnTypeValue);
         builder.append(" %_");
         builder.append(bitcastRegister);
-        builder.append("(i8* %_");
+        builder.append("(i8* ");
         builder.append(loadedRegister);
         builder.append(arguments);
         builder.append(")\n");
@@ -879,43 +1060,16 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     @Override
     public void visit(NewIntArrayExpr e) {
-        // TODO EX2 - according to example in class
-        int lengthResultRegister = invokeRegisterCount("i1");
+        // according to example in class
         int labelIllegalLength = invokeIfRegisterCount();
         int labelLegalLength = invokeIfRegisterCount();
         String lengthValue;
-        e.lengthExpr().accept(this);
         // check len size is not negative
         // %_0 = icmp slt i32 %_2, 0
-        builder.append("%_");
-        builder.append(lengthResultRegister);
-        builder.append(" = icmp slt i32 ");
-        // TODO EX2 - notice to handle %refId.name separately and int-literal
-        if (e.lengthExpr() instanceof IntegerLiteralExpr) {
-            lengthValue = "i32 " + ((IntegerLiteralExpr) e.lengthExpr()).num();
-        } else if (e.lengthExpr() instanceof IdentifierExpr) {
-            resolveVariable(((IdentifierExpr) e.lengthExpr()).id(), currentMethod);
-            lengthValue = "i32 %_" + getLastRegisterCount();
-        } else {
-            lengthValue = "i32 %_" + getLastRegisterCount();
-        }
-        builder.append(lengthValue);
-        builder.append(", 0\n");
         //	br i1 %_0, label %arr_alloc0, label %arr_alloc1
-        builder.append("br i1 %_");
-        builder.append(lengthResultRegister);
-        builder.append(", label %if");
-        builder.append(labelIllegalLength);
-        builder.append(", label %if");
-        builder.append(labelLegalLength);
-        builder.append("\n");
-        builder.append("if");
-        builder.append(labelIllegalLength);
-        builder.append(":\n");
-        builder.append("call void @throw_oob()\n");
-        builder.append("br label %if");
-        builder.append(labelLegalLength);
-        builder.append("\n");
+        // e.lengthExpr().accept(this);
+        lengthValue = printIsNegativeNumberLlvm(e, labelLegalLength, labelIllegalLength);
+        // if1:
         builder.append("if");
         builder.append(labelLegalLength);
         builder.append(":\n");
@@ -930,8 +1084,8 @@ public class AstLlvmPrintVisitor implements Visitor {
         int callocRegister = invokeRegisterCount("i8*");
         builder.append("%_");
         builder.append(callocRegister);
-        builder.append(" = call i8* @calloc(i32 4, i32 ");
-        builder.append(lengthValue);
+        builder.append(" = call i8* @calloc(i32 4, i32 %_");
+        builder.append(sizeOfArrayRegister);
         builder.append(")\n");
         // %_3 = bitcast i8* %_2 to i32*
         int bitcastRegister = invokeRegisterCount("i8*");
@@ -945,7 +1099,8 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(lengthValue);
         builder.append(", i32* %_");
         builder.append(bitcastRegister);
-        this.currentRegisterToAssign = "" + bitcastRegister;
+        builder.append("\n");
+        currentRegisterToAssign = "%_" + bitcastRegister;
     }
 
     @Override
@@ -984,7 +1139,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(", i8*** %_");
         builder.append(vTable);
         builder.append("\n");
-        this.currentRegisterToAssign = "" + objectReg;
+        this.currentRegisterToAssign = "%_" + objectReg;
     }
 
     @Override

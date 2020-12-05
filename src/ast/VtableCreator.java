@@ -1,7 +1,6 @@
 package ast;
 
 import symbolTable.Symbol;
-import symbolTable.SymbolTableUtils;
 import symbolTable.SymbolTable;
 import symbolTable.Type;
 
@@ -30,9 +29,9 @@ public class VtableCreator {
         objectStructMap = new HashMap<>();
         inverseMap(symbolTable.SymbolTableUtils.getSymbolTableClassMap_real());
         StringBuilder stringBuilder = new StringBuilder();
-        int countMethods = 0;
         //for each class in the program
         for (Map.Entry<String, SymbolTable> entry : symbolTable.SymbolTableUtils.getSymbolTableClassMap_real().entrySet()) {
+            int countMethods = 0;
             String className = entry.getKey();
             SymbolTable symbolTable = entry.getValue();
             List<MethodeRow> allClassMethods = new ArrayList<MethodeRow>();
@@ -47,7 +46,7 @@ public class VtableCreator {
                 } else {
                     countMethods++;
                     MethodeRow methodeRow = new MethodeRow();
-                    extractMethodFileds(symbol, methodeRow, allClassMethods, methodsNames);
+                    extractMethodFields(symbol, methodeRow, allClassMethods, methodsNames);
                     methodeRow.setClassName(className);
                 }
             }
@@ -74,7 +73,7 @@ public class VtableCreator {
         ObjectStruct objectStruct = new ObjectStruct();
         for (MethodeRow methodeRow : methodeRowList) {
             methodeRow.createArgsString();
-            objectStruct.addMethode(methodeRow.getMethodeName(), methodeRow.getArgs(), methodeRow.getRetType());
+            objectStruct.addMethod(methodeRow.getMethodeName(), methodeRow.getArgs(), methodeRow.getRetType());
         }
         for (Field field : fieldList) {
             objectStruct.addField(field.getFieldName(), field.getType(), field.getSize());
@@ -95,10 +94,10 @@ public class VtableCreator {
     }
 
     public void vtableHeader(int funcsNum, String className, StringBuilder stringBuilder) {
-        stringBuilder.append("@." + className + "_vtable = global [" + funcsNum + " x " + refPointerString + "] [\n");
+        stringBuilder.append("\n@." + className + "_vtable = global [" + funcsNum + " x " + refPointerString + "] [\n");
     }
 
-    public void extractMethodFileds(Symbol symbol, MethodeRow methodeRow, List<MethodeRow> methodsList, Set<String> methodsNames) {
+    public void extractMethodFields(Symbol symbol, MethodeRow methodeRow, List<MethodeRow> methodsList, Set<String> methodsNames) {
         extractArgsTypes(symbol, methodeRow);
         extractRetType(symbol, methodeRow);
         extractMethodeName(symbol, methodeRow);
@@ -250,22 +249,20 @@ public class VtableCreator {
         SymbolTable parentSymbolTable = symbolTable.getParentSymbolTable();
         int countMethodes = 0;
         while (parentSymbolTable != null) {
-            for (Map.Entry<String, Symbol> symbolTableRow : symbolTable.getEntries().entrySet()) {
+            for (Map.Entry<String, Symbol> symbolTableRow : parentSymbolTable.getEntries().entrySet()) {
                 Symbol symbol = symbolTableRow.getValue();
                 if (!symbol.getType().equals(Type.METHOD)) {
                     Field field = new Field();
-                    field.setType(convertAstTypeToLLVMRepresention(symbol.getDecl().get(0)));
-                    field.setFieldName(symbol.getSymbolName());
-                    fieldList.add(field);
+                    extractFieldFields(field, symbol, fieldList);
+                } else {
+                    if (methodesNames.contains(symbol.getSymbolName())) {
+                        continue;
+                    }
+                    countMethodes++;
+                    MethodeRow methodeRow = new MethodeRow();
+                    extractMethodFields(symbol, methodeRow, methodsList, methodesNames);
+                    methodeRow.setClassName(symbolTableClassesMap.get(parentSymbolTable));
                 }
-                if (methodesNames.contains(symbol.getSymbolName())) {
-                    continue;
-                }
-                countMethodes++;
-                MethodeRow methodeRow = new MethodeRow();
-                extractMethodFileds(symbol, methodeRow, methodsList, methodesNames);
-                methodeRow.setMethodeName(symbolTableClassesMap.get(symbolTable));
-
             }
             parentSymbolTable = parentSymbolTable.getParentSymbolTable();
         }

@@ -8,17 +8,17 @@ public class ObjectStruct {
 
 
     //maps between methode name and it's properties
-    private Map<String, MethodeInfo> methodeInfoMap;
+    private Map<String, MethodInfo> methodeInfoMap;
 
     //maps between field and it's offset
 
     private Map<String, FieldInfo> fieldInfoMap;
-    private int lastOffsetFields = 0;
+    private int lastOffsetFields = 8;
     private int lastOffsetMethodes = 0;
     public int getSizeInBytes() {
         return sizeInBytes;
     }
-    public Map<String, MethodeInfo> getMethodeInfoMap() {
+    public Map<String, MethodInfo> getMethodeInfoMap() {
         return methodeInfoMap;
     }
 
@@ -38,7 +38,7 @@ public class ObjectStruct {
         return result;
     }
 
-    private int getLastOffsetMethodes() {
+    private int getLastOffsetMethods() {
         return lastOffsetMethodes++;
     }
 
@@ -52,11 +52,8 @@ public class ObjectStruct {
         fieldInfoMap.put(fieldName, fieldInfo);
     }
 
-    public void addMethode(String methodeName, String args, String ret) {
-        MethodeInfo methodeInfo = new MethodeInfo(args, ret, getLastOffsetMethodes());
-        methodeInfoMap.put(methodeName, methodeInfo);
-
+    public void addMethod(String methodName, String args, String ret) {
+        MethodInfo methodInfo = new MethodInfo(args, ret, getLastOffsetMethods());
+        methodeInfoMap.put(methodName, methodInfo);
     }
-
-
 }
