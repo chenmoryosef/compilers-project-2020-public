@@ -9,10 +9,10 @@ import java.util.*;
 
 public class VtableCreator {
     StringBuilder vtables = new StringBuilder();
-    final String refPointerString = "i8*";
-    final String intString = "i32";
-    final String intPointerString = "i32*";
-    final String boolString = "i1";
+    final static String refPointerString = "i8*";
+    final static String intString = "i32";
+    final static String intPointerString = "i32*";
+    final static String boolString = "i1";
 
     public static Map<SymbolTable, String> getSymbolTableClassesMap() {
         return symbolTableClassesMap;
@@ -127,7 +127,7 @@ public class VtableCreator {
 
     }
 
-    public String convertAstTypeToLLVMRepresention(String astType) {
+    public static String convertAstTypeToLLVMRepresention(String astType) {
         switch (astType) {
             case "boolean":
                 return boolString;
