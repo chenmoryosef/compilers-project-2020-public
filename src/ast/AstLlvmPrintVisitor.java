@@ -18,12 +18,6 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     private String printIsOutOfBoundary(AstNode astNode, int labelLegal, int labelIllegal, int lengthRegister) {
         // %_8 = icmp sle i32 %_7, 0
-        int resultRegister = invokeRegisterCount("i1");
-        builder.append("%_");
-        builder.append(resultRegister);
-        builder.append(" = icmp sle i32 %_");
-        builder.append(lengthRegister);
-        builder.append(", ");
         // handle %refId.name separately and int-literal
         AstNode exp = null;
         if (astNode instanceof ArrayAccessExpr) {
@@ -44,6 +38,12 @@ public class AstLlvmPrintVisitor implements Visitor {
             exp.accept(this);
             index = "%_" + getLastRegisterCount();
         }
+        int resultRegister = invokeRegisterCount("i1");
+        builder.append("%_");
+        builder.append(resultRegister);
+        builder.append(" = icmp sle i32 %_");
+        builder.append(lengthRegister);
+        builder.append(", ");
         builder.append(index);
         builder.append("\n");
 
@@ -67,11 +67,6 @@ public class AstLlvmPrintVisitor implements Visitor {
     }
 
     private String printIsNegativeNumberLlvm(AstNode astNode, int labelLegal, int labelIllegal) {
-        // %_0 = icmp slt i32 %_2, 0
-        int resultRegister = invokeRegisterCount("i1");
-        builder.append("%_");
-        builder.append(resultRegister);
-        builder.append(" = icmp slt i32 ");
         // handle %refId.name separately and int-literal
         AstNode exp = null;
         if (astNode instanceof NewIntArrayExpr) {
@@ -94,6 +89,11 @@ public class AstLlvmPrintVisitor implements Visitor {
             exp.accept(this);
             lengthValue = "%_" + getLastRegisterCount();
         }
+        // %_0 = icmp slt i32 %_2, 0
+        int resultRegister = invokeRegisterCount("i1");
+        builder.append("%_");
+        builder.append(resultRegister);
+        builder.append(" = icmp slt i32 ");
         builder.append(lengthValue);
         builder.append(", 0\n");
 
@@ -195,9 +195,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         int registerImplement = invokeRegisterCount("i8");
         builder.append("%_");
         builder.append(registerImplement);
-        builder.append(" = getelementptr i8, i8* %this, ");
-        builder.append(type);
-        builder.append(" ");
+        builder.append(" = getelementptr i8, i8* %this, i32 ");
         builder.append(offset);
         builder.append("\n");
         //	%_4 = bitcast i8* %_3 to i32*
@@ -478,6 +476,9 @@ public class AstLlvmPrintVisitor implements Visitor {
 
     @Override
     public void visit(BlockStatement blockStatement) {
+        for (var statement : blockStatement.statements()) {
+            statement.accept(this);
+        }
     }
 
     @Override
@@ -540,7 +541,6 @@ public class AstLlvmPrintVisitor implements Visitor {
     }
 
     private void handleWhileCond(int whileLabel, int outLabel, WhileStatement whileStatement) {
-        whileStatement.cond().accept(this);
         if (whileStatement.cond() instanceof TrueExpr) {
             // br label %if1
             builder.append("br label %if");
@@ -551,7 +551,11 @@ public class AstLlvmPrintVisitor implements Visitor {
             builder.append(outLabel);
         } else {
             // compute cond
-            whileStatement.cond().accept(this);
+            if (whileStatement.cond() instanceof IdentifierExpr) {
+                resolveVariable(((IdentifierExpr) whileStatement.cond()).id(), currentMethod, true);
+            } else {
+                whileStatement.cond().accept(this);
+            }
             // br i1 %_1, label %if1, label %if2
             builder.append("br i1 %_");
             builder.append(getLastRegisterCount());
@@ -566,20 +570,33 @@ public class AstLlvmPrintVisitor implements Visitor {
     @Override
     public void visit(WhileStatement whileStatement) {
         // create while and out labels
+        int condLabel = invokeIfRegisterCount();
         int whileLabel = invokeIfRegisterCount();
         int outLabel = invokeIfRegisterCount();
-        // compute condition and branch over condition value
-        handleWhileCond(whileLabel, outLabel, whileStatement);
-        // if1: (== whileLabel)
-        builder.append("if").append(whileLabel).append(":");
+
+        // br label %condLabel
+        builder.append("br label %if");
+        builder.append(condLabel);
         builder.append("\n");
+
+        // compute condition and branch over condition value
+        // if0: (== condLabel)
+        builder.append("if").append(condLabel).append(":\n");
+        handleWhileCond(whileLabel, outLabel, whileStatement);
+
+        // if1: (== whileLabel)
+        builder.append("if").append(whileLabel).append(":\n");
+
         // while statements
         whileStatement.body().accept(this);
+
         // re-check cond
-        handleWhileCond(whileLabel, outLabel, whileStatement);
-        // if2:  (== outLabel)
-        builder.append("if").append(outLabel).append(":");
+        builder.append("br label %if");
+        builder.append(condLabel);
         builder.append("\n");
+
+        // if2:  (== outLabel)
+        builder.append("if").append(outLabel).append(":\n");
     }
 
     @Override
@@ -661,6 +678,15 @@ public class AstLlvmPrintVisitor implements Visitor {
             builder.append(", ");
             builder.append(rvType);
             builder.append("* ");
+        } else {
+            // store i32 %_3, i32* %x
+            builder.append("store ");
+            builder.append(getLastRegisterType());
+            builder.append(" %_");
+            builder.append(getLastRegisterCount());
+            builder.append(", ");
+            builder.append(getLastRegisterType());
+            builder.append("* ");
         }
 
         builder.append(lvReg);
@@ -715,7 +741,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append("%_");
         builder.append(elementPtrRegister);
         builder.append(" = getelementptr i32, i32* ");
-        builder.append(currentRegisterToAssign);
+        builder.append(arrayRegister);
         builder.append(", i32 %_");
         builder.append(indexRegister);
         builder.append("\n");
@@ -966,6 +992,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         String classId = "";
         // resolve class of owner (this, new, ref-id)  -> class
         if (ownerExp instanceof ThisExpr) {
+            currentRegisterToAssign = "%this";
             classId = this.currentClass;
         } else if (ownerExp instanceof NewObjectExpr) {
             classId = ((NewObjectExpr) ownerExp).classId();
@@ -1034,7 +1061,11 @@ public class AstLlvmPrintVisitor implements Visitor {
             } else if (arg instanceof FalseExpr) {
                 arguments.append("i1 0");
             } else {
-                arg.accept(this);
+                if (arg instanceof IdentifierExpr) {
+                    resolveVariable(((IdentifierExpr) arg).id(), currentMethod, true);
+                } else {
+                    arg.accept(this);
+                }
                 arguments.append(this.getLastRegisterType());
                 arguments.append(" ");
                 arguments.append("%_");
@@ -1042,7 +1073,7 @@ public class AstLlvmPrintVisitor implements Visitor {
             }
         }
         // %_12 = call i32 %_11(i8* %_6, i32 1)
-        int callRegister = invokeRegisterCount("i32");
+        int callRegister = invokeRegisterCount(returnTypeValue);
         builder.append("%_");
         builder.append(callRegister);
         builder.append(" = call ");
@@ -1169,10 +1200,11 @@ public class AstLlvmPrintVisitor implements Visitor {
             builder.append(e.e() instanceof TrueExpr ? "1" : "0");
             builder.append("\n");
         } else {
+            int lastReg = getLastRegisterCount();
             builder.append("%_");
             builder.append(invokeRegisterCount("i1"));
             builder.append(" = sub i1 1, %_");
-            builder.append(getLastRegisterCount());
+            builder.append(lastReg);
             builder.append("\n");
         }
     }
