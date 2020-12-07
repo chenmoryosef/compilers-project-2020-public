@@ -139,16 +139,15 @@ public class AstLlvmPrintVisitor implements Visitor {
             }
 
             if (foundField) {
-                if (methodFlag) {
-                    classId = type;
-                } else {
-                    classId = VtableCreator.getSymbolTableClassesMap().get(symbolTable);
-                }
+                classId = VtableCreator.getSymbolTableClassesMap().get(symbolTable);
             } else {
                 // TODO handle error
                 System.out.println("ERRORRRRRRRR");
             }
             retrieveField(classId, variableName, doLoad);
+            if (methodFlag) {
+                classId = type;
+            }
         } else {
             // %_3 = load i32, i32* %e.id()
             classId = type;
@@ -634,6 +633,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         } else {
             assignStatement.rv().accept(this);
             rvRegister = getLastRegisterCount();
+            rvType = getLastRegisterType();
         }
 
         // resolve lv variable
@@ -687,11 +687,11 @@ public class AstLlvmPrintVisitor implements Visitor {
         } else {
             // store i32 %_3, i32* %x
             builder.append("store ");
-            builder.append(getLastRegisterType());
+            builder.append(rvType);
             builder.append(" %_");
-            builder.append(getLastRegisterCount());
+            builder.append(rvRegister);
             builder.append(", ");
-            builder.append(getLastRegisterType());
+            builder.append(rvType);
             builder.append("* ");
         }
 
@@ -1066,6 +1066,8 @@ public class AstLlvmPrintVisitor implements Visitor {
                 arguments.append("i1 1");
             } else if (arg instanceof FalseExpr) {
                 arguments.append("i1 0");
+            } else if (arg instanceof ThisExpr) {
+                arguments.append("i8* %this");
             } else {
                 if (arg instanceof IdentifierExpr) {
                     resolveVariable(((IdentifierExpr) arg).id(), currentMethod, true);
