@@ -498,6 +498,9 @@ public class AstLlvmPrintVisitor implements Visitor {
             builder.append("br label %if");
             builder.append(falseLabel);
         } else {
+            if (ifStatement.cond() instanceof IdentifierExpr) {
+                resolveVariable(((IdentifierExpr) ifStatement.cond()).id(), currentMethod, true);
+            }
             // cond accept writes the bool result to the last register
             // br i1 %_1, label %if0, label %if1
             builder.append("br ");
@@ -678,6 +681,9 @@ public class AstLlvmPrintVisitor implements Visitor {
             builder.append(", ");
             builder.append(rvType);
             builder.append("* ");
+        } else if (assignStatement.rv() instanceof ThisExpr) {
+            // store i8* %this, i8** %x
+            builder.append("store i8* %this, i8** ");
         } else {
             // store i32 %_3, i32* %x
             builder.append("store ");
@@ -801,7 +807,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         } else if (e.e1() instanceof IdentifierExpr) {
             builder.append("br i1 %_").append(getLastRegisterCount()).append(", label %if").append(andCond1).append(", label %if").append(andCond3);
         } else {
-            builder.append("br i1 ").append(register).append(", label %if").append(andCond1).append(", label %if").append(andCond3);
+            builder.append("br i1 %_").append(getLastRegisterCount()).append(", label %if").append(andCond1).append(", label %if").append(andCond3);
         }
         builder.append("\n");
 
