@@ -294,7 +294,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         if (e.e2() instanceof IntegerLiteralExpr) {
             secondArg = "" + ((IntegerLiteralExpr) e.e2()).num();
         } else if (e.e2() instanceof IdentifierExpr) {
-            resolveVariable(((IdentifierExpr) e.e1()).id(), currentMethod, true);
+            resolveVariable(((IdentifierExpr) e.e2()).id(), currentMethod, true);
             secondArg = "%_" + getLastRegisterCount();
         } else {
             secondArg = "%_" + getLastRegisterCount();
@@ -517,7 +517,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         // then statements
         ifStatement.thencase().accept(this);
         // br label %if2
-        builder.append("br ");
+        builder.append("br label ");
         int thirdLabel = invokeIfRegisterCount();
         builder.append("%if");
         builder.append(thirdLabel);
@@ -529,7 +529,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         // else statement
         ifStatement.elsecase().accept(this);
         // br label %if2
-        builder.append("br ");
+        builder.append("br label ");
         builder.append("%if");
         builder.append(thirdLabel);
         builder.append("\n");
@@ -587,7 +587,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         // handle ref-id or int-literal
         sysoutStatement.arg().accept(this);
         if (sysoutStatement.arg() instanceof IntegerLiteralExpr) {
-            builder.append("call void (i32) @print_int(i32 ").append(sysoutStatement.arg()).append(")");
+            builder.append("call void (i32) @print_int(i32 ").append(((IntegerLiteralExpr) sysoutStatement.arg()).num()).append(")");
         } else if (sysoutStatement.arg() instanceof MethodCallExpr) {
             builder.append("call void (i32) @print_int(i32 %_").append(getLastRegisterCount()).append(")");
         } else if (sysoutStatement.arg() instanceof IdentifierExpr) {
@@ -748,13 +748,19 @@ public class AstLlvmPrintVisitor implements Visitor {
         int andCond1 = invokeIfRegisterCount();
         int andCond2 = invokeIfRegisterCount();
         int andCond3 = invokeIfRegisterCount();
-
+        String register = "";
         // compute e1
-        e.e1().accept(this);
+        if (e.e1() instanceof IdentifierExpr) {
+            resolveVariable(((IdentifierExpr) e.e1()).id(), currentMethod, true);
+            register = currentRegisterToAssign;
+        } else {
+            e.e1().accept(this);
+        }
+
 
         // br label %andcond0
         builder.append("br label %if");
-        builder.append(andCond1);
+        builder.append(andCond0);
         builder.append("\n");
         // andcond0:
         builder.append("if");
@@ -763,14 +769,13 @@ public class AstLlvmPrintVisitor implements Visitor {
 
         // br i1 %_0, label %andcond1, label %andcond3
         if (e.e1() instanceof TrueExpr) {
-            builder.append("br i1 1 label %if").append(andCond1).append(", label %if").append(andCond3);
+            builder.append("br i1 1, label %if").append(andCond1).append(", label %if").append(andCond3);
         } else if (e.e1() instanceof FalseExpr) {
-            builder.append("br i1 0 label %if").append(andCond1).append(", label %if").append(andCond3);
+            builder.append("br i1 0, label %if").append(andCond1).append(", label %if").append(andCond3);
         } else if (e.e1() instanceof IdentifierExpr) {
-            resolveVariable(((IdentifierExpr) e.e1()).id(), currentMethod, true);
-            builder.append("br i1 %_").append(getLastRegisterCount()).append(" label %if").append(andCond1).append(", label %if").append(andCond3);
+            builder.append("br i1 %_").append(getLastRegisterCount()).append(", label %if").append(andCond1).append(", label %if").append(andCond3);
         } else {
-            builder.append("br i1 %_").append(getLastRegisterCount()).append(" label %if").append(andCond1).append(", label %if").append(andCond3);
+            builder.append("br i1 ").append(register).append(", label %if").append(andCond1).append(", label %if").append(andCond3);
         }
         builder.append("\n");
 
@@ -781,21 +786,16 @@ public class AstLlvmPrintVisitor implements Visitor {
         e.e2().accept(this);
         if (e.e2() instanceof TrueExpr) {
             assignedVal = invokeRegisterCount("i1");
-            builder.append("%_").append(getLastRegisterCount()).append("= i1 1\n");
+            builder.append("%_").append(getLastRegisterCount()).append(" = icmp eq i1 1, 1\n");
         } else if (e.e2() instanceof FalseExpr) {
             assignedVal = invokeRegisterCount("i1");
-            builder.append("%_").append(getLastRegisterCount()).append("= i1 0\n");
+            builder.append("%_").append(getLastRegisterCount()).append(" = = icmp eq i1 1, 0\n");
         } else if (e.e2() instanceof IdentifierExpr) {
             resolveVariable(((IdentifierExpr) e.e2()).id(), currentMethod, true);
-            int lastVal = getLastRegisterCount();
-            assignedVal = invokeRegisterCount("i1");
-            builder.append("%_").append(getLastRegisterCount()).append("= ").append(lastVal);
+            assignedVal = getLastRegisterCount();
         } else {
-            int lastVal = getLastRegisterCount();
-            assignedVal = invokeRegisterCount("i1");
-            builder.append("%_").append(getLastRegisterCount()).append("= ").append(lastVal);
+            assignedVal = getLastRegisterCount();
         }
-        builder.append("\n");
 
         // br label %andcond2
         builder.append("br label %if").append(andCond2).append("\n");
@@ -810,7 +810,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append("if").append(andCond3).append(":\n");
 
         invokeRegisterCount("i1");
-        builder.append("%_").append(getLastRegisterCount()).append("= phi i1 [").append(assignedVal).append(",%if").append(andCond2).append("], [0, %").append(andCond0);
+        builder.append("%_").append(getLastRegisterCount()).append(" = phi i1 [0, %if").append(andCond0).append("], [%_").append(assignedVal).append(", %if").append(andCond2).append("]");
         builder.append("\n");
     }
 
