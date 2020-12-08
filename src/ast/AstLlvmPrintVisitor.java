@@ -1208,6 +1208,9 @@ public class AstLlvmPrintVisitor implements Visitor {
             builder.append(e.e() instanceof TrueExpr ? "1" : "0");
             builder.append("\n");
         } else {
+            if( e.e() instanceof IdentifierExpr) {
+                resolveVariable(((IdentifierExpr) e.e()).id(), currentMethod, true);
+            }
             int lastReg = getLastRegisterCount();
             builder.append("%_");
             builder.append(invokeRegisterCount("i1"));
