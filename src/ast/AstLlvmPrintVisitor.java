@@ -15,6 +15,7 @@ public class AstLlvmPrintVisitor implements Visitor {
     private String currentMethod;
     private String currentRegisterToAssign;
     private String currentRegisterToStoreTo;
+    private String currentCallocRegister;
 
     private String printIsOutOfBoundary(AstNode astNode, int labelLegal, int labelIllegal, int lengthRegister) {
         // %_8 = icmp sle i32 %_7, 0
@@ -130,6 +131,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         SymbolTable symbolTable = null;
         if (isField) {
             SymbolTable parentSymbolTable = currentSymbolTable.getParentSymbolTable();
+            SymbolTable realParentSymbolTable = currentSymbolTable.getParentSymbolTable();
             boolean foundField = false;
             while (parentSymbolTable != null && !foundField) {
                 type = isVariableInSymbolTable(variableName, parentSymbolTable);
@@ -139,7 +141,11 @@ public class AstLlvmPrintVisitor implements Visitor {
             }
 
             if (foundField) {
-                classId = VtableCreator.getSymbolTableClassesMap().get(symbolTable);
+                if (methodFlag) {
+                    classId = VtableCreator.getSymbolTableClassesMap().get(symbolTable);
+                } else {
+                    classId = VtableCreator.getSymbolTableClassesMap().get(realParentSymbolTable);
+                }
             } else {
                 // TODO handle error
                 System.out.println("ERRORRRRRRRR");
@@ -421,6 +427,10 @@ public class AstLlvmPrintVisitor implements Visitor {
             // Load that variable into register
             this.resolveVariable(((IdentifierExpr) methodDecl.ret()).id(), this.currentMethod, true);
             tmpBuilder.append(currentRegisterToAssign);
+        } else if (methodDecl.ret() instanceof ThisExpr) {
+            tmpBuilder.append(" %this");
+        } else if (methodDecl.ret() instanceof NewIntArrayExpr || methodDecl.ret() instanceof NewObjectExpr) {
+            tmpBuilder.append(currentCallocRegister);
         } else {
             tmpBuilder.append(" %_");
             tmpBuilder.append(getLastRegisterCount());
@@ -1058,6 +1068,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         String delim = ", ";
         StringBuilder arguments = new StringBuilder();
         for (Expr arg : e.actuals()) {
+            arg.accept(this);
             arguments.append(delim);
             if (arg instanceof IntegerLiteralExpr) {
                 arguments.append("i32 ");
@@ -1068,6 +1079,12 @@ public class AstLlvmPrintVisitor implements Visitor {
                 arguments.append("i1 0");
             } else if (arg instanceof ThisExpr) {
                 arguments.append("i8* %this");
+            } else if (arg instanceof NewIntArrayExpr) {
+                arguments.append("i32* ");
+                arguments.append(currentCallocRegister);
+            } else if (arg instanceof NewObjectExpr) {
+                arguments.append("i8* ");
+                arguments.append(currentCallocRegister);
             } else {
                 if (arg instanceof IdentifierExpr) {
                     resolveVariable(((IdentifierExpr) arg).id(), currentMethod, true);
@@ -1156,6 +1173,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(bitcastRegister);
         builder.append("\n");
         currentRegisterToAssign = "%_" + bitcastRegister;
+        currentCallocRegister = "%_" + bitcastRegister;
     }
 
     @Override
@@ -1195,6 +1213,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(vTable);
         builder.append("\n");
         this.currentRegisterToAssign = "%_" + objectReg;
+        currentCallocRegister = "%_" + objectReg;
     }
 
     @Override
