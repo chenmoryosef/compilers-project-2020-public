@@ -246,6 +246,17 @@ public class VtableCreator {
 
     }
 
+    private void moveToLast(List<MethodeRow> methodsList, String methodName) {
+        int i;
+        for (i = 0; i < methodsList.size(); i++) {
+            if (methodsList.get(i).getMethodeName().equals(methodName)) {
+                break;
+            }
+        }
+        MethodeRow tmp = methodsList.get(i);
+        methodsList.remove(i);
+        methodsList.add(tmp);
+    }
 
     public int findAllmethodsAndFields(SymbolTable symbolTable, List<MethodeRow> methodsList, Set<String> methodesNames, List<Field> fieldList) {
         SymbolTable parentSymbolTable = symbolTable.getParentSymbolTable();
@@ -258,6 +269,7 @@ public class VtableCreator {
                     extractFieldFields(field, symbol, fieldList);
                 } else {
                     if (methodesNames.contains(symbol.getSymbolName())) {
+                        moveToLast(methodsList, symbol.getSymbolName());
                         continue;
                     }
                     countMethodes++;
