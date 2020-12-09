@@ -75,7 +75,9 @@ public class VtableCreator {
             methodeRow.createArgsString();
             objectStruct.addMethod(methodeRow.getMethodeName(), methodeRow.getArgs(), methodeRow.getRetType());
         }
-        for (Field field : fieldList) {
+        List<Field> inverseFieldList = fieldList.subList(0, fieldList.size());
+        Collections.reverse(inverseFieldList);
+        for (Field field : inverseFieldList) {
             objectStruct.addField(field.getFieldName(), field.getType(), field.getSize());
         }
         objectStructMap.put(className, objectStruct);
