@@ -17,7 +17,7 @@ public class AstLlvmPrintVisitor implements Visitor {
     private String currentRegisterToStoreTo;
     private String currentCallocRegister;
 
-    private String printIsOutOfBoundary(AstNode astNode, int labelLegal, int labelIllegal, int lengthRegister) {
+    private String printIsOutOfBoundary(AstNode astNode, int labelLegal, int labelIllegal, int lengthRegister, String indexRegister) {
         // %_8 = icmp sle i32 %_7, 0
         // handle %refId.name separately and int-literal
         AstNode exp = null;
@@ -36,8 +36,8 @@ public class AstLlvmPrintVisitor implements Visitor {
             resolveVariable(((IdentifierExpr) exp).id(), currentMethod, true);
             index = "%_" + getLastRegisterCount();
         } else {
-            exp.accept(this);
-            index = "%_" + getLastRegisterCount();
+//            exp.accept(this);
+            index = indexRegister;
         }
         int resultRegister = invokeRegisterCount("i1");
         builder.append("%_");
@@ -736,7 +736,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         int lengthRegister = getLengthOfArray(arrayRegister);
 
         // validate index - make sure it is not OOB
-        value = printIsOutOfBoundary(assignArrayStatement, oobLegalAccessIndex, oobIlLegalAccessIndex, lengthRegister);
+        value = printIsOutOfBoundary(assignArrayStatement, oobLegalAccessIndex, oobIlLegalAccessIndex, lengthRegister, value);
 
         // if4:
         builder.append("if");
@@ -907,7 +907,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         int lengthRegister = getLengthOfArray(arrayRegister);
 
         // validate index - make sure it is not OOB
-        indexValue = printIsOutOfBoundary(e, oobLegalAccessIndex, oobIlLegalAccessIndex, lengthRegister);
+        indexValue = printIsOutOfBoundary(e, oobLegalAccessIndex, oobIlLegalAccessIndex, lengthRegister, indexValue);
 
         // if2:
         builder.append("if");
@@ -965,6 +965,10 @@ public class AstLlvmPrintVisitor implements Visitor {
             // %_reg = get element name of array in 0 index
             resolveVariable(((IdentifierExpr) e.arrayExpr()).id(), currentMethod, true);
             getLengthOfArray(currentRegisterToAssign);
+        } else {
+            // the only option is method call?
+            e.arrayExpr().accept(this);
+            getLengthOfArray("%_" + getLastRegisterCount());
         }
     }
 
@@ -1109,6 +1113,7 @@ public class AstLlvmPrintVisitor implements Visitor {
         builder.append(loadedRegister);
         builder.append(arguments);
         builder.append(")\n");
+        currentRegisterToAssign = "%_" + callRegister;
     }
 
     @Override
