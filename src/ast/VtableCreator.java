@@ -38,11 +38,12 @@ public class VtableCreator {
             List<Field> allFields = new ArrayList<>();
             Set<String> methodsNames = new HashSet<>();
             //for each methode in this class
+            int i = 0;
             for (Map.Entry<String, Symbol> symbolTableRow : symbolTable.getEntries().entrySet()) {
                 Symbol symbol = symbolTableRow.getValue();
                 if (!symbol.getType().equals(Type.METHOD)) {
                     Field field = new Field();
-                    extractFieldFields(field, symbol, allFields);
+                    extractFieldFields(field, symbol, allFields, i++);
                 } else {
                     countMethods++;
                     MethodeRow methodeRow = new MethodeRow();
@@ -62,11 +63,11 @@ public class VtableCreator {
         return stringBuilder.toString();
     }
 
-    private void extractFieldFields(Field field, Symbol symbol, List<Field> allFields) {
+    private void extractFieldFields(Field field, Symbol symbol, List<Field> allFields, int i) {
         field.setType(convertAstTypeToLLVMRepresention(symbol.getDecl().get(0)));
         field.setSize(convertAstTypeToSize(symbol.getDecl().get(0)));
         field.setFieldName(symbol.getSymbolName());
-        allFields.add(field);
+        allFields.add(i, field);
     }
 
     public void addToObjectsStructMap(String className, List<MethodeRow> methodeRowList, List<Field> fieldList) {
@@ -76,7 +77,7 @@ public class VtableCreator {
             objectStruct.addMethod(methodeRow.getMethodeName(), methodeRow.getArgs(), methodeRow.getRetType());
         }
         List<Field> inverseFieldList = fieldList.subList(0, fieldList.size());
-        Collections.reverse(inverseFieldList);
+//        Collections.reverse(inverseFieldList);
         for (Field field : inverseFieldList) {
             objectStruct.addField(field.getFieldName(), field.getType(), field.getSize());
         }
@@ -246,7 +247,7 @@ public class VtableCreator {
 
     }
 
-    private void moveToLast(List<MethodeRow> methodsList, String methodName) {
+    private void moveToTmpList(List<MethodeRow> methodsList, String methodName, List<MethodeRow> tmpMethodsList) {
         int i;
         for (i = 0; i < methodsList.size(); i++) {
             if (methodsList.get(i).getMethodeName().equals(methodName)) {
@@ -255,31 +256,45 @@ public class VtableCreator {
         }
         MethodeRow tmp = methodsList.get(i);
         methodsList.remove(i);
-        methodsList.add(tmp);
+        tmpMethodsList.add(tmp);
+    }
+
+    private void addAllFirst(List<MethodeRow> to, List<MethodeRow> from) {
+        for (int i = 0; i < from.size(); i++) {
+            to.add(i, from.get(i));
+        }
     }
 
     public int findAllmethodsAndFields(SymbolTable symbolTable, List<MethodeRow> methodsList, Set<String> methodesNames, List<Field> fieldList) {
         SymbolTable parentSymbolTable = symbolTable.getParentSymbolTable();
         int countMethodes = 0;
+        List<MethodeRow> orderedMethodLists = new ArrayList<>(methodsList);
+        methodsList.clear();
         while (parentSymbolTable != null) {
+            List<MethodeRow> tmp = new ArrayList<>();
+            int i = 0;
             for (Map.Entry<String, Symbol> symbolTableRow : parentSymbolTable.getEntries().entrySet()) {
                 Symbol symbol = symbolTableRow.getValue();
                 if (!symbol.getType().equals(Type.METHOD)) {
                     Field field = new Field();
-                    extractFieldFields(field, symbol, fieldList);
+                    extractFieldFields(field, symbol, fieldList, i++);
                 } else {
                     if (methodesNames.contains(symbol.getSymbolName())) {
-                        moveToLast(methodsList, symbol.getSymbolName());
+                        moveToTmpList(orderedMethodLists, symbol.getSymbolName(), tmp);
                         continue;
                     }
                     countMethodes++;
                     MethodeRow methodeRow = new MethodeRow();
-                    extractMethodFields(symbol, methodeRow, methodsList, methodesNames);
+                    extractMethodFields(symbol, methodeRow, tmp, methodesNames);
                     methodeRow.setClassName(symbolTableClassesMap.get(parentSymbolTable));
                 }
             }
+            addAllFirst(orderedMethodLists, tmp);
+//            tmp.addAll(orderedMethodLists);
+//            orderedMethodLists = tmp;
             parentSymbolTable = parentSymbolTable.getParentSymbolTable();
         }
+        methodsList.addAll(orderedMethodLists);
         return countMethodes;
     }
 
