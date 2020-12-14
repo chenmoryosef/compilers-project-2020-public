@@ -277,10 +277,15 @@ public class AstVisitor implements Visitor {
         } else if (ownerExp instanceof NewObjectExpr) {
             classId = ((NewObjectExpr) ownerExp).classId();
             symbolTable = SymbolTableUtils.getSymbolTable(classId);
-        } else {
+        } else if (ownerExp instanceof IdentifierExpr){
             Symbol ownerSymbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(((IdentifierExpr) ownerExp).id(), Type.VARIABLE));
             classId = ownerSymbol.getDecl().get(0);
             symbolTable = SymbolTableUtils.getSymbolTable(classId);
+        }
+        else{
+            SymbolTableUtils.setERROR(true);
+            SymbolTableUtils.setERRORReasons("method call should be invoked with this, new or variable");
+            return;
         }
         if (symbolTable == null) {
             if (classId != null) {

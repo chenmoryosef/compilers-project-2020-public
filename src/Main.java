@@ -28,6 +28,7 @@ public class Main {
                 boolean validToContinue = true;
                 SymbolTableUtils.buildSymbolTables(prog);
                 if (SymbolTableUtils.isERROR()) {
+                    System.out.println(SymbolTableUtils.getERRORReasons());
                     outFile.write("ERROR\n");
                     validToContinue = false;
                 }

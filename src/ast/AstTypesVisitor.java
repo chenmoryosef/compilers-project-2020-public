@@ -49,6 +49,9 @@ public class AstTypesVisitor implements Visitor {
         SymbolTable typeBSymbolTable = SymbolTableUtils.getSymbolTableClassMap_real().get(typeB);
 
         SymbolTable symbolTable = typeASymbolTable;
+        if (symbolTable == typeBSymbolTable) {
+            return true;
+        }
         while (symbolTable != null && symbolTable != typeBSymbolTable) {
             symbolTable = symbolTable.getParentSymbolTable();
             if (symbolTable == typeBSymbolTable) {
