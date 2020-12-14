@@ -318,7 +318,16 @@ public class AstTypesVisitor implements Visitor {
 
     @Override
     public void visit(LtExpr e) {
-        visitIntBinaryExpr(e);
+        e.e1().accept(this);
+        if (!currentType.equals("int")) {
+            setError("Expected: int, Got: " + currentType);
+        }
+
+        e.e2().accept(this);
+        if (!currentType.equals("int")) {
+            setError("Expected: int, Got: " + currentType);
+        }
+        currentType = "boolean";
     }
 
     @Override
