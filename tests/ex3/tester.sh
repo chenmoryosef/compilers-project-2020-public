@@ -42,3 +42,5 @@ test InitVarValid.java InitVarValid
 test OwnerExprInvalid.java OwnerExprInvalid
 test OwnerExprValid.java OwnerExprValid
 test MethodInvalid MethodInvalid
+test 9Invalid 9Invalid
+test 9Valid 9Valid
