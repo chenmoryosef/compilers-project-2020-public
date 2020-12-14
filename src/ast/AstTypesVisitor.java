@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class AstTypesVisitor implements Visitor {
 
-    private String errorMsg;
+    private String errorMsg = "";
     private boolean error = false;
     private String currentMethod;
     private String currentClass;
@@ -22,7 +22,7 @@ public class AstTypesVisitor implements Visitor {
     // sets error
     private void setError(String errorString) {
         error = true;
-        errorMsg = "Method: " + currentMethod + " Class:" + currentClass + "\n" + errorString;
+        errorMsg += "\nMethod: " + currentMethod + " Class:" + currentClass + "\n" + errorString;
     }
 
     public boolean isError() {
@@ -39,6 +39,8 @@ public class AstTypesVisitor implements Visitor {
             if (typeA.equals(type)) {
                 if (!typeA.equals(typeB)) {
                     return false;
+                } else {
+                    return true;
                 }
             }
         }
@@ -103,7 +105,7 @@ public class AstTypesVisitor implements Visitor {
     // Returns root method - only when the current class doesn't have it
     private Symbol getRootMethod(String methodName) {
         SymbolTable currentSymbolTable = SymbolTableUtils.getSymbolTableClassMap_real().get(currentClass);
-        currentSymbolTable = currentSymbolTable.getParentSymbolTable();
+//        currentSymbolTable = currentSymbolTable.getParentSymbolTable();
         while (currentSymbolTable != null) {
             Symbol symbol = getSymbol(methodName, currentSymbolTable);
             if (symbol != null) {
