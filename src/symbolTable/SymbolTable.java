@@ -3,16 +3,25 @@ package symbolTable;
 import ast.AstNode;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class SymbolTable {
+
     private Map<String, Symbol> entries;
     private SymbolTable parentSymbolTable;
 
     public SymbolTable(SymbolTable parentSymbolTable) {
-        this.entries = new HashMap<>();
+        this.entries = new LinkedHashMap<>();
         this.parentSymbolTable = parentSymbolTable;
+    }
+    public Map<String, Symbol> getEntries() {
+        return entries;
+    }
+
+    public SymbolTable getParentSymbolTable() {
+        return parentSymbolTable;
     }
 
     public static String createKey(String name, String name2) {

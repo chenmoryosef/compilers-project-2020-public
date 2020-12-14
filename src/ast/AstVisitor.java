@@ -41,6 +41,8 @@ public class AstVisitor implements Visitor {
         }
         SymbolTable classSymbolTable = new SymbolTable(parentSymbolTable);
         SymbolTableUtils.addSymbolTable(classDecl.name(), classSymbolTable);
+        SymbolTableUtils.addClassMethodSymbolTable(classDecl.name(), classSymbolTable);
+        SymbolTableUtils.addClassSymbolTable(classDecl.name(), classSymbolTable);
 
         for (var fieldDecl : classDecl.fields()) {
             ArrayList<String> decl = new ArrayList<>();
@@ -79,6 +81,7 @@ public class AstVisitor implements Visitor {
     public void visit(MethodDecl methodDecl) {
         SymbolTable methodSymbolTable = new SymbolTable(SymbolTableUtils.getCurrSymTable());
         SymbolTableUtils.addSymbolTable(methodDecl.name(), methodSymbolTable);
+        SymbolTableUtils.addClassMethodSymbolTable(methodDecl.name() + SymbolTableUtils.getCurrClassId(), methodSymbolTable);
 
         for (var formal : methodDecl.formals()) {
             ArrayList<String> decl = new ArrayList<>();

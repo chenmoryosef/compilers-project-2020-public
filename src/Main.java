@@ -39,8 +39,15 @@ public class Main {
                     throw new UnsupportedOperationException("TODO - Ex. 3");
 
                 } else if (action.equals("compile")) {
-                    throw new UnsupportedOperationException("TODO - Ex. 2");
-
+                    // VtableCreator - create vtables + Class->data-structure(vtable-method/field -> offset) and probably more...
+                    VtableCreator v = new VtableCreator();
+                    String llvmVtables = v.createVtableAndObjectsStruct();
+                    // LLVM Print Visitor
+                    AstLlvmPrintVisitor astLlvmPrintVisitor = new AstLlvmPrintVisitor();
+                    astLlvmPrintVisitor.visit(prog);
+                    // Concat v tables and visitor's result
+                    String llvmOutput = astLlvmPrintVisitor.getString();
+                    outFile.write(llvmVtables + "\n" + llvmOutput);
                 } else if (action.equals("rename")) {
                     var type = args[2];
                     var originalName = args[3];
