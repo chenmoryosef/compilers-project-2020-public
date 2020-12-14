@@ -49,7 +49,15 @@ public class Main {
                             System.out.println(astTypeVisitor.getErrorMsg());
                             outFile.write("ERROR\n");
                         } else {
-                            outFile.write("OK\n");
+                            AstInitializedVisitor astInitVisitor = new AstInitializedVisitor();
+                            astInitVisitor.visit(prog);
+                            if (astInitVisitor.isError()) {
+                                System.out.println(astInitVisitor.getErrorMsg());
+                                outFile.write("ERROR\n");
+                            }
+                            else{
+                                outFile.write("OK\n");
+                            }
                         }
                     }
                 } else if (action.equals("compile")) {

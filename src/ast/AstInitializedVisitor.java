@@ -17,8 +17,8 @@ public class AstInitializedVisitor implements Visitor {
 
     private Stack<Set<String>> initVars = new Stack<>();
 
-    private void removeTop() {
-        initVars.pop();
+    private Set<String> removeTop() {
+        return initVars.pop();
     }
 
     private void pushScope() {
@@ -33,6 +33,11 @@ public class AstInitializedVisitor implements Visitor {
     private void pushVar(String varName) {
         Set<String> set = initVars.peek();
         set.add(varName);
+    }
+
+    private void pushVarSet(Set<String> varSet) {
+        Set<String> set = initVars.peek();
+        set.addAll(varSet);
     }
 
     private boolean isInit(String varName) {
@@ -115,36 +120,12 @@ public class AstInitializedVisitor implements Visitor {
 
     @Override
     public void visit(MethodDecl methodDecl) {
-        // Check if this method is root.
-//        Symbol rootMethodSymbol = getRootMethod(methodDecl.name());
-//        String rootMethodReturnType = rootMethodSymbol.getDecl().get(0);
-//        if (!isRootMethod(methodDecl.name())) {
-//            int i = 1;
-//            // check that the variables are exact type of root
-//            if (methodDecl.formals().size() != rootMethodSymbol.getDecl().size() - 1) {
-//                String exp = "" + (rootMethodSymbol.getDecl().size() - 1);
-//                setError("Incorrect number of formals; expected: " + exp + " got: " + methodDecl.formals().size());
-//            }
-//
-//            for (FormalArg formal : methodDecl.formals()) {
-//                formal.accept(this);
-//                // resolve upper type
-//                String formalRootMethod = rootMethodSymbol.getDecl().get(i);
-//                // compare upper type and currentType
-//                if (!currentType.equals(formalRootMethod)) {
-//                    setError("Formal type incorrect; expected: " + formalRootMethod + " got: " + currentType);
-//                }
-//                i++;
-//            }
-//            // check that the return type is subtype of root return
-//            methodDecl.returnType().accept(this);
-//            if (!isSubTypeOf(currentType, rootMethodReturnType)) {
-//                setError("Return type incorrect; expected: " + rootMethodReturnType + " got: " + currentType);
-//            }
-//        }
-//
-//
-//        // Do we need this?
+        pushScope();
+        // Formals are always initialized
+        for (FormalArg formal : methodDecl.formals()) {
+            formal.accept(this);
+        }
+
         for (var varDecl : methodDecl.vardecls()) {
             varDecl.accept(this);
         }
@@ -154,21 +135,18 @@ public class AstInitializedVisitor implements Visitor {
             stmt.accept(this);
         }
 
-        // make sure return type is appropriate
+        // make sure return type is initialized
         methodDecl.ret().accept(this);
-//        if (!isSubTypeOf(currentType, rootMethodReturnType)) {
-//            setError("Return value incorrect; expected: " + rootMethodReturnType + " got: " + currentType);
-//        }
+        removeTop();
     }
 
     @Override
     public void visit(FormalArg formalArg) {
-//        currentType = resolveVariableType(formalArg.name());
+        pushVar(formalArg.name());
     }
 
     @Override
     public void visit(VarDecl varDecl) {
-        // make sure it needs to be empty
     }
 
     @Override
@@ -180,236 +158,172 @@ public class AstInitializedVisitor implements Visitor {
 
     @Override
     public void visit(IfStatement ifStatement) {
-        // accept cond
         ifStatement.cond().accept(this);
-//        if (!currentType.equals("boolean")) {
-//            setError("Expected: boolean, Received: " + currentType);
-//        }
 
         // then statements
+        // push then scope
+        pushScope();
         ifStatement.thencase().accept(this);
+        // remove scope
+        Set<String> thenCaseVars = removeTop();
 
-        // else statement
+        // else statements
+        // push then scope
+        pushScope();
         ifStatement.elsecase().accept(this);
+        // remove scope
+        Set<String> elseCaseVars = removeTop();
+        elseCaseVars.retainAll(thenCaseVars);
+
+        // push intersection vars to current scope
+        pushVarSet(elseCaseVars);
     }
 
     @Override
     public void visit(WhileStatement whileStatement) {
         // accept cond
         whileStatement.cond().accept(this);
-//        if (!currentType.equals("boolean")) {
-//            setError("Expected: boolean, Received: " + currentType);
-//        }
 
         // while statements
+        // push then scope
+        pushScope();
         whileStatement.body().accept(this);
+        // remove scope
+        removeTop();
     }
 
     @Override
     public void visit(SysoutStatement sysoutStatement) {
-        // handle ref-id or int-literal
+        // check if arg is initialized is inside
         sysoutStatement.arg().accept(this);
-//        if (!currentType.equals("int")) {
-//            setError("Expected: int, Received: " + currentType);
-//        }
     }
 
     @Override
     public void visit(AssignStatement assignStatement) {
-        // compute lv
-//        String typeLv = resolveVariableType(assignStatement.lv());
-//
-//        assignStatement.rv().accept(this);
-//        String typeRv = currentType;
-//
-//        if (!isSubTypeOf(typeRv, typeLv)) {
-//            setError("AssignStatement, expected subtype of: " + typeLv + " Received: " + typeRv);
-//        }
+        // check if rv is initialized is inside
+        assignStatement.rv().accept(this);
+        pushVar(assignStatement.lv());
     }
 
     @Override
     public void visit(AssignArrayStatement assignArrayStatement) {
-        // compute lv
-//        String typeLv = resolveVariableType(assignArrayStatement.lv());
-//        if (!typeLv.equals("intArray")) {
-//            setError("Expected: intArray, Received: " + typeLv);
-//        }
-//
-//        assignArrayStatement.index().accept(this);
-//        if (!currentType.equals("int")) {
-//            setError("Expected: int, Received: " + currentType);
-//        }
-//
-//        assignArrayStatement.rv().accept(this);
-//        if (!currentType.equals("int")) {
-//            setError("Expected: int, Received: " + currentType);
-//        }
+        // make sure index is initialized
+        assignArrayStatement.index().accept(this);
+
+        // make sure rv is initialized
+        assignArrayStatement.rv().accept(this);
+
+        // push lv to init vars
+        pushVar(assignArrayStatement.lv());
+
     }
 
     @Override
     public void visit(AndExpr e) {
-        e.e1().accept(this);
-//        if (!currentType.equals("boolean")) {
-//            setError("Expected: boolean, Got: " + currentType);
-//        }
-//
-//        e.e2().accept(this);
-//        if (!currentType.equals("boolean")) {
-//            setError("Expected: boolean, Got: " + currentType);
-//        }
-//
-//        currentType = "boolean";
+        visitBinaryExpr(e);
     }
 
-    private void visitIntBinaryExpr(BinaryExpr e) {
-//        e.e1().accept(this);
-//        if (!currentType.equals("int")) {
-//            setError("Expected: int, Got: " + currentType);
-//        }
-//
-//        e.e2().accept(this);
-//        if (!currentType.equals("int")) {
-//            setError("Expected: int, Got: " + currentType);
-//        }
-//        currentType = "int";
+    private void visitBinaryExpr(BinaryExpr e) {
+        e.e1().accept(this);
+        e.e2().accept(this);
     }
 
     @Override
     public void visit(LtExpr e) {
-        visitIntBinaryExpr(e);
+        visitBinaryExpr(e);
     }
 
     @Override
     public void visit(AddExpr e) {
-        visitIntBinaryExpr(e);
+        visitBinaryExpr(e);
     }
 
     @Override
     public void visit(SubtractExpr e) {
-        visitIntBinaryExpr(e);
+        visitBinaryExpr(e);
     }
 
     @Override
     public void visit(MultExpr e) {
-        visitIntBinaryExpr(e);
+        visitBinaryExpr(e);
     }
 
     @Override
     public void visit(ArrayAccessExpr e) {
-//        e.arrayExpr().accept(this);
-//        if (!currentType.equals("intArray")) {
-//            setError("Expected: intArray, Got: " + currentType);
-//        }
-//
-//        e.indexExpr().accept(this);
-//        if (!currentType.equals("int")) {
-//            setError("Expected: int, Got: " + currentType);
-//        }
-//
-//        currentType = "int";
+        // make sure array is initialized
+        e.arrayExpr().accept(this);
+
+        // make sure indexExpr is initialized
+        e.indexExpr().accept(this);
     }
 
     @Override
     public void visit(ArrayLengthExpr e) {
+        // make sure array is initialized
         e.arrayExpr().accept(this);
-//        if (!currentType.equals("intArray")) {
-//            setError("Expected: intArray, Got: " + currentType);
-//        }
-//
-//        currentType = "int";
     }
 
     @Override
     public void visit(MethodCallExpr e) {
-        // make sure correct owner type
-//        e.ownerExpr().accept(this);
-//        if (primitiveTypes.contains(currentType)) {
-//            setError("Expected: ref-type, Got: " + currentType);
-//        }
-//
-//        Symbol methodSymbol = getMethodCallSymbol(currentType, e.methodId());
+        // make sure ownerExpr is initialized
+        e.ownerExpr().accept(this);
 
-        // make sure variables are of correct type
-        int i = 1;
+        // make sure variables are initialized
         for (Expr arg : e.actuals()) {
             arg.accept(this);
-//            String formalType = methodSymbol.getDecl().get(i);
-//            if (!isSubTypeOf(currentType, formalType)) {
-//                setError("Formal type incorrect; expected: " + formalType + " got: " + currentType);
-//            }
-//            i++;
         }
-//
-//        currentType = methodSymbol.getDecl().get(0);
     }
 
     @Override
     public void visit(IntegerLiteralExpr e) {
-//        currentType = "int";
     }
 
     @Override
     public void visit(TrueExpr e) {
-//        currentType = "boolean";
     }
 
     @Override
     public void visit(FalseExpr e) {
-//        currentType = "boolean";
     }
 
     @Override
     public void visit(IdentifierExpr e) {
-//        currentType = resolveVariableType(e.id());
+        if (!isInit(e.id())) {
+            setError("UnInitialized variable: " + e.id());
+        }
     }
 
     public void visit(ThisExpr e) {
-//        currentType = currentClass;
     }
 
     @Override
     public void visit(NewIntArrayExpr e) {
         e.lengthExpr().accept(this);
-//        if (!currentType.equals("int")) {
-//            setError("Expected: int, Got: " + currentType);
-//        }
-
-//        currentType = "intArray";
     }
 
     @Override
     public void visit(NewObjectExpr e) {
-//        currentType = e.classId();
     }
 
     @Override
     public void visit(NotExpr e) {
-        // accept
+        // make sure e is initialized
         e.e().accept(this);
-//        if (!currentType.equals("boolean")) {
-//            setError("Expected: boolean, Got: " + currentType);
-//        }
-
-//        currentType = "boolean";
     }
 
     @Override
     public void visit(IntAstType t) {
-//        currentType = t.id;
     }
 
     @Override
     public void visit(BoolAstType t) {
-//        currentType = t.id;
     }
 
     @Override
     public void visit(IntArrayAstType t) {
-//        currentType = t.id;
     }
 
     @Override
     public void visit(RefType t) {
-        System.out.println("Why we got here????");
     }
 }
