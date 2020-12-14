@@ -4,7 +4,9 @@ package ast;
 import symbolTable.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class AstVisitor implements Visitor {
 
@@ -96,8 +98,16 @@ public class AstVisitor implements Visitor {
         SymbolTable methodSymbolTable = new SymbolTable(SymbolTableUtils.getCurrSymTable());
         SymbolTableUtils.addSymbolTable(methodDecl.name(), methodSymbolTable);
         SymbolTableUtils.addClassMethodSymbolTable(methodDecl.name() + SymbolTableUtils.getCurrClassId(), methodSymbolTable);
-
+        Set<String> formals = new HashSet<>();
         for (var formal : methodDecl.formals()) {
+            if(formals.contains(formal.name())){
+                SymbolTableUtils.setERROR(true);
+                SymbolTableUtils.setERRORReasons("there are at last two formal params with the same name");
+                return;
+            }
+            else{
+                formals.add(formal.name());
+            }
             ArrayList<String> decl = new ArrayList<>();
             decl.add(formal.type().id());
             methodSymbolTable.addSymbol(formal, formal.name(), Type.VARIABLE, decl);
