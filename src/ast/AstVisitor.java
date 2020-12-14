@@ -8,6 +8,8 @@ import java.util.List;
 
 public class AstVisitor implements Visitor {
 
+    private String mainClassName;
+
     private List<String> prepareDecl(List<FormalArg> list, AstType returnType) {
         ArrayList<String> decl = new ArrayList<>();
         decl.add(returnType.id());
@@ -17,13 +19,13 @@ public class AstVisitor implements Visitor {
         return decl;
     }
 
-
     @Override
     public void visit(Program program) {
         SymbolTable root = new SymbolTable(null);
         SymbolTableUtils.setRoot(root);
-
+        mainClassName = program.mainClass().name();
         for (ClassDecl classdecl : program.classDecls()) {
+            if(SymbolTableUtils.isERROR()){return;}
             SymbolTableUtils.setCurrSymTable(root);
             SymbolTableUtils.setCurrClassID(classdecl.name());
             classdecl.accept(this);
@@ -37,21 +39,32 @@ public class AstVisitor implements Visitor {
         SymbolTable parentSymbolTable = SymbolTableUtils.getCurrSymTable();
         if (classDecl.superName() != null) {
             parentSymbolTable = SymbolTableUtils.getSymbolTable(classDecl.superName());
-            // TODO - error handling
+            if(parentSymbolTable==null || classDecl.superName().equals(mainClassName)){
+                SymbolTableUtils.setERROR(true);
+                SymbolTableUtils.setERRORReasons("class inherits from class that hasn't been defined yet. " +
+                        "or, inherits from class main");
+                return;
+            }
         }
         SymbolTable classSymbolTable = new SymbolTable(parentSymbolTable);
+        if(SymbolTableUtils.addClassSymbolTable(classDecl.name(), classSymbolTable)){return;}
         SymbolTableUtils.addSymbolTable(classDecl.name(), classSymbolTable);
         SymbolTableUtils.addClassMethodSymbolTable(classDecl.name(), classSymbolTable);
-        SymbolTableUtils.addClassSymbolTable(classDecl.name(), classSymbolTable);
+
 
         for (var fieldDecl : classDecl.fields()) {
             ArrayList<String> decl = new ArrayList<>();
             decl.add(fieldDecl.type().id());
+            String className = fieldDecl.name();
+            if(classSymbolTable.checkFieldWasDeclaredBefore(SymbolTable.createKey(className,Type.VARIABLE))){return;}
             classSymbolTable.addSymbol(fieldDecl, fieldDecl.name(), Type.VARIABLE, decl);
+
         }
 
         for (var methodDecl : classDecl.methoddecls()) {
+            if(SymbolTableUtils.isERROR()){return;}
             List<String> decl = prepareDecl(methodDecl.formals(), methodDecl.returnType());
+            if(classSymbolTable.checkWasAlreadyDeclared(SymbolTable.createKey(methodDecl.name(),Type.METHOD))){return;}
             Symbol methodSymbol = classSymbolTable.addSymbol(methodDecl, methodDecl.name(), Type.METHOD, decl);
             Symbol rootMethodSymbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(methodDecl.name(), Type.METHOD));
             if (rootMethodSymbol != null) {
@@ -67,6 +80,7 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(MainClass mainClass) {
+        if(SymbolTableUtils.isERROR()){return;}
         // This is a new scope -> create new symbol table
         SymbolTable symbolTable = new SymbolTable(SymbolTableUtils.getRoot());
         SymbolTableUtils.addSymbolTable(mainClass.name(), symbolTable);
@@ -92,12 +106,16 @@ public class AstVisitor implements Visitor {
         for (var varDecl : methodDecl.vardecls()) {
             ArrayList<String> decl = new ArrayList<>();
             decl.add(varDecl.type().id());
+            String varName = varDecl.name();
+            if(methodSymbolTable.checkWasAlreadyDeclared(SymbolTable.createKey(varName,Type.VARIABLE))){return;}
             methodSymbolTable.addSymbol(varDecl, varDecl.name(), Type.VARIABLE, decl);
         }
 
         for (var stmt : methodDecl.body()) {
+            if(SymbolTableUtils.isERROR()){return;}
             stmt.accept(this);
         }
+        if(SymbolTableUtils.isERROR()){return;}
         methodDecl.ret().accept(this);
     }
 
@@ -108,102 +126,132 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(VarDecl varDecl) {
+        if(SymbolTableUtils.isERROR()){return;}
         varDecl.type().accept(this);
     }
 
     @Override
     public void visit(BlockStatement blockStatement) {
+        if(SymbolTableUtils.isERROR()){return;}
         SymbolTable blockSymbolTable = new SymbolTable(SymbolTableUtils.getCurrSymTable());
         SymbolTableUtils.addSymbolTable(String.valueOf(blockStatement.lineNumber), blockSymbolTable);
         for (var s : blockStatement.statements()) {
+            if(SymbolTableUtils.isERROR()){return;}
             s.accept(this);
         }
     }
 
     @Override
     public void visit(IfStatement ifStatement) {
+        if(SymbolTableUtils.isERROR()){return;}
         ifStatement.cond().accept(this);
+        if(SymbolTableUtils.isERROR()){return;}
         ifStatement.thencase().accept(this);
+        if(SymbolTableUtils.isERROR()){return;}
         ifStatement.elsecase().accept(this);
     }
 
     @Override
     public void visit(WhileStatement whileStatement) {
+        if(SymbolTableUtils.isERROR()){return;}
         whileStatement.cond().accept(this);
+        if(SymbolTableUtils.isERROR()){return;}
         whileStatement.body().accept(this);
     }
 
     @Override
     public void visit(SysoutStatement sysoutStatement) {
+        if(SymbolTableUtils.isERROR()){return;}
         sysoutStatement.arg().accept(this);
     }
 
     @Override
     public void visit(AssignStatement assignStatement) {
+        if(SymbolTableUtils.isERROR()){return;}
         Symbol rootSymbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(assignStatement.lv(), Type.VARIABLE));
         if (rootSymbol != null) {
             rootSymbol.addProperty(assignStatement);
         } else {
-            // TODO - error handling
+            SymbolTableUtils.setERROR(true);
+            SymbolTableUtils.setERRORReasons("reference to object that has not been declared before");
+            return;
         }
         assignStatement.rv().accept(this);
     }
 
     @Override
     public void visit(AssignArrayStatement assignArrayStatement) {
+        if(SymbolTableUtils.isERROR()){return;}
         Symbol rootSymbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(assignArrayStatement.lv(), Type.VARIABLE));
         if (rootSymbol != null) {
             rootSymbol.addProperty(assignArrayStatement);
         } else {
-            // TODO - error handling
+            SymbolTableUtils.setERROR(true);
+            SymbolTableUtils.setERRORReasons("reference to object that has not been declared before");
+            return;
         }
         assignArrayStatement.index().accept(this);
+        if(SymbolTableUtils.isERROR()){return;}
         assignArrayStatement.rv().accept(this);
     }
 
     @Override
     public void visit(AndExpr e) {
+        if(SymbolTableUtils.isERROR()){return;}
         e.e1().accept(this);
+        if(SymbolTableUtils.isERROR()){return;}
         e.e2().accept(this);
     }
 
     @Override
     public void visit(LtExpr e) {
+        if(SymbolTableUtils.isERROR()){return;}
         e.e1().accept(this);
+        if(SymbolTableUtils.isERROR()){return;}
         e.e2().accept(this);
     }
 
     @Override
     public void visit(AddExpr e) {
+        if(SymbolTableUtils.isERROR()){return;}
         e.e1().accept(this);
+        if(SymbolTableUtils.isERROR()){return;}
         e.e2().accept(this);
     }
 
     @Override
     public void visit(SubtractExpr e) {
+        if(SymbolTableUtils.isERROR()){return;}
         e.e1().accept(this);
+        if(SymbolTableUtils.isERROR()){return;}
         e.e2().accept(this);
     }
 
     @Override
     public void visit(MultExpr e) {
+        if(SymbolTableUtils.isERROR()){return;}
         e.e1().accept(this);
+        if(SymbolTableUtils.isERROR()){return;}
         e.e2().accept(this);
     }
 
     @Override
     public void visit(ArrayAccessExpr e) {
+        if(SymbolTableUtils.isERROR()){return;}
         e.arrayExpr().accept(this);
+        if(SymbolTableUtils.isERROR()){return;}
         e.indexExpr().accept(this);
     }
 
     @Override
     public void visit(ArrayLengthExpr e) {
+        if(SymbolTableUtils.isERROR()){return;}
         e.arrayExpr().accept(this);
     }
 
     @Override
     public void visit(MethodCallExpr e) {
+        if(SymbolTableUtils.isERROR()){return;}
         AstNode ownerExp = e.ownerExpr();
         Symbol symbol;
         String symbolKey = SymbolTable.createKey(e.methodId(), Type.METHOD);
@@ -229,7 +277,7 @@ public class AstVisitor implements Visitor {
                 SymbolTableUtils.addUnresolvedParam(classId, e.methodId(), e);
                 return;
             }
-            // TODO - handle error
+            // TODO - handle error why the hell should we get here-
             return;
         }
         symbol = symbolTable.resolveSymbol(symbolKey);
@@ -255,8 +303,13 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(IdentifierExpr e) {
+        if(SymbolTableUtils.isERROR()){return;}
         Symbol symbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(e.id(), Type.VARIABLE));
-        // TODO - handle null symbol
+        if(symbol==null){
+            SymbolTableUtils.setERROR(true);
+            SymbolTableUtils.setERRORReasons("reference to object that has not been declared before");
+            return;
+        }
         symbol.addProperty(e);
     }
 
@@ -265,16 +318,20 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(NewIntArrayExpr e) {
+        if(SymbolTableUtils.isERROR()){return;}
         e.lengthExpr().accept(this);
     }
 
     @Override
     public void visit(NewObjectExpr e) {
-        // TODO - do we neeed to pay attention to this?
+        if(!SymbolTableUtils.getSymbolTableClassMap_real().containsKey(e.classId())){
+            SymbolTableUtils.addUnresolvedClasses(e.classId());
+        }
     }
 
     @Override
     public void visit(NotExpr e) {
+        if(SymbolTableUtils.isERROR()){return;}
         e.e().accept(this);
     }
 
@@ -294,7 +351,8 @@ public class AstVisitor implements Visitor {
     public void visit(RefType t) {
         Symbol symbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(t.id(), Type.VARIABLE));
         if (symbol == null) {
-            // TODO - handle error
+            SymbolTableUtils.setERROR(true);
+            SymbolTableUtils.setERRORReasons("reference to object that has not been declared before");
             return;
         }
         symbol.addProperty(t);
