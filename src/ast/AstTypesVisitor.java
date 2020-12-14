@@ -25,6 +25,14 @@ public class AstTypesVisitor implements Visitor {
         errorMsg = "Method: " + currentMethod + " Class:" + currentClass + "\n" + errorString;
     }
 
+    public boolean isError() {
+        return error;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
     // Checks if a is subtype of b
     private boolean isSubTypeOf(String typeA, String typeB) {
         for (var type : primitiveTypes) {

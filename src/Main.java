@@ -36,8 +36,14 @@ public class Main {
                     outFile.write(astPrinter.getString());
 
                 } else if (action.equals("semantic")) {
-                    throw new UnsupportedOperationException("TODO - Ex. 3");
-
+                    AstTypesVisitor astTypeVisitor = new AstTypesVisitor();
+                    astTypeVisitor.visit(prog);
+                    if (astTypeVisitor.isError()) {
+                        System.out.println(astTypeVisitor.getErrorMsg());
+                        outFile.write("Error\n");
+                    } else {
+                        outFile.write("Ok\n");
+                    }
                 } else if (action.equals("compile")) {
                     // VtableCreator - create vtables + Class->data-structure(vtable-method/field -> offset) and probably more...
                     VtableCreator v = new VtableCreator();
