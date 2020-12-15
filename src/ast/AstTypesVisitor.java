@@ -3,6 +3,7 @@ package ast;
 import symbolTable.Symbol;
 import symbolTable.SymbolTable;
 import symbolTable.SymbolTableUtils;
+import symbolTable.Type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,7 +92,7 @@ public class AstTypesVisitor implements Visitor {
 
     private Symbol getSymbol(String methodName, SymbolTable currentSymbolTable) {
         for (Map.Entry<String, Symbol> entry : currentSymbolTable.getEntries().entrySet()) {
-            if (entry.getValue().getSymbolName().equals(methodName)) {
+            if (entry.getKey().equals(SymbolTable.createKey(methodName, Type.METHOD))) {
                 return entry.getValue();
             }
         }
@@ -118,6 +119,21 @@ public class AstTypesVisitor implements Visitor {
         }
         return null;
     }
+
+    // Returns closet anestor method with the same name- to check override
+    private Symbol getAncestorMethod(String methodName) {
+        SymbolTable currentSymbolTable = SymbolTableUtils.getSymbolTableClassMap_real().get(currentClass);
+        currentSymbolTable = currentSymbolTable.getParentSymbolTable();
+        while (currentSymbolTable != null) {
+            Symbol symbol = getSymbol(methodName, currentSymbolTable);
+            if (symbol != null) {
+                return symbol;
+            }
+            currentSymbolTable = currentSymbolTable.getParentSymbolTable();
+        }
+        return null;
+    }
+
 
     private Symbol getMethodCallSymbol(String classId, String methodName) {
         SymbolTable currentSymbolTable = SymbolTableUtils.getSymbolTableClassMap_real().get(classId);
@@ -160,8 +176,20 @@ public class AstTypesVisitor implements Visitor {
     @Override
     public void visit(MethodDecl methodDecl) {
         // Check if this method is root.
-        Symbol rootMethodSymbol = getRootMethod(methodDecl.name());
-        String rootMethodReturnType = rootMethodSymbol.getDecl().get(0);
+        System.out.println(currentClass);
+        Symbol rootMethodSymbol;
+        String rootMethodReturnType;
+        if(!isRootMethod(methodDecl.name())){
+            rootMethodSymbol = getAncestorMethod(methodDecl.name());
+            rootMethodReturnType= rootMethodSymbol.getDecl().get(0);
+        }
+        else {
+            rootMethodSymbol = getRootMethod(methodDecl.name());
+            rootMethodReturnType = rootMethodSymbol.getDecl().get(0);
+        System.out.println("root");
+        System.out.println(rootMethodSymbol.getDecl().size());
+        System.out.println(rootMethodSymbol.getSymbolName());
+        }
         if (!isRootMethod(methodDecl.name())) {
             int i = 1;
             // check that the variables are exact type of root
