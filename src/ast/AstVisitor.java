@@ -3,14 +3,12 @@ package ast;
 
 import symbolTable.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AstVisitor implements Visitor {
 
     private String mainClassName;
+    private Set<String> notReferenceTypes = new HashSet<>(Arrays.asList("int","boolean","intArray"));
 
     private List<String> prepareDecl(List<FormalArg> list, AstType returnType) {
         ArrayList<String> decl = new ArrayList<>();
@@ -38,6 +36,12 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(ClassDecl classDecl) {
+        if(classDecl.name().equals(mainClassName)){
+            SymbolTableUtils.setERROR(true);
+            SymbolTableUtils.setERRORReasons("class inherits from class that hasn't been defined yet. " +
+                    "or, inherits from class main");
+            return;
+        }
         SymbolTable parentSymbolTable = SymbolTableUtils.getCurrSymTable();
         if (classDecl.superName() != null) {
             parentSymbolTable = SymbolTableUtils.getSymbolTable(classDecl.superName());
@@ -55,6 +59,12 @@ public class AstVisitor implements Visitor {
 
 
         for (var fieldDecl : classDecl.fields()) {
+            String type = fieldDecl.type().id();
+            if(!notReferenceTypes.contains(type)){
+                if(!SymbolTableUtils.getSymbolTableClassMap_real().containsKey(type)){
+                    SymbolTableUtils.addUnresolvedClasses(type);
+                }
+            }
             ArrayList<String> decl = new ArrayList<>();
             decl.add(fieldDecl.type().id());
             String className = fieldDecl.name();
@@ -100,6 +110,12 @@ public class AstVisitor implements Visitor {
         SymbolTableUtils.addClassMethodSymbolTable(methodDecl.name() + SymbolTableUtils.getCurrClassId(), methodSymbolTable);
         Set<String> formals = new HashSet<>();
         for (var formal : methodDecl.formals()) {
+            String type = formal.type().id();
+            if(!notReferenceTypes.contains(type)){
+                if(!SymbolTableUtils.getSymbolTableClassMap_real().containsKey(type)){
+                    SymbolTableUtils.addUnresolvedClasses(type);
+                }
+            }
             if(formals.contains(formal.name())){
                 SymbolTableUtils.setERROR(true);
                 SymbolTableUtils.setERRORReasons("there are at last two formal params with the same name");
@@ -114,6 +130,12 @@ public class AstVisitor implements Visitor {
         }
 
         for (var varDecl : methodDecl.vardecls()) {
+            String type = varDecl.type().id();
+            if(!notReferenceTypes.contains(type)){
+                if(!SymbolTableUtils.getSymbolTableClassMap_real().containsKey(type)){
+                    SymbolTableUtils.addUnresolvedClasses(type);
+                }
+            }
             ArrayList<String> decl = new ArrayList<>();
             decl.add(varDecl.type().id());
             String varName = varDecl.name();

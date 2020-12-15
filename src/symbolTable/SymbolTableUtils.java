@@ -118,7 +118,8 @@ public class SymbolTableUtils {
         for(String className:unresolvedClasses){
             if(!symbolTableClassMap_real.containsKey(className)){
                 SymbolTableUtils.setERROR(true);
-                SymbolTableUtils.setERRORReasons("created new class object that has not been declared in file");
+                SymbolTableUtils.setERRORReasons("created new class object that has not been declared in file," +
+                        "or created reference to object of class type not declared in file ");
                 return;
             }
         }
