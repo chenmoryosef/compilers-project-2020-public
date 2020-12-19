@@ -42,6 +42,30 @@ test InitVarValid.java InitVarValid
 test OwnerExprInvalid.java OwnerExprInvalid
 test OwnerExprValid.java OwnerExprValid
 test MethodInvalid MethodInvalid
+test 1orderOfClassesDecls
+test 2mainInheritance
+test 3classesWithSameName
+test 4FieldInheritClassSameName
+test 4FieldWithSameDecl
+test 5methodsWithSameName
+test 6declOfOverrodeMethodRetVal
+test 6declOfOverrideMethodFotmalVal
+test 6declOfOverrideMethodSubTypeValid
+test 8declareObjectOfUndeclaredClass
 test 9Invalid 9Invalid
 test 9Valid 9Valid
-test 1orderOfClassesDecls
+test 10methodCallOnlyFromObject
+test 11methodCallStaticType
+test 15IfInitialized
+test 16assignmentInvalid
+test 16assignmentvalid
+tets 17ifCond
+test 17whileCond
+test 18returnValueInvalid
+test 18returnValuevalid
+test 20printInt
+test 21multInvalid
+test 21notInvalid
+test 21addInvalid
+test 22arrayInvalid
+test 24varsWithSameName
