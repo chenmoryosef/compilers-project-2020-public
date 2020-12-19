@@ -72,7 +72,6 @@ public class AstVisitor implements Visitor {
             classSymbolTable.addSymbol(fieldDecl, fieldDecl.name(), Type.VARIABLE, decl);
 
         }
-
         for (var methodDecl : classDecl.methoddecls()) {
             if(SymbolTableUtils.isERROR()){return;}
             List<String> decl = prepareDecl(methodDecl.formals(), methodDecl.returnType());
@@ -302,7 +301,14 @@ public class AstVisitor implements Visitor {
         } else if (ownerExp instanceof IdentifierExpr){
             Symbol ownerSymbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(((IdentifierExpr) ownerExp).id(), Type.VARIABLE));
             classId = ownerSymbol.getDecl().get(0);
-            symbolTable = SymbolTableUtils.getSymbolTable(classId);
+            if(notReferenceTypes.contains(classId)){
+                SymbolTableUtils.setERROR(true);
+                SymbolTableUtils.setERRORReasons("method call should be invoked with this, new or variable");
+                return;
+            }
+            else {
+                symbolTable = SymbolTableUtils.getSymbolTable(classId);
+            }
         }
         else{
             SymbolTableUtils.setERROR(true);
