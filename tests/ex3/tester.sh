@@ -34,7 +34,7 @@ function test()
 	fi
 }
 
-#ex3 examples in yotam's git:
+#ex3:
 test AssignmentInvalid.java AssignmentInvalid
 test AssignmentValid.java AssignmentValid
 test InitVarInvalid.java InitVarInvalid
@@ -56,6 +56,13 @@ test 9Invalid 9Invalid
 test 9Valid 9Valid
 test 10methodCallOnlyFromObject 10methodCallOnlyFromObject
 test 11methodCallStaticType 11methodCallStaticType
+test 12OwnerExprInvalid 12OwnerExprInvalid
+test 12OwnerExprThisValid 12OwnerExprThisValid
+test 13LengthValid 13LengthValid
+test 13LengthInvalid 13LengthInvalid
+test 13LengthValid2 13LengthValid2
+test 14notDefined 14notDefined
+test 14definedInDiffClass 14definedInDiffClass
 test 15IfInitialized 15IfInitialized
 test 16assignmentInvalid 16assignmentInvalid
 test 16assignmentValid 16assignmentValid
@@ -69,3 +76,4 @@ test 21notInvalid 21notInvalid
 test 21addInvalid 21addInvalid
 test 22arrayInvalid 22arrayInvalid
 test 24varsWithSameName 24varsWithSameName
+
