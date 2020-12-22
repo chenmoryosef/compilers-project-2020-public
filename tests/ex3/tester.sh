@@ -42,30 +42,30 @@ test InitVarValid.java InitVarValid
 test OwnerExprInvalid.java OwnerExprInvalid
 test OwnerExprValid.java OwnerExprValid
 test MethodInvalid MethodInvalid
-test 1orderOfClassesDecls
-test 2mainInheritance
-test 3classesWithSameName
-test 4FieldInheritClassSameName
-test 4FieldWithSameDecl
-test 5methodsWithSameName
-test 6declOfOverrodeMethodRetVal
-test 6declOfOverrideMethodFotmalVal
-test 6declOfOverrideMethodSubTypeValid
-test 8declareObjectOfUndeclaredClass
+test 1orderOfClassesDecls 1orderOfClassesDecls
+test 2mainInheritance 2mainInheritance
+test 3classesWithSameName 3classesWithSameName
+test 4FieldInheritClassSameName 4FieldInheritClassSameName
+test 4FieldWithSameDecl 4FieldWithSameDecl
+test 5methodsWithSameName 5methodsWithSameName
+test 6declOfOverrodeMethodRetVal 6declOfOverrodeMethodRetVal
+test 6declOfOverrideMethodFotmalVal 6declOfOverrideMethodFotmalVal
+test 6declOfOverrideMethodSubTypeValid 6declOfOverrideMethodSubTypeValid
+test 8declareObjectOfUndeclaredClass 8declareObjectOfUndeclaredClass
 test 9Invalid 9Invalid
 test 9Valid 9Valid
-test 10methodCallOnlyFromObject
-test 11methodCallStaticType
-test 15IfInitialized
-test 16assignmentInvalid
-test 16assignmentvalid
-tets 17ifCond
-test 17whileCond
-test 18returnValueInvalid
-test 18returnValuevalid
-test 20printInt
-test 21multInvalid
-test 21notInvalid
-test 21addInvalid
-test 22arrayInvalid
-test 24varsWithSameName
+test 10methodCallOnlyFromObject 10methodCallOnlyFromObject
+test 11methodCallStaticType 11methodCallStaticType
+test 15IfInitialized 15IfInitialized
+test 16assignmentInvalid 16assignmentInvalid
+test 16assignmentValid 16assignmentValid
+test 17ifCond 17ifCond
+test 17whileCond 17whileCond
+test 18returnValueInvalid 18returnValueInvalid
+test 18returnValueValid 18returnValueValid
+test 20printInt 20printInt
+test 21multInvalid 21multInvalid
+test 21notInvalid 21notInvalid
+test 21addInvalid 21addInvalid
+test 22arrayInvalid 22arrayInvalid
+test 24varsWithSameName 24varsWithSameName
