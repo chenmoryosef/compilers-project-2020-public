@@ -300,6 +300,11 @@ public class AstVisitor implements Visitor {
             symbolTable = SymbolTableUtils.getSymbolTable(classId);
         } else if (ownerExp instanceof IdentifierExpr){
             Symbol ownerSymbol = SymbolTableUtils.getCurrSymTable().resolveSymbol(SymbolTable.createKey(((IdentifierExpr) ownerExp).id(), Type.VARIABLE));
+            if(ownerSymbol == null) {
+                SymbolTableUtils.setERROR(true);
+                SymbolTableUtils.setERRORReasons("method call should be invoked with existing variable");
+                return;
+            }
             classId = ownerSymbol.getDecl().get(0);
             if(notReferenceTypes.contains(classId)){
                 SymbolTableUtils.setERROR(true);
