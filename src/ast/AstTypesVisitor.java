@@ -36,6 +36,7 @@ public class AstTypesVisitor implements Visitor {
 
     // Checks if a is subtype of b
     private boolean isSubTypeOf(String typeA, String typeB) {
+        boolean bIsPrimitive = false;
         for (var type : primitiveTypes) {
             if (typeA.equals(type)) {
                 if (!typeA.equals(typeB)) {
@@ -44,8 +45,14 @@ public class AstTypesVisitor implements Visitor {
                     return true;
                 }
             }
+            if (typeB.equals(type)) {
+                bIsPrimitive = true;
+            }
         }
 
+        if(bIsPrimitive) {
+            return false;
+        }
         SymbolTable typeASymbolTable = SymbolTableUtils.getSymbolTableClassMap_real().get(typeA);
         SymbolTable typeBSymbolTable = SymbolTableUtils.getSymbolTableClassMap_real().get(typeB);
 
@@ -541,6 +548,6 @@ public class AstTypesVisitor implements Visitor {
     @Override
     public void visit(RefType t) {
         if(isError()){return;}
-        System.out.println("Why we got here????");
+        currentType = t.id();
     }
 }
