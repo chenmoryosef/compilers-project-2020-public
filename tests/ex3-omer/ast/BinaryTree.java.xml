@@ -1,0 +1,2683 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<program>
+    <mainclass>
+        <name>BinaryTree</name>
+        <argsName>a</argsName>
+        <mainStatement>
+            <sysout>
+                <arg>
+                    <call>
+                        <ownerExpr>
+                            <new-object>
+<classId>BT</classId>
+                            </new-object>
+                        </ownerExpr>
+                        <methodId>Start</methodId>
+                        <actuals/>
+                    </call>
+                </arg>
+            </sysout>
+        </mainStatement>
+    </mainclass>
+    <classdecls>
+        <classdecl>
+            <name>BT</name>
+            <fields/>
+            <methoddecls>
+                <methoddecl>
+                    <lineNumber>42</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>Start</name>
+                    <formals/>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>14</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>root</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>15</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ntb</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>17</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>nti</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>root</lv>
+                            <rv>
+<new-object>
+    <classId>Tree</classId>
+</new-object>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Init</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>16</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <sysout>
+                            <arg>
+<int-literal>
+    <num>100000000</num>
+</int-literal>
+                            </arg>
+                        </sysout>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Insert</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>8</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Insert</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>24</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Insert</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>4</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Insert</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>12</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Insert</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>20</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Insert</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>28</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Insert</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>14</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <sysout>
+                            <arg>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Search</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>24</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </arg>
+                        </sysout>
+                        <sysout>
+                            <arg>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Search</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>12</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </arg>
+                        </sysout>
+                        <sysout>
+                            <arg>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Search</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>16</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </arg>
+                        </sysout>
+                        <sysout>
+                            <arg>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Search</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>50</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </arg>
+                        </sysout>
+                        <sysout>
+                            <arg>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Search</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>12</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </arg>
+                        </sysout>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Delete</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>12</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <sysout>
+                            <arg>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>root</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Search</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>12</num>
+            </int-literal>
+        </actual>
+    </actuals>
+</call>
+                            </arg>
+                        </sysout>
+                    </body>
+                    <ret>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </ret>
+                </methoddecl>
+            </methoddecls>
+        </classdecl>
+        <classdecl>
+            <name>Tree</name>
+            <fields>
+                <field>
+                    <lineNumber>46</lineNumber>
+                    <type>
+                        <ref>
+                            <id>Tree</id>
+                        </ref>
+                    </type>
+                    <name>left</name>
+                </field>
+                <field>
+                    <lineNumber>47</lineNumber>
+                    <type>
+                        <ref>
+                            <id>Tree</id>
+                        </ref>
+                    </type>
+                    <name>right</name>
+                </field>
+                <field>
+                    <lineNumber>48</lineNumber>
+                    <type>
+                        <int/>
+                    </type>
+                    <name>key</name>
+                </field>
+                <field>
+                    <lineNumber>49</lineNumber>
+                    <type>
+                        <bool/>
+                    </type>
+                    <name>has_left</name>
+                </field>
+                <field>
+                    <lineNumber>50</lineNumber>
+                    <type>
+                        <bool/>
+                    </type>
+                    <name>has_right</name>
+                </field>
+                <field>
+                    <lineNumber>53</lineNumber>
+                    <type>
+                        <ref>
+                            <id>Tree</id>
+                        </ref>
+                    </type>
+                    <name>my_null</name>
+                </field>
+            </fields>
+            <methoddecls>
+                <methoddecl>
+                    <lineNumber>61</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>Init</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>53</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>v_key</name>
+                        </formal>
+                    </formals>
+                    <vardecls/>
+                    <body>
+                        <assign>
+                            <lv>key</lv>
+                            <rv>
+<ref-id>
+    <id>v_key</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>has_left</lv>
+                            <rv>
+<false/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>has_right</lv>
+                            <rv>
+<false/>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>67</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>SetRight</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>61</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>rn</name>
+                        </formal>
+                    </formals>
+                    <vardecls/>
+                    <body>
+                        <assign>
+                            <lv>right</lv>
+                            <rv>
+<ref-id>
+    <id>rn</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>72</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>SetLeft</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>67</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>ln</name>
+                        </formal>
+                    </formals>
+                    <vardecls/>
+                    <body>
+                        <assign>
+                            <lv>left</lv>
+                            <rv>
+<ref-id>
+    <id>ln</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>76</lineNumber>
+                    <returnType>
+                        <ref>
+                            <id>Tree</id>
+                        </ref>
+                    </returnType>
+                    <name>GetRight</name>
+                    <formals/>
+                    <vardecls/>
+                    <body/>
+                    <ret>
+                        <ref-id>
+                            <id>right</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>80</lineNumber>
+                    <returnType>
+                        <ref>
+                            <id>Tree</id>
+                        </ref>
+                    </returnType>
+                    <name>GetLeft</name>
+                    <formals/>
+                    <vardecls/>
+                    <body/>
+                    <ret>
+                        <ref-id>
+                            <id>left</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>84</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>GetKey</name>
+                    <formals/>
+                    <vardecls/>
+                    <body/>
+                    <ret>
+                        <ref-id>
+                            <id>key</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>89</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>SetKey</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>84</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>v_key</name>
+                        </formal>
+                    </formals>
+                    <vardecls/>
+                    <body>
+                        <assign>
+                            <lv>key</lv>
+                            <rv>
+<ref-id>
+    <id>v_key</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>93</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>GetHas_Right</name>
+                    <formals/>
+                    <vardecls/>
+                    <body/>
+                    <ret>
+                        <ref-id>
+                            <id>has_right</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>97</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>GetHas_Left</name>
+                    <formals/>
+                    <vardecls/>
+                    <body/>
+                    <ret>
+                        <ref-id>
+                            <id>has_left</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>102</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>SetHas_Left</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>97</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>val</name>
+                        </formal>
+                    </formals>
+                    <vardecls/>
+                    <body>
+                        <assign>
+                            <lv>has_left</lv>
+                            <rv>
+<ref-id>
+    <id>val</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>110</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>SetHas_Right</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>102</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>val</name>
+                        </formal>
+                    </formals>
+                    <vardecls/>
+                    <body>
+                        <assign>
+                            <lv>has_right</lv>
+                            <rv>
+<ref-id>
+    <id>val</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>124</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>Compare</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>110</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>num1</name>
+                        </formal>
+                        <formal>
+                            <lineNumber>110</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>num2</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>112</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ntb</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>114</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>nti</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<false/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>nti</lv>
+                            <rv>
+<add>
+    <e1>
+        <ref-id>
+            <id>num2</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <int-literal>
+            <num>1</num>
+        </int-literal>
+    </e2>
+</add>
+                            </rv>
+                        </assign>
+                        <if>
+                            <cond>
+<lt>
+    <e1>
+        <ref-id>
+            <id>num1</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <ref-id>
+            <id>num2</id>
+        </ref-id>
+    </e2>
+</lt>
+                            </cond>
+                            <thencase>
+<assign>
+    <lv>ntb</lv>
+    <rv>
+        <false/>
+    </rv>
+</assign>
+                            </thencase>
+                            <elsecase>
+<if>
+    <cond>
+        <not>
+            <e>
+                <lt>
+                    <e1>
+                        <ref-id>
+                            <id>num1</id>
+                        </ref-id>
+                    </e1>
+                    <e2>
+                        <ref-id>
+                            <id>nti</id>
+                        </ref-id>
+                    </e2>
+                </lt>
+            </e>
+        </not>
+    </cond>
+    <thencase>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <false/>
+            </rv>
+        </assign>
+    </thencase>
+    <elsecase>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <true/>
+            </rv>
+        </assign>
+    </elsecase>
+</if>
+                            </elsecase>
+                        </if>
+                    </body>
+                    <ret>
+                        <ref-id>
+                            <id>ntb</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>161</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>Insert</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>124</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>v_key</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>126</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>new_node</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>127</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ntb</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>128</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>cont</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>129</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>key_aux</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>131</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>current_node</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>new_node</lv>
+                            <rv>
+<new-object>
+    <classId>Tree</classId>
+</new-object>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>new_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Init</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>v_key</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>current_node</lv>
+                            <rv>
+<this/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>cont</lv>
+                            <rv>
+<true/>
+                            </rv>
+                        </assign>
+                        <while>
+                            <cond>
+<ref-id>
+    <id>cont</id>
+</ref-id>
+                            </cond>
+                            <body>
+<block>
+    <statements>
+        <assign>
+            <lv>key_aux</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>current_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetKey</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+        <if>
+            <cond>
+                <lt>
+                    <e1>
+                        <ref-id>
+                            <id>v_key</id>
+                        </ref-id>
+                    </e1>
+                    <e2>
+                        <ref-id>
+                            <id>key_aux</id>
+                        </ref-id>
+                    </e2>
+                </lt>
+            </cond>
+            <thencase>
+                <block>
+                    <statements>
+                        <if>
+                            <cond>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>current_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetHas_Left</methodId>
+    <actuals/>
+</call>
+                            </cond>
+                            <thencase>
+<assign>
+    <lv>current_node</lv>
+    <rv>
+        <call>
+            <ownerExpr>
+                <ref-id>
+                    <id>current_node</id>
+                </ref-id>
+            </ownerExpr>
+            <methodId>GetLeft</methodId>
+            <actuals/>
+        </call>
+    </rv>
+</assign>
+                            </thencase>
+                            <elsecase>
+<block>
+    <statements>
+        <assign>
+            <lv>cont</lv>
+            <rv>
+                <false/>
+            </rv>
+        </assign>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>current_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>SetHas_Left</methodId>
+                    <actuals>
+                        <actual>
+                            <true/>
+                        </actual>
+                    </actuals>
+                </call>
+            </rv>
+        </assign>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>current_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>SetLeft</methodId>
+                    <actuals>
+                        <actual>
+                            <ref-id>
+<id>new_node</id>
+                            </ref-id>
+                        </actual>
+                    </actuals>
+                </call>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </elsecase>
+                        </if>
+                    </statements>
+                </block>
+            </thencase>
+            <elsecase>
+                <block>
+                    <statements>
+                        <if>
+                            <cond>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>current_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetHas_Right</methodId>
+    <actuals/>
+</call>
+                            </cond>
+                            <thencase>
+<assign>
+    <lv>current_node</lv>
+    <rv>
+        <call>
+            <ownerExpr>
+                <ref-id>
+                    <id>current_node</id>
+                </ref-id>
+            </ownerExpr>
+            <methodId>GetRight</methodId>
+            <actuals/>
+        </call>
+    </rv>
+</assign>
+                            </thencase>
+                            <elsecase>
+<block>
+    <statements>
+        <assign>
+            <lv>cont</lv>
+            <rv>
+                <false/>
+            </rv>
+        </assign>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>current_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>SetHas_Right</methodId>
+                    <actuals>
+                        <actual>
+                            <true/>
+                        </actual>
+                    </actuals>
+                </call>
+            </rv>
+        </assign>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>current_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>SetRight</methodId>
+                    <actuals>
+                        <actual>
+                            <ref-id>
+<id>new_node</id>
+                            </ref-id>
+                        </actual>
+                    </actuals>
+                </call>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </elsecase>
+                        </if>
+                    </statements>
+                </block>
+            </elsecase>
+        </if>
+    </statements>
+</block>
+                            </body>
+                        </while>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>209</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>Delete</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>161</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>v_key</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>163</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>current_node</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>164</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>parent_node</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>165</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>cont</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>166</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>found</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>167</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>is_root</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>168</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>key_aux</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>170</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ntb</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>current_node</lv>
+                            <rv>
+<this/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>parent_node</lv>
+                            <rv>
+<this/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>cont</lv>
+                            <rv>
+<true/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>found</lv>
+                            <rv>
+<false/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>is_root</lv>
+                            <rv>
+<true/>
+                            </rv>
+                        </assign>
+                        <while>
+                            <cond>
+<ref-id>
+    <id>cont</id>
+</ref-id>
+                            </cond>
+                            <body>
+<block>
+    <statements>
+        <assign>
+            <lv>key_aux</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>current_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetKey</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+        <if>
+            <cond>
+                <lt>
+                    <e1>
+                        <ref-id>
+                            <id>v_key</id>
+                        </ref-id>
+                    </e1>
+                    <e2>
+                        <ref-id>
+                            <id>key_aux</id>
+                        </ref-id>
+                    </e2>
+                </lt>
+            </cond>
+            <thencase>
+                <if>
+                    <cond>
+                        <call>
+                            <ownerExpr>
+<ref-id>
+    <id>current_node</id>
+</ref-id>
+                            </ownerExpr>
+                            <methodId>GetHas_Left</methodId>
+                            <actuals/>
+                        </call>
+                    </cond>
+                    <thencase>
+                        <block>
+                            <statements>
+<assign>
+    <lv>parent_node</lv>
+    <rv>
+        <ref-id>
+            <id>current_node</id>
+        </ref-id>
+    </rv>
+</assign>
+<assign>
+    <lv>current_node</lv>
+    <rv>
+        <call>
+            <ownerExpr>
+                <ref-id>
+                    <id>current_node</id>
+                </ref-id>
+            </ownerExpr>
+            <methodId>GetLeft</methodId>
+            <actuals/>
+        </call>
+    </rv>
+</assign>
+                            </statements>
+                        </block>
+                    </thencase>
+                    <elsecase>
+                        <assign>
+                            <lv>cont</lv>
+                            <rv>
+<false/>
+                            </rv>
+                        </assign>
+                    </elsecase>
+                </if>
+            </thencase>
+            <elsecase>
+                <if>
+                    <cond>
+                        <lt>
+                            <e1>
+<ref-id>
+    <id>key_aux</id>
+</ref-id>
+                            </e1>
+                            <e2>
+<ref-id>
+    <id>v_key</id>
+</ref-id>
+                            </e2>
+                        </lt>
+                    </cond>
+                    <thencase>
+                        <if>
+                            <cond>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>current_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetHas_Right</methodId>
+    <actuals/>
+</call>
+                            </cond>
+                            <thencase>
+<block>
+    <statements>
+        <assign>
+            <lv>parent_node</lv>
+            <rv>
+                <ref-id>
+                    <id>current_node</id>
+                </ref-id>
+            </rv>
+        </assign>
+        <assign>
+            <lv>current_node</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>current_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetRight</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </thencase>
+                            <elsecase>
+<assign>
+    <lv>cont</lv>
+    <rv>
+        <false/>
+    </rv>
+</assign>
+                            </elsecase>
+                        </if>
+                    </thencase>
+                    <elsecase>
+                        <block>
+                            <statements>
+<if>
+    <cond>
+        <ref-id>
+            <id>is_root</id>
+        </ref-id>
+    </cond>
+    <thencase>
+        <if>
+            <cond>
+                <and>
+                    <e1>
+                        <not>
+                            <e>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>current_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetHas_Right</methodId>
+    <actuals/>
+</call>
+                            </e>
+                        </not>
+                    </e1>
+                    <e2>
+                        <not>
+                            <e>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>current_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetHas_Left</methodId>
+    <actuals/>
+</call>
+                            </e>
+                        </not>
+                    </e2>
+                </and>
+            </cond>
+            <thencase>
+                <assign>
+                    <lv>ntb</lv>
+                    <rv>
+                        <true/>
+                    </rv>
+                </assign>
+            </thencase>
+            <elsecase>
+                <assign>
+                    <lv>ntb</lv>
+                    <rv>
+                        <call>
+                            <ownerExpr>
+<this/>
+                            </ownerExpr>
+                            <methodId>Remove</methodId>
+                            <actuals>
+<actual>
+    <ref-id>
+        <id>parent_node</id>
+    </ref-id>
+</actual>
+<actual>
+    <ref-id>
+        <id>current_node</id>
+    </ref-id>
+</actual>
+                            </actuals>
+                        </call>
+                    </rv>
+                </assign>
+            </elsecase>
+        </if>
+    </thencase>
+    <elsecase>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <this/>
+                    </ownerExpr>
+                    <methodId>Remove</methodId>
+                    <actuals>
+                        <actual>
+                            <ref-id>
+<id>parent_node</id>
+                            </ref-id>
+                        </actual>
+                        <actual>
+                            <ref-id>
+<id>current_node</id>
+                            </ref-id>
+                        </actual>
+                    </actuals>
+                </call>
+            </rv>
+        </assign>
+    </elsecase>
+</if>
+<assign>
+    <lv>found</lv>
+    <rv>
+        <true/>
+    </rv>
+</assign>
+<assign>
+    <lv>cont</lv>
+    <rv>
+        <false/>
+    </rv>
+</assign>
+                            </statements>
+                        </block>
+                    </elsecase>
+                </if>
+            </elsecase>
+        </if>
+        <assign>
+            <lv>is_root</lv>
+            <rv>
+                <false/>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </body>
+                        </while>
+                    </body>
+                    <ret>
+                        <ref-id>
+                            <id>found</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>242</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>Remove</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>209</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>p_node</name>
+                        </formal>
+                        <formal>
+                            <lineNumber>209</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>c_node</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>211</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ntb</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>212</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>auxkey1</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>213</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>auxkey2</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>215</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>t</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <if>
+                            <cond>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>c_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetHas_Left</methodId>
+    <actuals/>
+</call>
+                            </cond>
+                            <thencase>
+<assign>
+    <lv>ntb</lv>
+    <rv>
+        <call>
+            <ownerExpr>
+                <this/>
+            </ownerExpr>
+            <methodId>RemoveLeft</methodId>
+            <actuals>
+                <actual>
+                    <ref-id>
+                        <id>p_node</id>
+                    </ref-id>
+                </actual>
+                <actual>
+                    <ref-id>
+                        <id>c_node</id>
+                    </ref-id>
+                </actual>
+            </actuals>
+        </call>
+    </rv>
+</assign>
+                            </thencase>
+                            <elsecase>
+<if>
+    <cond>
+        <call>
+            <ownerExpr>
+                <ref-id>
+                    <id>c_node</id>
+                </ref-id>
+            </ownerExpr>
+            <methodId>GetHas_Right</methodId>
+            <actuals/>
+        </call>
+    </cond>
+    <thencase>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <this/>
+                    </ownerExpr>
+                    <methodId>RemoveRight</methodId>
+                    <actuals>
+                        <actual>
+                            <ref-id>
+<id>p_node</id>
+                            </ref-id>
+                        </actual>
+                        <actual>
+                            <ref-id>
+<id>c_node</id>
+                            </ref-id>
+                        </actual>
+                    </actuals>
+                </call>
+            </rv>
+        </assign>
+    </thencase>
+    <elsecase>
+        <block>
+            <statements>
+                <assign>
+                    <lv>auxkey1</lv>
+                    <rv>
+                        <call>
+                            <ownerExpr>
+<ref-id>
+    <id>c_node</id>
+</ref-id>
+                            </ownerExpr>
+                            <methodId>GetKey</methodId>
+                            <actuals/>
+                        </call>
+                    </rv>
+                </assign>
+                <assign>
+                    <lv>t</lv>
+                    <rv>
+                        <call>
+                            <ownerExpr>
+<ref-id>
+    <id>p_node</id>
+</ref-id>
+                            </ownerExpr>
+                            <methodId>GetLeft</methodId>
+                            <actuals/>
+                        </call>
+                    </rv>
+                </assign>
+                <assign>
+                    <lv>auxkey2</lv>
+                    <rv>
+                        <call>
+                            <ownerExpr>
+<ref-id>
+    <id>t</id>
+</ref-id>
+                            </ownerExpr>
+                            <methodId>GetKey</methodId>
+                            <actuals/>
+                        </call>
+                    </rv>
+                </assign>
+                <if>
+                    <cond>
+                        <call>
+                            <ownerExpr>
+<this/>
+                            </ownerExpr>
+                            <methodId>Compare</methodId>
+                            <actuals>
+<actual>
+    <ref-id>
+        <id>auxkey1</id>
+    </ref-id>
+</actual>
+<actual>
+    <ref-id>
+        <id>auxkey2</id>
+    </ref-id>
+</actual>
+                            </actuals>
+                        </call>
+                    </cond>
+                    <thencase>
+                        <block>
+                            <statements>
+<assign>
+    <lv>ntb</lv>
+    <rv>
+        <call>
+            <ownerExpr>
+                <ref-id>
+                    <id>p_node</id>
+                </ref-id>
+            </ownerExpr>
+            <methodId>SetLeft</methodId>
+            <actuals>
+                <actual>
+                    <ref-id>
+                        <id>my_null</id>
+                    </ref-id>
+                </actual>
+            </actuals>
+        </call>
+    </rv>
+</assign>
+<assign>
+    <lv>ntb</lv>
+    <rv>
+        <call>
+            <ownerExpr>
+                <ref-id>
+                    <id>p_node</id>
+                </ref-id>
+            </ownerExpr>
+            <methodId>SetHas_Left</methodId>
+            <actuals>
+                <actual>
+                    <false/>
+                </actual>
+            </actuals>
+        </call>
+    </rv>
+</assign>
+                            </statements>
+                        </block>
+                    </thencase>
+                    <elsecase>
+                        <block>
+                            <statements>
+<assign>
+    <lv>ntb</lv>
+    <rv>
+        <call>
+            <ownerExpr>
+                <ref-id>
+                    <id>p_node</id>
+                </ref-id>
+            </ownerExpr>
+            <methodId>SetRight</methodId>
+            <actuals>
+                <actual>
+                    <ref-id>
+                        <id>my_null</id>
+                    </ref-id>
+                </actual>
+            </actuals>
+        </call>
+    </rv>
+</assign>
+<assign>
+    <lv>ntb</lv>
+    <rv>
+        <call>
+            <ownerExpr>
+                <ref-id>
+                    <id>p_node</id>
+                </ref-id>
+            </ownerExpr>
+            <methodId>SetHas_Right</methodId>
+            <actuals>
+                <actual>
+                    <false/>
+                </actual>
+            </actuals>
+        </call>
+    </rv>
+</assign>
+                            </statements>
+                        </block>
+                    </elsecase>
+                </if>
+            </statements>
+        </block>
+    </elsecase>
+</if>
+                            </elsecase>
+                        </if>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>264</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>RemoveRight</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>242</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>p_node</name>
+                        </formal>
+                        <formal>
+                            <lineNumber>242</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>c_node</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>244</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ntb</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>246</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>t</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <while>
+                            <cond>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>c_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetHas_Right</methodId>
+    <actuals/>
+</call>
+                            </cond>
+                            <body>
+<block>
+    <statements>
+        <assign>
+            <lv>t</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>c_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetRight</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>c_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>SetKey</methodId>
+                    <actuals>
+                        <actual>
+                            <call>
+<ownerExpr>
+    <ref-id>
+        <id>t</id>
+    </ref-id>
+</ownerExpr>
+<methodId>GetKey</methodId>
+<actuals/>
+                            </call>
+                        </actual>
+                    </actuals>
+                </call>
+            </rv>
+        </assign>
+        <assign>
+            <lv>p_node</lv>
+            <rv>
+                <ref-id>
+                    <id>c_node</id>
+                </ref-id>
+            </rv>
+        </assign>
+        <assign>
+            <lv>c_node</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>c_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetRight</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </body>
+                        </while>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>p_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>SetRight</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>my_null</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>p_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>SetHas_Right</methodId>
+    <actuals>
+        <actual>
+            <false/>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>283</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>RemoveLeft</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>264</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>p_node</name>
+                        </formal>
+                        <formal>
+                            <lineNumber>264</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>c_node</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>266</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ntb</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>268</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>t</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <while>
+                            <cond>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>c_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetHas_Left</methodId>
+    <actuals/>
+</call>
+                            </cond>
+                            <body>
+<block>
+    <statements>
+        <assign>
+            <lv>t</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>c_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetLeft</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>c_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>SetKey</methodId>
+                    <actuals>
+                        <actual>
+                            <call>
+<ownerExpr>
+    <ref-id>
+        <id>t</id>
+    </ref-id>
+</ownerExpr>
+<methodId>GetKey</methodId>
+<actuals/>
+                            </call>
+                        </actual>
+                    </actuals>
+                </call>
+            </rv>
+        </assign>
+        <assign>
+            <lv>p_node</lv>
+            <rv>
+                <ref-id>
+                    <id>c_node</id>
+                </ref-id>
+            </rv>
+        </assign>
+        <assign>
+            <lv>c_node</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>c_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetLeft</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </body>
+                        </while>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>p_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>SetLeft</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>my_null</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>p_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>SetHas_Left</methodId>
+    <actuals>
+        <actual>
+            <false/>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>312</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>Search</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>283</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>v_key</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>285</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>cont</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>286</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>ifound</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>287</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>current_node</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>289</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>key_aux</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>current_node</lv>
+                            <rv>
+<this/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>cont</lv>
+                            <rv>
+<true/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ifound</lv>
+                            <rv>
+<int-literal>
+    <num>0</num>
+</int-literal>
+                            </rv>
+                        </assign>
+                        <while>
+                            <cond>
+<ref-id>
+    <id>cont</id>
+</ref-id>
+                            </cond>
+                            <body>
+<block>
+    <statements>
+        <assign>
+            <lv>key_aux</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>current_node</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetKey</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+        <if>
+            <cond>
+                <lt>
+                    <e1>
+                        <ref-id>
+                            <id>v_key</id>
+                        </ref-id>
+                    </e1>
+                    <e2>
+                        <ref-id>
+                            <id>key_aux</id>
+                        </ref-id>
+                    </e2>
+                </lt>
+            </cond>
+            <thencase>
+                <if>
+                    <cond>
+                        <call>
+                            <ownerExpr>
+<ref-id>
+    <id>current_node</id>
+</ref-id>
+                            </ownerExpr>
+                            <methodId>GetHas_Left</methodId>
+                            <actuals/>
+                        </call>
+                    </cond>
+                    <thencase>
+                        <assign>
+                            <lv>current_node</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>current_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetLeft</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                    </thencase>
+                    <elsecase>
+                        <assign>
+                            <lv>cont</lv>
+                            <rv>
+<false/>
+                            </rv>
+                        </assign>
+                    </elsecase>
+                </if>
+            </thencase>
+            <elsecase>
+                <if>
+                    <cond>
+                        <lt>
+                            <e1>
+<ref-id>
+    <id>key_aux</id>
+</ref-id>
+                            </e1>
+                            <e2>
+<ref-id>
+    <id>v_key</id>
+</ref-id>
+                            </e2>
+                        </lt>
+                    </cond>
+                    <thencase>
+                        <if>
+                            <cond>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>current_node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetHas_Right</methodId>
+    <actuals/>
+</call>
+                            </cond>
+                            <thencase>
+<assign>
+    <lv>current_node</lv>
+    <rv>
+        <call>
+            <ownerExpr>
+                <ref-id>
+                    <id>current_node</id>
+                </ref-id>
+            </ownerExpr>
+            <methodId>GetRight</methodId>
+            <actuals/>
+        </call>
+    </rv>
+</assign>
+                            </thencase>
+                            <elsecase>
+<assign>
+    <lv>cont</lv>
+    <rv>
+        <false/>
+    </rv>
+</assign>
+                            </elsecase>
+                        </if>
+                    </thencase>
+                    <elsecase>
+                        <block>
+                            <statements>
+<assign>
+    <lv>ifound</lv>
+    <rv>
+        <int-literal>
+            <num>1</num>
+        </int-literal>
+    </rv>
+</assign>
+<assign>
+    <lv>cont</lv>
+    <rv>
+        <false/>
+    </rv>
+</assign>
+                            </statements>
+                        </block>
+                    </elsecase>
+                </if>
+            </elsecase>
+        </if>
+    </statements>
+</block>
+                            </body>
+                        </while>
+                    </body>
+                    <ret>
+                        <ref-id>
+                            <id>ifound</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>322</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>Print</name>
+                    <formals/>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>314</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>current_node</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>316</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ntb</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>current_node</lv>
+                            <rv>
+<this/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ntb</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <this/>
+    </ownerExpr>
+    <methodId>RecPrint</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>current_node</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>339</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>RecPrint</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>322</lineNumber>
+                            <type>
+<ref>
+    <id>Tree</id>
+</ref>
+                            </type>
+                            <name>node</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>325</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ntb</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <if>
+                            <cond>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetHas_Left</methodId>
+    <actuals/>
+</call>
+                            </cond>
+                            <thencase>
+<block>
+    <statements>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <this/>
+                    </ownerExpr>
+                    <methodId>RecPrint</methodId>
+                    <actuals>
+                        <actual>
+                            <call>
+<ownerExpr>
+    <ref-id>
+        <id>node</id>
+    </ref-id>
+</ownerExpr>
+<methodId>GetLeft</methodId>
+<actuals/>
+                            </call>
+                        </actual>
+                    </actuals>
+                </call>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </thencase>
+                            <elsecase>
+<assign>
+    <lv>ntb</lv>
+    <rv>
+        <true/>
+    </rv>
+</assign>
+                            </elsecase>
+                        </if>
+                        <sysout>
+                            <arg>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetKey</methodId>
+    <actuals/>
+</call>
+                            </arg>
+                        </sysout>
+                        <if>
+                            <cond>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>node</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetHas_Right</methodId>
+    <actuals/>
+</call>
+                            </cond>
+                            <thencase>
+<block>
+    <statements>
+        <assign>
+            <lv>ntb</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <this/>
+                    </ownerExpr>
+                    <methodId>RecPrint</methodId>
+                    <actuals>
+                        <actual>
+                            <call>
+<ownerExpr>
+    <ref-id>
+        <id>node</id>
+    </ref-id>
+</ownerExpr>
+<methodId>GetRight</methodId>
+<actuals/>
+                            </call>
+                        </actual>
+                    </actuals>
+                </call>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </thencase>
+                            <elsecase>
+<assign>
+    <lv>ntb</lv>
+    <rv>
+        <true/>
+    </rv>
+</assign>
+                            </elsecase>
+                        </if>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+            </methoddecls>
+        </classdecl>
+    </classdecls>
+</program>
