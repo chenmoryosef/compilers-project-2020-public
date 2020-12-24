@@ -5,3 +5,5 @@
 /mjavac.jar
 /tests/ex3/**/*.log
 /tests/ex3/**/*.our-result
+/tests/ex3-omer/**/*.log
+
