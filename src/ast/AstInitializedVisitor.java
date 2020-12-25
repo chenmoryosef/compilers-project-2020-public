@@ -44,7 +44,7 @@ public class AstInitializedVisitor implements Visitor {
         Set<String> set = initVars.peek();
         if (set.contains(varName)) {
             return true;
-        } else if (classFields.get(currentClass).contains(varName)) {
+        } else if (classFields.get(currentClass).contains(varName) && !SymbolTableUtils.getSymbolTableClassWithMethodMap().get(currentMethod + currentClass).getEntries().containsKey(SymbolTable.createKey(varName, Type.VARIABLE))) {
             return true;
         }
         return false;
@@ -115,7 +115,9 @@ public class AstInitializedVisitor implements Visitor {
 
     @Override
     public void visit(MainClass mainClass) {
+        pushScope();
         mainClass.mainStatement().accept(this);
+        removeTop();
     }
 
     @Override
