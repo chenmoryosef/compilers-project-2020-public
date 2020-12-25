@@ -452,7 +452,12 @@ public class AstTypesVisitor implements Visitor {
         }
 
         Symbol methodSymbol = getMethodCallSymbol(currentType, e.methodId());
-
+        //make sure number of actual params matches the method declaration
+        if (e.actuals().size()!=methodSymbol.getDecl().size()-1) {
+            setError("Number of actual params doesn't match the method declaration; expected: " + (methodSymbol.getDecl().size()-1) +
+                    " got: " + e.actuals().size());
+        }
+        if(isError()){return;}
         // make sure variables are of correct type
         int i = 1;
         for (Expr arg : e.actuals()) {
