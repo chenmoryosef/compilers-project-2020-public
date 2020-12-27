@@ -216,7 +216,9 @@ public class AstInitializedVisitor implements Visitor {
         assignArrayStatement.rv().accept(this);
 
         // push lv to init vars
-        pushVar(assignArrayStatement.lv());
+        if(!isInit(assignArrayStatement.lv())) {
+            setError("UnInitialized variable: " + assignArrayStatement.lv());
+        }
 
     }
 

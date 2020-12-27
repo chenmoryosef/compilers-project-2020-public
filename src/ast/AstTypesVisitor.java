@@ -62,7 +62,7 @@ public class AstTypesVisitor implements Visitor {
         }
         while (symbolTable != null) {
             symbolTable = symbolTable.getParentSymbolTable();
-            if (symbolTable == typeBSymbolTable) {
+            if (symbolTable != null && symbolTable == typeBSymbolTable) {
                 return true;
             }
         }
