@@ -25,7 +25,13 @@ public class Main {
             }
             var outFile = new PrintWriter(outfilename);
             try {
+                boolean validToContinue = true;
                 SymbolTableUtils.buildSymbolTables(prog);
+                if (SymbolTableUtils.isERROR()) {
+                    System.out.println(SymbolTableUtils.getERRORReasons());
+                    outFile.write("ERROR\n");
+                    validToContinue = false;
+                }
 
                 if (action.equals("marshal")) {
                     AstXMLSerializer xmlSerializer = new AstXMLSerializer();
@@ -36,8 +42,24 @@ public class Main {
                     outFile.write(astPrinter.getString());
 
                 } else if (action.equals("semantic")) {
-                    throw new UnsupportedOperationException("TODO - Ex. 3");
-
+                    if (validToContinue) {
+                        AstTypesVisitor astTypeVisitor = new AstTypesVisitor();
+                        astTypeVisitor.visit(prog);
+                        if (astTypeVisitor.isError()) {
+                            System.out.println(astTypeVisitor.getErrorMsg());
+                            outFile.write("ERROR\n");
+                        } else {
+                            AstInitializedVisitor astInitVisitor = new AstInitializedVisitor();
+                            astInitVisitor.visit(prog);
+                            if (astInitVisitor.isError()) {
+                                System.out.println(astInitVisitor.getErrorMsg());
+                                outFile.write("ERROR\n");
+                            }
+                            else{
+                                outFile.write("OK\n");
+                            }
+                        }
+                    }
                 } else if (action.equals("compile")) {
                     // VtableCreator - create vtables + Class->data-structure(vtable-method/field -> offset) and probably more...
                     VtableCreator v = new VtableCreator();

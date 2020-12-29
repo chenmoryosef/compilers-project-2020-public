@@ -1,0 +1,766 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<program>
+    <mainclass>
+        <name>BubbleSort</name>
+        <argsName>a</argsName>
+        <mainStatement>
+            <sysout>
+                <arg>
+                    <call>
+                        <ownerExpr>
+                            <new-object>
+<classId>BBS</classId>
+                            </new-object>
+                        </ownerExpr>
+                        <methodId>Start</methodId>
+                        <actuals>
+                            <actual>
+<int-literal>
+    <num>10</num>
+</int-literal>
+                            </actual>
+                        </actuals>
+                    </call>
+                </arg>
+            </sysout>
+        </mainStatement>
+    </mainclass>
+    <classdecls>
+        <classdecl>
+            <name>BBS</name>
+            <fields>
+                <field>
+                    <lineNumber>14</lineNumber>
+                    <type>
+                        <int-array/>
+                    </type>
+                    <name>number</name>
+                </field>
+                <field>
+                    <lineNumber>18</lineNumber>
+                    <type>
+                        <int/>
+                    </type>
+                    <name>size</name>
+                </field>
+            </fields>
+            <methoddecls>
+                <methoddecl>
+                    <lineNumber>30</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>Start</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>18</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>sz</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>20</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>aux01</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <this/>
+    </ownerExpr>
+    <methodId>Init</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>sz</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <this/>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <sysout>
+                            <arg>
+<int-literal>
+    <num>99999</num>
+</int-literal>
+                            </arg>
+                        </sysout>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <this/>
+    </ownerExpr>
+    <methodId>Sort</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <this/>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>64</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>Sort</name>
+                    <formals/>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>32</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>nt</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>33</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>i</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>34</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>aux02</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>35</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>aux04</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>36</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>aux05</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>37</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>aux06</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>38</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>aux07</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>39</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>j</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>40</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>t</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>i</lv>
+                            <rv>
+<subtract>
+    <e1>
+        <ref-id>
+            <id>size</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <int-literal>
+            <num>1</num>
+        </int-literal>
+    </e2>
+</subtract>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux02</lv>
+                            <rv>
+<subtract>
+    <e1>
+        <int-literal>
+            <num>0</num>
+        </int-literal>
+    </e1>
+    <e2>
+        <int-literal>
+            <num>1</num>
+        </int-literal>
+    </e2>
+</subtract>
+                            </rv>
+                        </assign>
+                        <while>
+                            <cond>
+<lt>
+    <e1>
+        <ref-id>
+            <id>aux02</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <ref-id>
+            <id>i</id>
+        </ref-id>
+    </e2>
+</lt>
+                            </cond>
+                            <body>
+<block>
+    <statements>
+        <assign>
+            <lv>j</lv>
+            <rv>
+                <int-literal>
+                    <num>1</num>
+                </int-literal>
+            </rv>
+        </assign>
+        <while>
+            <cond>
+                <lt>
+                    <e1>
+                        <ref-id>
+                            <id>j</id>
+                        </ref-id>
+                    </e1>
+                    <e2>
+                        <add>
+                            <e1>
+<ref-id>
+    <id>i</id>
+</ref-id>
+                            </e1>
+                            <e2>
+<int-literal>
+    <num>1</num>
+</int-literal>
+                            </e2>
+                        </add>
+                    </e2>
+                </lt>
+            </cond>
+            <body>
+                <block>
+                    <statements>
+                        <assign>
+                            <lv>aux07</lv>
+                            <rv>
+<subtract>
+    <e1>
+        <ref-id>
+            <id>j</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <int-literal>
+            <num>1</num>
+        </int-literal>
+    </e2>
+</subtract>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux04</lv>
+                            <rv>
+<array-access>
+    <arrayExpr>
+        <ref-id>
+            <id>number</id>
+        </ref-id>
+    </arrayExpr>
+    <indexExpr>
+        <ref-id>
+            <id>aux07</id>
+        </ref-id>
+    </indexExpr>
+</array-access>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux05</lv>
+                            <rv>
+<array-access>
+    <arrayExpr>
+        <ref-id>
+            <id>number</id>
+        </ref-id>
+    </arrayExpr>
+    <indexExpr>
+        <ref-id>
+            <id>j</id>
+        </ref-id>
+    </indexExpr>
+</array-access>
+                            </rv>
+                        </assign>
+                        <if>
+                            <cond>
+<lt>
+    <e1>
+        <ref-id>
+            <id>aux05</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <ref-id>
+            <id>aux04</id>
+        </ref-id>
+    </e2>
+</lt>
+                            </cond>
+                            <thencase>
+<block>
+    <statements>
+        <assign>
+            <lv>aux06</lv>
+            <rv>
+                <subtract>
+                    <e1>
+                        <ref-id>
+                            <id>j</id>
+                        </ref-id>
+                    </e1>
+                    <e2>
+                        <int-literal>
+                            <num>1</num>
+                        </int-literal>
+                    </e2>
+                </subtract>
+            </rv>
+        </assign>
+        <assign>
+            <lv>t</lv>
+            <rv>
+                <array-access>
+                    <arrayExpr>
+                        <ref-id>
+                            <id>number</id>
+                        </ref-id>
+                    </arrayExpr>
+                    <indexExpr>
+                        <ref-id>
+                            <id>aux06</id>
+                        </ref-id>
+                    </indexExpr>
+                </array-access>
+            </rv>
+        </assign>
+        <assign-array>
+            <lv>number</lv>
+            <index>
+                <ref-id>
+                    <id>aux06</id>
+                </ref-id>
+            </index>
+            <rv>
+                <array-access>
+                    <arrayExpr>
+                        <ref-id>
+                            <id>number</id>
+                        </ref-id>
+                    </arrayExpr>
+                    <indexExpr>
+                        <ref-id>
+                            <id>j</id>
+                        </ref-id>
+                    </indexExpr>
+                </array-access>
+            </rv>
+        </assign-array>
+        <assign-array>
+            <lv>number</lv>
+            <index>
+                <ref-id>
+                    <id>j</id>
+                </ref-id>
+            </index>
+            <rv>
+                <ref-id>
+                    <id>t</id>
+                </ref-id>
+            </rv>
+        </assign-array>
+    </statements>
+</block>
+                            </thencase>
+                            <elsecase>
+<assign>
+    <lv>nt</lv>
+    <rv>
+        <int-literal>
+            <num>0</num>
+        </int-literal>
+    </rv>
+</assign>
+                            </elsecase>
+                        </if>
+                        <assign>
+                            <lv>j</lv>
+                            <rv>
+<add>
+    <e1>
+        <ref-id>
+            <id>j</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <int-literal>
+            <num>1</num>
+        </int-literal>
+    </e2>
+</add>
+                            </rv>
+                        </assign>
+                    </statements>
+                </block>
+            </body>
+        </while>
+        <assign>
+            <lv>i</lv>
+            <rv>
+                <subtract>
+                    <e1>
+                        <ref-id>
+                            <id>i</id>
+                        </ref-id>
+                    </e1>
+                    <e2>
+                        <int-literal>
+                            <num>1</num>
+                        </int-literal>
+                    </e2>
+                </subtract>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </body>
+                        </while>
+                    </body>
+                    <ret>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>75</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>Print</name>
+                    <formals/>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>66</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>j</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>j</lv>
+                            <rv>
+<int-literal>
+    <num>0</num>
+</int-literal>
+                            </rv>
+                        </assign>
+                        <while>
+                            <cond>
+<lt>
+    <e1>
+        <ref-id>
+            <id>j</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <ref-id>
+            <id>size</id>
+        </ref-id>
+    </e2>
+</lt>
+                            </cond>
+                            <body>
+<block>
+    <statements>
+        <sysout>
+            <arg>
+                <array-access>
+                    <arrayExpr>
+                        <ref-id>
+                            <id>number</id>
+                        </ref-id>
+                    </arrayExpr>
+                    <indexExpr>
+                        <ref-id>
+                            <id>j</id>
+                        </ref-id>
+                    </indexExpr>
+                </array-access>
+            </arg>
+        </sysout>
+        <assign>
+            <lv>j</lv>
+            <rv>
+                <add>
+                    <e1>
+                        <ref-id>
+                            <id>j</id>
+                        </ref-id>
+                    </e1>
+                    <e2>
+                        <int-literal>
+                            <num>1</num>
+                        </int-literal>
+                    </e2>
+                </add>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </body>
+                        </while>
+                    </body>
+                    <ret>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>93</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>Init</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>75</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>sz</name>
+                        </formal>
+                    </formals>
+                    <vardecls/>
+                    <body>
+                        <assign>
+                            <lv>size</lv>
+                            <rv>
+<ref-id>
+    <id>sz</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>number</lv>
+                            <rv>
+<new-int-array>
+    <lengthExpr>
+        <ref-id>
+            <id>sz</id>
+        </ref-id>
+    </lengthExpr>
+</new-int-array>
+                            </rv>
+                        </assign>
+                        <assign-array>
+                            <lv>number</lv>
+                            <index>
+<int-literal>
+    <num>0</num>
+</int-literal>
+                            </index>
+                            <rv>
+<int-literal>
+    <num>20</num>
+</int-literal>
+                            </rv>
+                        </assign-array>
+                        <assign-array>
+                            <lv>number</lv>
+                            <index>
+<int-literal>
+    <num>1</num>
+</int-literal>
+                            </index>
+                            <rv>
+<int-literal>
+    <num>7</num>
+</int-literal>
+                            </rv>
+                        </assign-array>
+                        <assign-array>
+                            <lv>number</lv>
+                            <index>
+<int-literal>
+    <num>2</num>
+</int-literal>
+                            </index>
+                            <rv>
+<int-literal>
+    <num>12</num>
+</int-literal>
+                            </rv>
+                        </assign-array>
+                        <assign-array>
+                            <lv>number</lv>
+                            <index>
+<int-literal>
+    <num>3</num>
+</int-literal>
+                            </index>
+                            <rv>
+<int-literal>
+    <num>18</num>
+</int-literal>
+                            </rv>
+                        </assign-array>
+                        <assign-array>
+                            <lv>number</lv>
+                            <index>
+<int-literal>
+    <num>4</num>
+</int-literal>
+                            </index>
+                            <rv>
+<int-literal>
+    <num>2</num>
+</int-literal>
+                            </rv>
+                        </assign-array>
+                        <assign-array>
+                            <lv>number</lv>
+                            <index>
+<int-literal>
+    <num>5</num>
+</int-literal>
+                            </index>
+                            <rv>
+<int-literal>
+    <num>11</num>
+</int-literal>
+                            </rv>
+                        </assign-array>
+                        <assign-array>
+                            <lv>number</lv>
+                            <index>
+<int-literal>
+    <num>6</num>
+</int-literal>
+                            </index>
+                            <rv>
+<int-literal>
+    <num>6</num>
+</int-literal>
+                            </rv>
+                        </assign-array>
+                        <assign-array>
+                            <lv>number</lv>
+                            <index>
+<int-literal>
+    <num>7</num>
+</int-literal>
+                            </index>
+                            <rv>
+<int-literal>
+    <num>9</num>
+</int-literal>
+                            </rv>
+                        </assign-array>
+                        <assign-array>
+                            <lv>number</lv>
+                            <index>
+<int-literal>
+    <num>8</num>
+</int-literal>
+                            </index>
+                            <rv>
+<int-literal>
+    <num>19</num>
+</int-literal>
+                            </rv>
+                        </assign-array>
+                        <assign-array>
+                            <lv>number</lv>
+                            <index>
+<int-literal>
+    <num>9</num>
+</int-literal>
+                            </index>
+                            <rv>
+<int-literal>
+    <num>5</num>
+</int-literal>
+                            </rv>
+                        </assign-array>
+                    </body>
+                    <ret>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </ret>
+                </methoddecl>
+            </methoddecls>
+        </classdecl>
+    </classdecls>
+</program>

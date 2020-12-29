@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<program>
+    <mainclass>
+        <name>Main</name>
+        <argsName>a</argsName>
+        <mainStatement>
+            <sysout>
+                <arg>
+                    <int-literal>
+                        <num>3</num>
+                    </int-literal>
+                </arg>
+            </sysout>
+        </mainStatement>
+    </mainclass>
+    <classdecls>
+        <classdecl>
+            <name>Simple</name>
+            <fields/>
+            <methoddecls>
+                <methoddecl>
+                    <lineNumber>17</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>fun</name>
+                    <formals/>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>25</lineNumber>
+                            <type>
+                                <bool/>
+                            </type>
+                            <name>a</name>
+                        </vardecl>
+
+                    </vardecls>
+
+                    <body>
+
+                        <assign>
+                            <lv>a</lv>
+                            <rv>
+                                <ref-id>
+                                    <id>b</id>
+                                </ref-id>
+                            </rv>
+                        </assign>
+
+                    </body>
+                    <ret>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </ret>
+                </methoddecl>
+            </methoddecls>
+        </classdecl>
+
+    </classdecls>
+
+</program>

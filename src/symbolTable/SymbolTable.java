@@ -56,4 +56,29 @@ public class SymbolTable {
         }
         return symbol;
     }
+
+    public boolean checkFieldWasDeclaredBefore(String key) {
+        Symbol symbol = entries.get(key);
+        SymbolTable parentSymbolTable = this.parentSymbolTable;
+        while (symbol == null && parentSymbolTable != null) {
+            symbol = parentSymbolTable.getKey(key);
+            parentSymbolTable = parentSymbolTable.parentSymbolTable;
+        }
+        if (symbol != null) {
+            SymbolTableUtils.setERROR(true);
+            SymbolTableUtils.setERRORReasons("field was declared at least twice in the same class, or in a class and subclass ");
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkWasAlreadyDeclared(String key) {
+        Symbol symbol = entries.get(key);
+        if (symbol != null) {
+            SymbolTableUtils.setERROR(true);
+            SymbolTableUtils.setERRORReasons("methode was declared at least twice in the same class or variable declared twice in same method");
+            return true;
+        }
+        return false;
+    }
 }

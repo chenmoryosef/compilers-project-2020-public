@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<program>
+    <mainclass>
+        <name>Factorial</name>
+        <argsName>a</argsName>
+        <mainStatement>
+            <sysout>
+                <arg>
+                    <call>
+                        <ownerExpr>
+                            <new-object>
+<classId>Fac</classId>
+                            </new-object>
+                        </ownerExpr>
+                        <methodId>ComputeFac</methodId>
+                        <actuals>
+                            <actual>
+<int-literal>
+    <num>10</num>
+</int-literal>
+                            </actual>
+                        </actuals>
+                    </call>
+                </arg>
+            </sysout>
+        </mainStatement>
+    </mainclass>
+    <classdecls>
+        <classdecl>
+            <name>Fac</name>
+            <fields/>
+            <methoddecls>
+                <methoddecl>
+                    <lineNumber>19</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>ComputeFac</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>9</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>num</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>11</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>num_aux</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <if>
+                            <cond>
+<lt>
+    <e1>
+        <ref-id>
+            <id>num</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <int-literal>
+            <num>1</num>
+        </int-literal>
+    </e2>
+</lt>
+                            </cond>
+                            <thencase>
+<block>
+    <statements>
+        <assign>
+            <lv>num_aux</lv>
+            <rv>
+                <int-literal>
+                    <num>1</num>
+                </int-literal>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </thencase>
+                            <elsecase>
+<block>
+    <statements>
+        <assign>
+            <lv>num_aux</lv>
+            <rv>
+                <mult>
+                    <e1>
+                        <ref-id>
+                            <id>num</id>
+                        </ref-id>
+                    </e1>
+                    <e2>
+                        <call>
+                            <ownerExpr>
+<this/>
+                            </ownerExpr>
+                            <methodId>ComputeFac</methodId>
+                            <actuals>
+<actual>
+    <subtract>
+        <e1>
+            <ref-id>
+                <id>num</id>
+            </ref-id>
+        </e1>
+        <e2>
+            <int-literal>
+                <num>1</num>
+            </int-literal>
+        </e2>
+    </subtract>
+</actual>
+                            </actuals>
+                        </call>
+                    </e2>
+                </mult>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </elsecase>
+                        </if>
+                    </body>
+                    <ret>
+                        <ref-id>
+                            <id>num_aux</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+            </methoddecls>
+        </classdecl>
+    </classdecls>
+</program>
