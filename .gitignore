@@ -6,4 +6,14 @@
 /tests/ex3/**/*.log
 /tests/ex3/**/*.our-result
 /tests/ex3-omer/**/*.log
+/tests/ex4/**/*.ours
+/tests/ex4/**/*.log
+/src/Lexer.java
+/src/Parser.java
+/src/sym.java
 
+/tests/ex3-nadav
+/tests/ex3-noam
+/test_classes.py
+/tester.py
+/tester_utils.py
