@@ -183,7 +183,7 @@ public class AstTypesVisitor implements Visitor {
     @Override
     public void visit(MethodDecl methodDecl) {
         // Check if this method is root.
-        System.out.println(currentClass);
+//        System.out.println(currentClass);
         Symbol rootMethodSymbol;
         String rootMethodReturnType;
         if(!isRootMethod(methodDecl.name())){
@@ -193,9 +193,9 @@ public class AstTypesVisitor implements Visitor {
         else {
             rootMethodSymbol = getRootMethod(methodDecl.name());
             rootMethodReturnType = rootMethodSymbol.getDecl().get(0);
-        System.out.println("root");
-        System.out.println(rootMethodSymbol.getDecl().size());
-        System.out.println(rootMethodSymbol.getSymbolName());
+//        System.out.println("root");
+//        System.out.println(rootMethodSymbol.getDecl().size());
+//        System.out.println(rootMethodSymbol.getSymbolName());
         }
         if (!isRootMethod(methodDecl.name())) {
             int i = 1;

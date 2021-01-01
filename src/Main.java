@@ -28,7 +28,7 @@ public class Main {
                 boolean validToContinue = true;
                 SymbolTableUtils.buildSymbolTables(prog);
                 if (SymbolTableUtils.isERROR()) {
-                    System.out.println(SymbolTableUtils.getERRORReasons());
+//                    System.out.println(SymbolTableUtils.getERRORReasons());
                     outFile.write("ERROR\n");
                     validToContinue = false;
                 }
@@ -46,13 +46,13 @@ public class Main {
                         AstTypesVisitor astTypeVisitor = new AstTypesVisitor();
                         astTypeVisitor.visit(prog);
                         if (astTypeVisitor.isError()) {
-                            System.out.println(astTypeVisitor.getErrorMsg());
+//                            System.out.println(astTypeVisitor.getErrorMsg());
                             outFile.write("ERROR\n");
                         } else {
                             AstInitializedVisitor astInitVisitor = new AstInitializedVisitor();
                             astInitVisitor.visit(prog);
                             if (astInitVisitor.isError()) {
-                                System.out.println(astInitVisitor.getErrorMsg());
+//                                System.out.println(astInitVisitor.getErrorMsg());
                                 outFile.write("ERROR\n");
                             }
                             else{
