@@ -9,7 +9,7 @@ public class FlowUtils {
     private static Map<String, Symbol> lineNumberToSymbol = new HashMap<>();
 
     public static void rename(Properties properties, String newName) throws UnsupportedOperationException {
-        // TODO - raise error handling
+        // raise error handling
         for (var astNode : properties.getPtrList()) {
             if (astNode instanceof VariableIntroduction) {
                 ((VariableIntroduction) astNode).setName(newName);

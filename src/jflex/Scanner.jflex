@@ -63,6 +63,9 @@ import java_cup.runtime.*;
 /***********************/
 /* MACRO DECALARATIONS */
 /***********************/
+// TODO EX4 - fill with regex rules
+// E.g
+// LineTerminator	= \r|\n|\r\n
 
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
@@ -79,6 +82,10 @@ import java_cup.runtime.*;
 /* So these regular expressions will only be matched if the   */
 /* scanner is in the start state YYINITIAL.                   */
 /**************************************************************/
+
+// TODO EX4 - fill with rules that create symbols
+// E.g
+// ","			   { return symbol(sym.COMMA); }
 
 <YYINITIAL> {
 "public"            { return symbol(sym.PUBLIC); }

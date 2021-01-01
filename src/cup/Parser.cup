@@ -63,16 +63,28 @@ scan with
 /*************/
 /* TERMINALS */
 /*************/
+// TODO EX4 - fill with terminals
+// E.g
+// terminal PLUS, MINUS, MULT, DIV;
+
 terminal PUBLIC;
 
 /*****************/
 /* NON TERMINALS */
 /*****************/
+// TODO EX4 - fill with non terminals
+// E.g
+// non terminal Expr expr;
+
 non terminal prog;
 
 /***********************/
 /* OPERATOR PRECEDENCE */
 /***********************/
+// TODO EX4 - fill with precedence (lowest line has higher precedence)
+// E.g
+// precedence PLUS, MINUS;
+// precedence DIV, MULT;
 
 /************************/
 /* INITIAL NON TERMINAL */
@@ -82,5 +94,12 @@ start with prog;
 /********************/
 /* PRODUCTION RULES */
 /********************/
+// TODO EX4 - fill with production rules
+// E.g
+// expr ::= expr:e1 PLUS term:e2 		{: RESULT = new AddExpr(e1, e2); :}
+//            | expr:e1 MINUS term:e2	{: RESULT = new SubtractExpr(e1, e2); :}
+//            | term:e					{: RESULT = e; :}
+//   ;
+
 
 prog            ::=     ;

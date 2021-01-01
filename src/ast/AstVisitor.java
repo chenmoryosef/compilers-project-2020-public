@@ -152,7 +152,7 @@ public class AstVisitor implements Visitor {
 
     @Override
     public void visit(FormalArg formalArg) {
-        // Note - left empty - TODO - check if this is correct behaviour
+        // Note - left empty
     }
 
     @Override
@@ -325,7 +325,7 @@ public class AstVisitor implements Visitor {
                 SymbolTableUtils.addUnresolvedParam(classId, e.methodId(), e);
                 return;
             }
-            // TODO - handle error why the hell should we get here-
+            // handle error why the hell should we get here-
             return;
         }
         symbol = symbolTable.resolveSymbol(symbolKey);
