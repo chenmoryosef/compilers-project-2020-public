@@ -63,9 +63,13 @@ import java_cup.runtime.*;
 /***********************/
 /* MACRO DECALARATIONS */
 /***********************/
-// TODO EX4 - fill with regex rules
-// E.g
-// LineTerminator	= \r|\n|\r\n
+LINETERM	    = \r|\n|\r\n
+WHITESPACE		= [\t ] | {LINETERM}
+INTEGER			= 0 | [1-9][0-9]*
+ID				= [a-zA-Z]+[a-zA-Z0-9]*
+IN_COMMENT		= \/\/[a-zA-Z0-9\(\)\[\]\{\}\?!+\-\*\/\.; \t\f]*
+MUL_COMMENT	    = \/\*([a-zA-Z0-9\(\)\[\]\{\}\?!+\-\*\/\.;]|{WhiteSpace})*\*\/
+COMMENT 		= {IN_COMMENT}|{MUL_COMMENT}
 
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
@@ -83,11 +87,39 @@ import java_cup.runtime.*;
 /* scanner is in the start state YYINITIAL.                   */
 /**************************************************************/
 
-// TODO EX4 - fill with rules that create symbols
-// E.g
-// ","			   { return symbol(sym.COMMA); }
-
 <YYINITIAL> {
-"public"            { return symbol(sym.PUBLIC); }
-<<EOF>>				{ return symbol(sym.EOF); }
+<<EOF>>				    { return symbol(sym.EOF); }
+"public"                { return symbol(sym.PUBLIC); }
+"static"                { return symbol(sym.STATIC); }
+"class"                 { return symbol(sym.CLASS); }
+"extends"               { return symbol(sym.EXTENDS); }
+"+"				        { return symbol(sym.PLUS); }
+"-"				        { return symbol(sym.MINUS); }
+"*"				        { return symbol(sym.MULT); }
+"/"				        { return symbol(sym.DIV); }
+"="				        { return symbol(sym.ASS); }
+"!"  		            { return symbol(sym.NOT); }
+"while"                 { return symbol(sym.WHILE); }
+"if"                    { return symbol(sym.IF); }
+"else"                  { return symbol(sym.ELSE); }
+"true"  		        { return symbol(sym.TRUE); }
+"false"  		        { return symbol(sym.FALSE); }
+"<"			            { return symbol(sym.LT); }
+"&&"  		            { return symbol(sym.AND); }
+","			            { return symbol(sym.COMMA); }
+"("			            { return symbol(sym.LPAREN); }
+")"			            { return symbol(sym.RPAREN); }
+"{"			            { return symbol(sym.LBR); }
+"}"			            { return symbol(sym.RBR); }
+"["			            { return symbol(sym.LSQBR); }
+"]"			            { return symbol(sym.RSQBR); }
+";"			            { return symbol(sym.SEMICOLON); }
+"this"  		        { return symbol(sym.THIS); }
+"return"                { return symbol(sym.RET); }
+"String[]"              { return symbol(sym.STRINGARGS); }
+"System.out.println"    { return symbol(sym.SYSTEM); }
+{INTEGER}               { return symbol(sym.INTEGER, Integer.parseInt(yytext())); }
+{ID}		            { return symbol(sym.ID, new String(yytext())); }
+{WHITESPACE}            { /* do nothing */ }
+{COMMENTS}              { /* do nothing */ }
 }

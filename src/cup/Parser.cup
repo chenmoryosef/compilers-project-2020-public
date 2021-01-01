@@ -38,20 +38,20 @@ scan with
 	Symbol s;
     try {
 	s = lexer.next_token();
-	// System.out.print(s.sym);
-	// System.out.print("[");
-	// System.out.print(lexer.getLine());
-	// System.out.print(":");
-	// System.out.print(lexer.getCharPos());
-	// System.out.print("] ");
-	// System.out.print(sym.terminalNames[s.sym]);
-	// if (s.value != null)
-	// {
-	//	System.out.print("( ");
-	//	System.out.print(s.value);
-	//	System.out.print(" )");
-	// }
-	// System.out.print("\n");
+	System.out.print(s.sym);
+	System.out.print("[");
+	System.out.print(lexer.getLine());
+	System.out.print(":");
+	System.out.print(lexer.getCharPos());
+	System.out.print("] ");
+	System.out.print(sym.terminalNames[s.sym]);
+	if (s.value != null)
+	{
+	    System.out.print("( ");
+	    System.out.print(s.value);
+	    System.out.print(" )");
+	}
+	System.out.print("\n");
 	return s;
      } catch (java.lang.Error e) {
          System.err.print("Syntax error at line " + lexer.getLine() + " of input. Lexer\n");
@@ -63,11 +63,37 @@ scan with
 /*************/
 /* TERMINALS */
 /*************/
-// TODO EX4 - fill with terminals
-// E.g
-// terminal PLUS, MINUS, MULT, DIV;
-
 terminal PUBLIC;
+terminal STATIC;
+terminal CLASS;
+terminal EXTENDS;
+terminal PLUS;
+terminal MINUS;
+terminal MULT;
+terminal DIV;
+terminal ASS;
+terminal NOT;
+terminal WHILE;
+terminal IF;
+terminal ELSE;
+terminal TRUE;
+terminal FALSE;
+terminal LT;
+terminal AND;
+terminal THIS;
+terminal COMMA;
+terminal LPAREN;
+terminal RPAREN;
+terminal LBR;
+terminal RBR;
+terminal LSQBR;
+terminal RSQBR;
+terminal SEMICOLON;
+terminal RET;
+terminal STRINGARGS;
+terminal SYSTEM;
+terminal int INTEGER;
+terminal String ID;
 
 /*****************/
 /* NON TERMINALS */
@@ -76,7 +102,15 @@ terminal PUBLIC;
 // E.g
 // non terminal Expr expr;
 
-non terminal prog;
+non terminal Program prog;
+non terminal Expr expr;
+non terminal MainClass mainClass;
+non terminal ClassDecl classDecl;
+non terminal LinkedList<ClassDecl> classDecls;
+non terminal type;
+non terminal Statement stmt;
+non terminal LinkedList<Expr> commaExprList;
+non terminal Statement mainStatement;
 
 /***********************/
 /* OPERATOR PRECEDENCE */
@@ -95,11 +129,21 @@ start with prog;
 /* PRODUCTION RULES */
 /********************/
 // TODO EX4 - fill with production rules
-// E.g
-// expr ::= expr:e1 PLUS term:e2 		{: RESULT = new AddExpr(e1, e2); :}
-//            | expr:e1 MINUS term:e2	{: RESULT = new SubtractExpr(e1, e2); :}
-//            | term:e					{: RESULT = e; :}
-//   ;
 
+prog            ::=       mainClass:mainClass classDecls:classDecls  {: RESULT = new Program(mainClass, classDecls); :}
+                        ;
 
-prog            ::=     ;
+mainClass       ::=       CLASS ID:mainClass LBR PUBLIC STATIC ID:type ID:name LPAREN STRINGARGS ID:argsName RPAREN LBR mainStatement:mainStatement RBR RBR {: RESULT = new MainClass(mainClass, argsName, mainStatement); :}
+                        ;
+
+classDecls      ::=       classDecl:classDecl classDecls:classDecls {: classDecls.addFirst(classDecl); RESULT = classDecls; :}
+                        | /* empty */           	{: RESULT = new LinkedList<ClassDecl>(); :}
+                        ;
+classDecl       ::=       CLASS ID:className LBR RBR {: RESULT = new ClassDecl(className, null, null, null); :}
+                        ;
+
+mainStatement   ::=      SYSTEM LPAREN expr:expr RPAREN SEMICOLON           	{: RESULT = new SysoutStatement(expr); :}
+                        ;
+
+expr            ::=      INTEGER:num {: RESULT = new IntegerLiteralExpr(num); :}
+                        ;
