@@ -65,11 +65,11 @@ import java_cup.runtime.*;
 /***********************/
 LINETERM	    = \r|\n|\r\n
 WHITESPACE		= [\t ] | {LINETERM}
-INTEGER			= 0 | [1-9][0-9]*
-ID				= [a-zA-Z]+[a-zA-Z0-9]*
-IN_COMMENT		= \/\/[a-zA-Z0-9\(\)\[\]\{\}\?!+\-\*\/\.; \t\f]*
-MUL_COMMENT	    = \/\*([a-zA-Z0-9\(\)\[\]\{\}\?!+\-\*\/\.;]|{WhiteSpace})*\*\/
-COMMENT 		= {IN_COMMENT}|{MUL_COMMENT}
+NUMBER			= 0 | [1-9][0-9]*
+ID				= [a-zA-Z\_]+[a-zA-Z0-9\_]*
+IN_COMMENT		= \/\/[a-zA-Z0-9\(\)\[\]\{\}\?!+\-\*\/\.\,;=\"\_ \t\f]*
+MUL_COMMENT	    = \/\*([a-zA-Z0-9\(\)\[\]\{\}\?!+\-\*\/\.\,;=\"\_]|{WHITESPACE})*\*\/
+COMMENTS 		= {IN_COMMENT}|{MUL_COMMENT}
 
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
@@ -96,7 +96,6 @@ COMMENT 		= {IN_COMMENT}|{MUL_COMMENT}
 "+"				        { return symbol(sym.PLUS); }
 "-"				        { return symbol(sym.MINUS); }
 "*"				        { return symbol(sym.MULT); }
-"/"				        { return symbol(sym.DIV); }
 "="				        { return symbol(sym.ASS); }
 "!"  		            { return symbol(sym.NOT); }
 "while"                 { return symbol(sym.WHILE); }
@@ -114,11 +113,17 @@ COMMENT 		= {IN_COMMENT}|{MUL_COMMENT}
 "["			            { return symbol(sym.LSQBR); }
 "]"			            { return symbol(sym.RSQBR); }
 ";"			            { return symbol(sym.SEMICOLON); }
+"."			            { return symbol(sym.DOT); }
 "this"  		        { return symbol(sym.THIS); }
 "return"                { return symbol(sym.RET); }
 "String[]"              { return symbol(sym.STRINGARGS); }
+"int[]"                 { return symbol(sym.TYPEINTARRAY); }
+"int"                   { return symbol(sym.TYPEINT); }
+"boolean"               { return symbol(sym.TYPEBOOL); }
+"length"                { return symbol(sym.LENGTH); }
 "System.out.println"    { return symbol(sym.SYSTEM); }
-{INTEGER}               { return symbol(sym.INTEGER, Integer.parseInt(yytext())); }
+"new"                   { return symbol(sym.NEW); }
+{NUMBER}                { return symbol(sym.NUMBER, Integer.parseInt(yytext())); }
 {ID}		            { return symbol(sym.ID, new String(yytext())); }
 {WHITESPACE}            { /* do nothing */ }
 {COMMENTS}              { /* do nothing */ }
