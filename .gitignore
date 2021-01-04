@@ -6,6 +6,7 @@
 /tests/ex3/**/*.log
 /tests/ex3/**/*.our-result
 /tests/ex3-omer/**/*.log
+/tests/ex4/**/*.ours.java
 /tests/ex4/**/*.ours
 /tests/ex4/**/*.log
 /src/Lexer.java
