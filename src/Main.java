@@ -29,11 +29,7 @@ public class Main {
             try {
                 boolean validToContinue = true;
                 SymbolTableUtils.buildSymbolTables(prog);
-                if (SymbolTableUtils.isERROR()) {
-//                    System.out.println(SymbolTableUtils.getERRORReasons());
-                    outFile.write("ERROR\n");
-                    validToContinue = false;
-                }
+
 
                 if (action.equals("marshal")) {
                     AstXMLSerializer xmlSerializer = new AstXMLSerializer();
@@ -44,7 +40,10 @@ public class Main {
                     outFile.write(astPrinter.getString());
 
                 } else if (action.equals("semantic")) {
-                    if (validToContinue) {
+                        if (SymbolTableUtils.isERROR()) {
+//                    System.out.println(SymbolTableUtils.getERRORReasons());
+                            outFile.write("ERROR\n");
+                        }
                         AstTypesVisitor astTypeVisitor = new AstTypesVisitor();
                         astTypeVisitor.visit(prog);
                         if (astTypeVisitor.isError()) {
@@ -61,7 +60,6 @@ public class Main {
                                 outFile.write("OK\n");
                             }
                         }
-                    }
                 } else if (action.equals("compile")) {
                     // VtableCreator - create vtables + Class->data-structure(vtable-method/field -> offset) and probably more...
                     VtableCreator v = new VtableCreator();
