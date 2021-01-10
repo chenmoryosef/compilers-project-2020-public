@@ -68,7 +68,7 @@ WHITESPACE		= [\t ] | {LINETERM}
 NUMBER			= 0 | [1-9][0-9]*
 ID				= [a-zA-Z\_]+[a-zA-Z0-9\_]*
 IN_COMMENT		= \/\/[a-zA-Z0-9\(\)\[\]\{\}\?!+\-\*\/\.\,;=\"\_ \t\f]*
-MUL_COMMENT	    = \/\*([a-zA-Z0-9\(\)\[\]\{\}\?!+\-\*\/\.\,;=\"\_]|{WHITESPACE})*\*\/
+MUL_COMMENT	    = \/\*~"*/"
 COMMENTS 		= {IN_COMMENT}|{MUL_COMMENT}
 
 /******************************/
