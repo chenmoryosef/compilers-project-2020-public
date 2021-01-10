@@ -25,7 +25,7 @@ parser code
 	// Override default error reporting in parser
 	public void report_error(String message, Object info)
 	{
-	    System.err.print("Syntax error at line " + lexer.getLine() + " of input.\n");
+	    System.err.print("Syntax error at line " + lexer.getLine() + " of input. Parser\n");
 		System.exit(1);
 	}
 :}
@@ -54,7 +54,7 @@ scan with
 	// System.out.print("\n");
 	return s;
      } catch (java.lang.Error e) {
-         System.err.print("Syntax error at line " + lexer.getLine() + " of input.\n");
+         System.err.print("Syntax error at line " + lexer.getLine() + " of input. Lexer\n");
          System.exit(1);
          return null;
      }
