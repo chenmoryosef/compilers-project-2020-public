@@ -120,7 +120,7 @@ COMMENTS 		= {IN_COMMENT}|{MUL_COMMENT}
 "int[]"                 { return symbol(sym.TYPEINTARRAY); }
 "int"                   { return symbol(sym.TYPEINT); }
 "boolean"               { return symbol(sym.TYPEBOOL); }
-"length"                { return symbol(sym.LENGTH); }
+".length"               { return symbol(sym.LENGTH); }
 "System.out.println"    { return symbol(sym.SYSTEM); }
 "new"                   { return symbol(sym.NEW); }
 {NUMBER}                { return symbol(sym.NUMBER, Integer.parseInt(yytext())); }
