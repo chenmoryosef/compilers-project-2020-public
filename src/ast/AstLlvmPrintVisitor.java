@@ -147,7 +147,6 @@ public class AstLlvmPrintVisitor implements Visitor {
                     classId = VtableCreator.getSymbolTableClassesMap().get(realParentSymbolTable);
                 }
             } else {
-                // TODO handle error
                 System.out.println("ERRORRRRRRRR");
             }
             retrieveField(classId, variableName, doLoad);

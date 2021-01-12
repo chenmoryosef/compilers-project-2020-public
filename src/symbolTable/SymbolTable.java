@@ -52,7 +52,7 @@ public class SymbolTable {
             parentSymbolTable = parentSymbolTable.parentSymbolTable;
         }
         if (symbol == null) {
-            // TODO - error handling
+            // error handling
         }
         return symbol;
     }

@@ -1,0 +1,2173 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<program>
+    <mainclass>
+        <name>LinkedList</name>
+        <argsName>a</argsName>
+        <mainStatement>
+            <sysout>
+                <arg>
+                    <call>
+                        <ownerExpr>
+                            <new-object>
+<classId>LL</classId>
+                            </new-object>
+                        </ownerExpr>
+                        <methodId>Start</methodId>
+                        <actuals/>
+                    </call>
+                </arg>
+            </sysout>
+        </mainStatement>
+    </mainclass>
+    <classdecls>
+        <classdecl>
+            <name>Element</name>
+            <fields>
+                <field>
+                    <lineNumber>9</lineNumber>
+                    <type>
+                        <int/>
+                    </type>
+                    <name>Age</name>
+                </field>
+                <field>
+                    <lineNumber>10</lineNumber>
+                    <type>
+                        <int/>
+                    </type>
+                    <name>Salary</name>
+                </field>
+                <field>
+                    <lineNumber>13</lineNumber>
+                    <type>
+                        <bool/>
+                    </type>
+                    <name>Married</name>
+                </field>
+            </fields>
+            <methoddecls>
+                <methoddecl>
+                    <lineNumber>20</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>Init</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>13</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>v_Age</name>
+                        </formal>
+                        <formal>
+                            <lineNumber>13</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>v_Salary</name>
+                        </formal>
+                        <formal>
+                            <lineNumber>13</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>v_Married</name>
+                        </formal>
+                    </formals>
+                    <vardecls/>
+                    <body>
+                        <assign>
+                            <lv>Age</lv>
+                            <rv>
+<ref-id>
+    <id>v_Age</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>Salary</lv>
+                            <rv>
+<ref-id>
+    <id>v_Salary</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>Married</lv>
+                            <rv>
+<ref-id>
+    <id>v_Married</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>24</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>GetAge</name>
+                    <formals/>
+                    <vardecls/>
+                    <body/>
+                    <ret>
+                        <ref-id>
+                            <id>Age</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>28</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>GetSalary</name>
+                    <formals/>
+                    <vardecls/>
+                    <body/>
+                    <ret>
+                        <ref-id>
+                            <id>Salary</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>34</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>GetMarried</name>
+                    <formals/>
+                    <vardecls/>
+                    <body/>
+                    <ret>
+                        <ref-id>
+                            <id>Married</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>61</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>Equal</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>34</lineNumber>
+                            <type>
+<ref>
+    <id>Element</id>
+</ref>
+                            </type>
+                            <name>other</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>36</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ret_val</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>37</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>aux01</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>38</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>aux02</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>39</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>nt</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>ret_val</lv>
+                            <rv>
+<true/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>other</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetAge</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <if>
+                            <cond>
+<not>
+    <e>
+        <call>
+            <ownerExpr>
+                <this/>
+            </ownerExpr>
+            <methodId>Compare</methodId>
+            <actuals>
+                <actual>
+                    <ref-id>
+                        <id>aux01</id>
+                    </ref-id>
+                </actual>
+                <actual>
+                    <ref-id>
+                        <id>Age</id>
+                    </ref-id>
+                </actual>
+            </actuals>
+        </call>
+    </e>
+</not>
+                            </cond>
+                            <thencase>
+<assign>
+    <lv>ret_val</lv>
+    <rv>
+        <false/>
+    </rv>
+</assign>
+                            </thencase>
+                            <elsecase>
+<block>
+    <statements>
+        <assign>
+            <lv>aux02</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>other</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetSalary</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+        <if>
+            <cond>
+                <not>
+                    <e>
+                        <call>
+                            <ownerExpr>
+<this/>
+                            </ownerExpr>
+                            <methodId>Compare</methodId>
+                            <actuals>
+<actual>
+    <ref-id>
+        <id>aux02</id>
+    </ref-id>
+</actual>
+<actual>
+    <ref-id>
+        <id>Salary</id>
+    </ref-id>
+</actual>
+                            </actuals>
+                        </call>
+                    </e>
+                </not>
+            </cond>
+            <thencase>
+                <assign>
+                    <lv>ret_val</lv>
+                    <rv>
+                        <false/>
+                    </rv>
+                </assign>
+            </thencase>
+            <elsecase>
+                <if>
+                    <cond>
+                        <ref-id>
+                            <id>Married</id>
+                        </ref-id>
+                    </cond>
+                    <thencase>
+                        <if>
+                            <cond>
+<not>
+    <e>
+        <call>
+            <ownerExpr>
+                <ref-id>
+                    <id>other</id>
+                </ref-id>
+            </ownerExpr>
+            <methodId>GetMarried</methodId>
+            <actuals/>
+        </call>
+    </e>
+</not>
+                            </cond>
+                            <thencase>
+<assign>
+    <lv>ret_val</lv>
+    <rv>
+        <false/>
+    </rv>
+</assign>
+                            </thencase>
+                            <elsecase>
+<assign>
+    <lv>nt</lv>
+    <rv>
+        <int-literal>
+            <num>0</num>
+        </int-literal>
+    </rv>
+</assign>
+                            </elsecase>
+                        </if>
+                    </thencase>
+                    <elsecase>
+                        <if>
+                            <cond>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>other</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetMarried</methodId>
+    <actuals/>
+</call>
+                            </cond>
+                            <thencase>
+<assign>
+    <lv>ret_val</lv>
+    <rv>
+        <false/>
+    </rv>
+</assign>
+                            </thencase>
+                            <elsecase>
+<assign>
+    <lv>nt</lv>
+    <rv>
+        <int-literal>
+            <num>0</num>
+        </int-literal>
+    </rv>
+</assign>
+                            </elsecase>
+                        </if>
+                    </elsecase>
+                </if>
+            </elsecase>
+        </if>
+    </statements>
+</block>
+                            </elsecase>
+                        </if>
+                    </body>
+                    <ret>
+                        <ref-id>
+                            <id>ret_val</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>72</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>Compare</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>61</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>num1</name>
+                        </formal>
+                        <formal>
+                            <lineNumber>61</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>num2</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>63</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>retval</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>64</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>aux02</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>retval</lv>
+                            <rv>
+<false/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux02</lv>
+                            <rv>
+<add>
+    <e1>
+        <ref-id>
+            <id>num2</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <int-literal>
+            <num>1</num>
+        </int-literal>
+    </e2>
+</add>
+                            </rv>
+                        </assign>
+                        <if>
+                            <cond>
+<lt>
+    <e1>
+        <ref-id>
+            <id>num1</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <ref-id>
+            <id>num2</id>
+        </ref-id>
+    </e2>
+</lt>
+                            </cond>
+                            <thencase>
+<assign>
+    <lv>retval</lv>
+    <rv>
+        <false/>
+    </rv>
+</assign>
+                            </thencase>
+                            <elsecase>
+<if>
+    <cond>
+        <not>
+            <e>
+                <lt>
+                    <e1>
+                        <ref-id>
+                            <id>num1</id>
+                        </ref-id>
+                    </e1>
+                    <e2>
+                        <ref-id>
+                            <id>aux02</id>
+                        </ref-id>
+                    </e2>
+                </lt>
+            </e>
+        </not>
+    </cond>
+    <thencase>
+        <assign>
+            <lv>retval</lv>
+            <rv>
+                <false/>
+            </rv>
+        </assign>
+    </thencase>
+    <elsecase>
+        <assign>
+            <lv>retval</lv>
+            <rv>
+                <true/>
+            </rv>
+        </assign>
+    </elsecase>
+</if>
+                            </elsecase>
+                        </if>
+                    </body>
+                    <ret>
+                        <ref-id>
+                            <id>retval</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+            </methoddecls>
+        </classdecl>
+        <classdecl>
+            <name>List</name>
+            <fields>
+                <field>
+                    <lineNumber>76</lineNumber>
+                    <type>
+                        <ref>
+                            <id>Element</id>
+                        </ref>
+                    </type>
+                    <name>elem</name>
+                </field>
+                <field>
+                    <lineNumber>77</lineNumber>
+                    <type>
+                        <ref>
+                            <id>List</id>
+                        </ref>
+                    </type>
+                    <name>next</name>
+                </field>
+                <field>
+                    <lineNumber>80</lineNumber>
+                    <type>
+                        <bool/>
+                    </type>
+                    <name>end</name>
+                </field>
+            </fields>
+            <methoddecls>
+                <methoddecl>
+                    <lineNumber>86</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>Init</name>
+                    <formals/>
+                    <vardecls/>
+                    <body>
+                        <assign>
+                            <lv>end</lv>
+                            <rv>
+<true/>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>94</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>InitNew</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>86</lineNumber>
+                            <type>
+<ref>
+    <id>Element</id>
+</ref>
+                            </type>
+                            <name>v_elem</name>
+                        </formal>
+                        <formal>
+                            <lineNumber>86</lineNumber>
+                            <type>
+<ref>
+    <id>List</id>
+</ref>
+                            </type>
+                            <name>v_next</name>
+                        </formal>
+                        <formal>
+                            <lineNumber>86</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>v_end</name>
+                        </formal>
+                    </formals>
+                    <vardecls/>
+                    <body>
+                        <assign>
+                            <lv>end</lv>
+                            <rv>
+<ref-id>
+    <id>v_end</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>elem</lv>
+                            <rv>
+<ref-id>
+    <id>v_elem</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>next</lv>
+                            <rv>
+<ref-id>
+    <id>v_next</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>106</lineNumber>
+                    <returnType>
+                        <ref>
+                            <id>List</id>
+                        </ref>
+                    </returnType>
+                    <name>Insert</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>94</lineNumber>
+                            <type>
+<ref>
+    <id>Element</id>
+</ref>
+                            </type>
+                            <name>new_elem</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>96</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ret_val</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>97</lineNumber>
+                            <type>
+<ref>
+    <id>List</id>
+</ref>
+                            </type>
+                            <name>aux03</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>98</lineNumber>
+                            <type>
+<ref>
+    <id>List</id>
+</ref>
+                            </type>
+                            <name>aux02</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>aux03</lv>
+                            <rv>
+<this/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux02</lv>
+                            <rv>
+<new-object>
+    <classId>List</classId>
+</new-object>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ret_val</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>aux02</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>InitNew</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>new_elem</id>
+            </ref-id>
+        </actual>
+        <actual>
+            <ref-id>
+                <id>aux03</id>
+            </ref-id>
+        </actual>
+        <actual>
+            <false/>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <ref-id>
+                            <id>aux02</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>112</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>SetNext</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>106</lineNumber>
+                            <type>
+<ref>
+    <id>List</id>
+</ref>
+                            </type>
+                            <name>v_next</name>
+                        </formal>
+                    </formals>
+                    <vardecls/>
+                    <body>
+                        <assign>
+                            <lv>next</lv>
+                            <rv>
+<ref-id>
+    <id>v_next</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>158</lineNumber>
+                    <returnType>
+                        <ref>
+                            <id>List</id>
+                        </ref>
+                    </returnType>
+                    <name>Delete</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>112</lineNumber>
+                            <type>
+<ref>
+    <id>Element</id>
+</ref>
+                            </type>
+                            <name>e</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>114</lineNumber>
+                            <type>
+<ref>
+    <id>List</id>
+</ref>
+                            </type>
+                            <name>my_head</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>115</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>ret_val</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>116</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>aux05</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>117</lineNumber>
+                            <type>
+<ref>
+    <id>List</id>
+</ref>
+                            </type>
+                            <name>aux01</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>118</lineNumber>
+                            <type>
+<ref>
+    <id>List</id>
+</ref>
+                            </type>
+                            <name>prev</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>119</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>var_end</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>120</lineNumber>
+                            <type>
+<ref>
+    <id>Element</id>
+</ref>
+                            </type>
+                            <name>var_elem</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>121</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>aux04</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>124</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>nt</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>my_head</lv>
+                            <rv>
+<this/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>ret_val</lv>
+                            <rv>
+<false/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux04</lv>
+                            <rv>
+<subtract>
+    <e1>
+        <int-literal>
+            <num>0</num>
+        </int-literal>
+    </e1>
+    <e2>
+        <int-literal>
+            <num>1</num>
+        </int-literal>
+    </e2>
+</subtract>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<this/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>prev</lv>
+                            <rv>
+<this/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>var_end</lv>
+                            <rv>
+<ref-id>
+    <id>end</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>var_elem</lv>
+                            <rv>
+<ref-id>
+    <id>elem</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <while>
+                            <cond>
+<and>
+    <e1>
+        <not>
+            <e>
+                <ref-id>
+                    <id>var_end</id>
+                </ref-id>
+            </e>
+        </not>
+    </e1>
+    <e2>
+        <not>
+            <e>
+                <ref-id>
+                    <id>ret_val</id>
+                </ref-id>
+            </e>
+        </not>
+    </e2>
+</and>
+                            </cond>
+                            <body>
+<block>
+    <statements>
+        <if>
+            <cond>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>e</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>Equal</methodId>
+                    <actuals>
+                        <actual>
+                            <ref-id>
+<id>var_elem</id>
+                            </ref-id>
+                        </actual>
+                    </actuals>
+                </call>
+            </cond>
+            <thencase>
+                <block>
+                    <statements>
+                        <assign>
+                            <lv>ret_val</lv>
+                            <rv>
+<true/>
+                            </rv>
+                        </assign>
+                        <if>
+                            <cond>
+<lt>
+    <e1>
+        <ref-id>
+            <id>aux04</id>
+        </ref-id>
+    </e1>
+    <e2>
+        <int-literal>
+            <num>0</num>
+        </int-literal>
+    </e2>
+</lt>
+                            </cond>
+                            <thencase>
+<block>
+    <statements>
+        <assign>
+            <lv>my_head</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>aux01</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetNext</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </thencase>
+                            <elsecase>
+<block>
+    <statements>
+        <sysout>
+            <arg>
+                <subtract>
+                    <e1>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </e1>
+                    <e2>
+                        <int-literal>
+                            <num>555</num>
+                        </int-literal>
+                    </e2>
+                </subtract>
+            </arg>
+        </sysout>
+        <assign>
+            <lv>aux05</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>prev</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>SetNext</methodId>
+                    <actuals>
+                        <actual>
+                            <call>
+<ownerExpr>
+    <ref-id>
+        <id>aux01</id>
+    </ref-id>
+</ownerExpr>
+<methodId>GetNext</methodId>
+<actuals/>
+                            </call>
+                        </actual>
+                    </actuals>
+                </call>
+            </rv>
+        </assign>
+        <sysout>
+            <arg>
+                <subtract>
+                    <e1>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </e1>
+                    <e2>
+                        <int-literal>
+                            <num>555</num>
+                        </int-literal>
+                    </e2>
+                </subtract>
+            </arg>
+        </sysout>
+    </statements>
+</block>
+                            </elsecase>
+                        </if>
+                    </statements>
+                </block>
+            </thencase>
+            <elsecase>
+                <assign>
+                    <lv>nt</lv>
+                    <rv>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </rv>
+                </assign>
+            </elsecase>
+        </if>
+        <if>
+            <cond>
+                <not>
+                    <e>
+                        <ref-id>
+                            <id>ret_val</id>
+                        </ref-id>
+                    </e>
+                </not>
+            </cond>
+            <thencase>
+                <block>
+                    <statements>
+                        <assign>
+                            <lv>prev</lv>
+                            <rv>
+<ref-id>
+    <id>aux01</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>aux01</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetNext</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>var_end</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>aux01</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetEnd</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>var_elem</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>aux01</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>GetElem</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux04</lv>
+                            <rv>
+<int-literal>
+    <num>1</num>
+</int-literal>
+                            </rv>
+                        </assign>
+                    </statements>
+                </block>
+            </thencase>
+            <elsecase>
+                <assign>
+                    <lv>nt</lv>
+                    <rv>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </rv>
+                </assign>
+            </elsecase>
+        </if>
+    </statements>
+</block>
+                            </body>
+                        </while>
+                    </body>
+                    <ret>
+                        <ref-id>
+                            <id>my_head</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>181</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>Search</name>
+                    <formals>
+                        <formal>
+                            <lineNumber>158</lineNumber>
+                            <type>
+<ref>
+    <id>Element</id>
+</ref>
+                            </type>
+                            <name>e</name>
+                        </formal>
+                    </formals>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>160</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>int_ret_val</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>161</lineNumber>
+                            <type>
+<ref>
+    <id>List</id>
+</ref>
+                            </type>
+                            <name>aux01</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>162</lineNumber>
+                            <type>
+<ref>
+    <id>Element</id>
+</ref>
+                            </type>
+                            <name>var_elem</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>163</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>var_end</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>165</lineNumber>
+                            <type>
+<int/>
+                            </type>
+                            <name>nt</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>int_ret_val</lv>
+                            <rv>
+<int-literal>
+    <num>0</num>
+</int-literal>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<this/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>var_end</lv>
+                            <rv>
+<ref-id>
+    <id>end</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>var_elem</lv>
+                            <rv>
+<ref-id>
+    <id>elem</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <while>
+                            <cond>
+<not>
+    <e>
+        <ref-id>
+            <id>var_end</id>
+        </ref-id>
+    </e>
+</not>
+                            </cond>
+                            <body>
+<block>
+    <statements>
+        <if>
+            <cond>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>e</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>Equal</methodId>
+                    <actuals>
+                        <actual>
+                            <ref-id>
+<id>var_elem</id>
+                            </ref-id>
+                        </actual>
+                    </actuals>
+                </call>
+            </cond>
+            <thencase>
+                <block>
+                    <statements>
+                        <assign>
+                            <lv>int_ret_val</lv>
+                            <rv>
+<int-literal>
+    <num>1</num>
+</int-literal>
+                            </rv>
+                        </assign>
+                    </statements>
+                </block>
+            </thencase>
+            <elsecase>
+                <assign>
+                    <lv>nt</lv>
+                    <rv>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </rv>
+                </assign>
+            </elsecase>
+        </if>
+        <assign>
+            <lv>aux01</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>aux01</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetNext</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+        <assign>
+            <lv>var_end</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>aux01</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetEnd</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+        <assign>
+            <lv>var_elem</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>aux01</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetElem</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </body>
+                        </while>
+                    </body>
+                    <ret>
+                        <ref-id>
+                            <id>int_ret_val</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>185</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>GetEnd</name>
+                    <formals/>
+                    <vardecls/>
+                    <body/>
+                    <ret>
+                        <ref-id>
+                            <id>end</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>189</lineNumber>
+                    <returnType>
+                        <ref>
+                            <id>Element</id>
+                        </ref>
+                    </returnType>
+                    <name>GetElem</name>
+                    <formals/>
+                    <vardecls/>
+                    <body/>
+                    <ret>
+                        <ref-id>
+                            <id>elem</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>195</lineNumber>
+                    <returnType>
+                        <ref>
+                            <id>List</id>
+                        </ref>
+                    </returnType>
+                    <name>GetNext</name>
+                    <formals/>
+                    <vardecls/>
+                    <body/>
+                    <ret>
+                        <ref-id>
+                            <id>next</id>
+                        </ref-id>
+                    </ret>
+                </methoddecl>
+                <methoddecl>
+                    <lineNumber>212</lineNumber>
+                    <returnType>
+                        <bool/>
+                    </returnType>
+                    <name>Print</name>
+                    <formals/>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>197</lineNumber>
+                            <type>
+<ref>
+    <id>List</id>
+</ref>
+                            </type>
+                            <name>aux01</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>198</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>var_end</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>200</lineNumber>
+                            <type>
+<ref>
+    <id>Element</id>
+</ref>
+                            </type>
+                            <name>var_elem</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<this/>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>var_end</lv>
+                            <rv>
+<ref-id>
+    <id>end</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>var_elem</lv>
+                            <rv>
+<ref-id>
+    <id>elem</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <while>
+                            <cond>
+<not>
+    <e>
+        <ref-id>
+            <id>var_end</id>
+        </ref-id>
+    </e>
+</not>
+                            </cond>
+                            <body>
+<block>
+    <statements>
+        <sysout>
+            <arg>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>var_elem</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetAge</methodId>
+                    <actuals/>
+                </call>
+            </arg>
+        </sysout>
+        <assign>
+            <lv>aux01</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>aux01</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetNext</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+        <assign>
+            <lv>var_end</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>aux01</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetEnd</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+        <assign>
+            <lv>var_elem</lv>
+            <rv>
+                <call>
+                    <ownerExpr>
+                        <ref-id>
+                            <id>aux01</id>
+                        </ref-id>
+                    </ownerExpr>
+                    <methodId>GetElem</methodId>
+                    <actuals/>
+                </call>
+            </rv>
+        </assign>
+    </statements>
+</block>
+                            </body>
+                        </while>
+                    </body>
+                    <ret>
+                        <true/>
+                    </ret>
+                </methoddecl>
+            </methoddecls>
+        </classdecl>
+        <classdecl>
+            <name>LL</name>
+            <fields/>
+            <methoddecls>
+                <methoddecl>
+                    <lineNumber>278</lineNumber>
+                    <returnType>
+                        <int/>
+                    </returnType>
+                    <name>Start</name>
+                    <formals/>
+                    <vardecls>
+                        <vardecl>
+                            <lineNumber>222</lineNumber>
+                            <type>
+<ref>
+    <id>List</id>
+</ref>
+                            </type>
+                            <name>head</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>223</lineNumber>
+                            <type>
+<ref>
+    <id>List</id>
+</ref>
+                            </type>
+                            <name>last_elem</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>224</lineNumber>
+                            <type>
+<bool/>
+                            </type>
+                            <name>aux01</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>225</lineNumber>
+                            <type>
+<ref>
+    <id>Element</id>
+</ref>
+                            </type>
+                            <name>el01</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>226</lineNumber>
+                            <type>
+<ref>
+    <id>Element</id>
+</ref>
+                            </type>
+                            <name>el02</name>
+                        </vardecl>
+                        <vardecl>
+                            <lineNumber>228</lineNumber>
+                            <type>
+<ref>
+    <id>Element</id>
+</ref>
+                            </type>
+                            <name>el03</name>
+                        </vardecl>
+                    </vardecls>
+                    <body>
+                        <assign>
+                            <lv>last_elem</lv>
+                            <rv>
+<new-object>
+    <classId>List</classId>
+</new-object>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>last_elem</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Init</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>head</lv>
+                            <rv>
+<ref-id>
+    <id>last_elem</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Init</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>el01</lv>
+                            <rv>
+<new-object>
+    <classId>Element</classId>
+</new-object>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>el01</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Init</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>25</num>
+            </int-literal>
+        </actual>
+        <actual>
+            <int-literal>
+                <num>37000</num>
+            </int-literal>
+        </actual>
+        <actual>
+            <false/>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>head</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Insert</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>el01</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <sysout>
+                            <arg>
+<int-literal>
+    <num>10000000</num>
+</int-literal>
+                            </arg>
+                        </sysout>
+                        <assign>
+                            <lv>el01</lv>
+                            <rv>
+<new-object>
+    <classId>Element</classId>
+</new-object>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>el01</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Init</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>39</num>
+            </int-literal>
+        </actual>
+        <actual>
+            <int-literal>
+                <num>42000</num>
+            </int-literal>
+        </actual>
+        <actual>
+            <true/>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>el02</lv>
+                            <rv>
+<ref-id>
+    <id>el01</id>
+</ref-id>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>head</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Insert</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>el01</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <sysout>
+                            <arg>
+<int-literal>
+    <num>10000000</num>
+</int-literal>
+                            </arg>
+                        </sysout>
+                        <assign>
+                            <lv>el01</lv>
+                            <rv>
+<new-object>
+    <classId>Element</classId>
+</new-object>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>el01</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Init</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>22</num>
+            </int-literal>
+        </actual>
+        <actual>
+            <int-literal>
+                <num>34000</num>
+            </int-literal>
+        </actual>
+        <actual>
+            <false/>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>head</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Insert</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>el01</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>el03</lv>
+                            <rv>
+<new-object>
+    <classId>Element</classId>
+</new-object>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>el03</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Init</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>27</num>
+            </int-literal>
+        </actual>
+        <actual>
+            <int-literal>
+                <num>34000</num>
+            </int-literal>
+        </actual>
+        <actual>
+            <false/>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <sysout>
+                            <arg>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Search</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>el02</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </arg>
+                        </sysout>
+                        <sysout>
+                            <arg>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Search</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>el03</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </arg>
+                        </sysout>
+                        <sysout>
+                            <arg>
+<int-literal>
+    <num>10000000</num>
+</int-literal>
+                            </arg>
+                        </sysout>
+                        <assign>
+                            <lv>el01</lv>
+                            <rv>
+<new-object>
+    <classId>Element</classId>
+</new-object>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>el01</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Init</methodId>
+    <actuals>
+        <actual>
+            <int-literal>
+                <num>28</num>
+            </int-literal>
+        </actual>
+        <actual>
+            <int-literal>
+                <num>35000</num>
+            </int-literal>
+        </actual>
+        <actual>
+            <false/>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>head</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Insert</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>el01</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <sysout>
+                            <arg>
+<int-literal>
+    <num>2220000</num>
+</int-literal>
+                            </arg>
+                        </sysout>
+                        <assign>
+                            <lv>head</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Delete</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>el02</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <sysout>
+                            <arg>
+<int-literal>
+    <num>33300000</num>
+</int-literal>
+                            </arg>
+                        </sysout>
+                        <assign>
+                            <lv>head</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Delete</methodId>
+    <actuals>
+        <actual>
+            <ref-id>
+                <id>el01</id>
+            </ref-id>
+        </actual>
+    </actuals>
+</call>
+                            </rv>
+                        </assign>
+                        <assign>
+                            <lv>aux01</lv>
+                            <rv>
+<call>
+    <ownerExpr>
+        <ref-id>
+            <id>head</id>
+        </ref-id>
+    </ownerExpr>
+    <methodId>Print</methodId>
+    <actuals/>
+</call>
+                            </rv>
+                        </assign>
+                        <sysout>
+                            <arg>
+<int-literal>
+    <num>44440000</num>
+</int-literal>
+                            </arg>
+                        </sysout>
+                    </body>
+                    <ret>
+                        <int-literal>
+                            <num>0</num>
+                        </int-literal>
+                    </ret>
+                </methoddecl>
+            </methoddecls>
+        </classdecl>
+    </classdecls>
+</program>

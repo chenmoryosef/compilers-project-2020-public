@@ -16,7 +16,9 @@ public class Main {
             Program prog;
 
             if (inputMethod.equals("parse")) {
-                throw new UnsupportedOperationException("TODO - Ex. 4");
+                FileReader fileReader = new FileReader(new File(filename));
+                Parser p = new Parser(new Lexer(fileReader));
+                prog = (Program) p.parse().value;
             } else if (inputMethod.equals("unmarshal")) {
                 AstXMLSerializer xmlSerializer = new AstXMLSerializer();
                 prog = xmlSerializer.deserialize(new File(filename));
@@ -27,11 +29,7 @@ public class Main {
             try {
                 boolean validToContinue = true;
                 SymbolTableUtils.buildSymbolTables(prog);
-                if (SymbolTableUtils.isERROR()) {
-//                    System.out.println(SymbolTableUtils.getERRORReasons());
-                    outFile.write("ERROR\n");
-                    validToContinue = false;
-                }
+
 
                 if (action.equals("marshal")) {
                     AstXMLSerializer xmlSerializer = new AstXMLSerializer();
@@ -42,7 +40,10 @@ public class Main {
                     outFile.write(astPrinter.getString());
 
                 } else if (action.equals("semantic")) {
-                    if (validToContinue) {
+                    if (SymbolTableUtils.isERROR()) {
+//                    System.out.println(SymbolTableUtils.getERRORReasons());
+                        outFile.write("ERROR\n");
+                    } else {
                         AstTypesVisitor astTypeVisitor = new AstTypesVisitor();
                         astTypeVisitor.visit(prog);
                         if (astTypeVisitor.isError()) {
@@ -54,8 +55,7 @@ public class Main {
                             if (astInitVisitor.isError()) {
 //                                System.out.println(astInitVisitor.getErrorMsg());
                                 outFile.write("ERROR\n");
-                            }
-                            else{
+                            } else {
                                 outFile.write("OK\n");
                             }
                         }
@@ -93,7 +93,7 @@ public class Main {
                     } catch (UnsupportedOperationException e) {
                         throw new UnsupportedOperationException(e.getMessage());
                     } catch (Exception e) {
-                        // TODO error handling
+                        // error handling
                         throw new UnsupportedOperationException(e.getMessage());
                     }
 

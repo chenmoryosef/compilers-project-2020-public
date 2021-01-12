@@ -8,7 +8,7 @@
 
     <taskdef  name="jflex" classname="jflex.anttask.JFlexTask"   classpath="${tools}/JFlex.jar"   />
     <taskdef  name="cup"   classname="java_cup.anttask.CUPTask"  classpath="${tools}/java-cup-11b.jar"  />
-    
+
     <target name="init">
         <!-- Create the time stamp -->
         <tstamp/>
@@ -44,8 +44,10 @@
 
     <target name="clean"
             description="clean up">
+        <delete file="mjavac.jar"/>
         <delete dir="${build}"/>
         <delete file="${src}/Lexer.java"/>
         <delete file="${src}/Parser.java"/>
+        <delete file="${src}/sym.java"/>
     </target>
 </project>

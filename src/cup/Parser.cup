@@ -1,4 +1,9 @@
 /*************/
+/* Based on a template by Oren Ish-Shalom */
+/*************/
+
+
+/*************/
 /* IMPORTS */
 /*************/
 
@@ -16,15 +21,11 @@ parser code
 		super(lexer);
 		this.lexer = lexer;
 	}
+
+	// Override default error reporting in parser
 	public void report_error(String message, Object info)
 	{
-    System.out.print("Syntax error at line " + lexer.getLine() + " of input\n");
-		// System.out.print("ERROR >> ");
-		// System.out.print("[");
-		// System.out.print(lexer.getLine());
-		// System.out.print(":");
-		// System.out.print(lexer.getCharPos());
-		// System.out.print("] ");
+	    System.err.print("Syntax error at line " + lexer.getLine() + " of input. Parser\n");
 		System.exit(1);
 	}
 :}
@@ -35,6 +36,7 @@ parser code
 scan with
 {:
 	Symbol s;
+    try {
 	s = lexer.next_token();
 	// System.out.print(s.sym);
 	// System.out.print("[");
@@ -45,27 +47,92 @@ scan with
 	// System.out.print(sym.terminalNames[s.sym]);
 	// if (s.value != null)
 	// {
-	//	System.out.print("( ");
-	//	System.out.print(s.value);
-	//	System.out.print(" )");
+	    // System.out.print("( ");
+	    // System.out.print(s.value);
+	    // System.out.print(" )");
 	// }
 	// System.out.print("\n");
 	return s;
+     } catch (java.lang.Error e) {
+         System.err.print("Syntax error at line " + lexer.getLine() + " of input. Lexer\n");
+         System.exit(1);
+         return null;
+     }
 :};
 
 /*************/
 /* TERMINALS */
 /*************/
 terminal PUBLIC;
+terminal STATIC;
+terminal CLASS;
+terminal EXTENDS;
+terminal PLUS;
+terminal MINUS;
+terminal MULT;
+terminal ASS;
+terminal NOT;
+terminal WHILE;
+terminal IF;
+terminal ELSE;
+terminal TRUE;
+terminal FALSE;
+terminal LT;
+terminal AND;
+terminal THIS;
+terminal COMMA;
+terminal LPAREN;
+terminal RPAREN;
+terminal LBR;
+terminal RBR;
+terminal LSQBR;
+terminal RSQBR;
+terminal SEMICOLON;
+terminal DOT;
+terminal RET;
+terminal STRINGARGS;
+terminal SYSTEM;
+terminal NEW;
+terminal TYPEINT;
+terminal TYPEINTARRAY;
+terminal TYPEBOOL;
+terminal LENGTH;
+terminal int NUMBER;
+terminal String ID;
 
 /*****************/
 /* NON TERMINALS */
 /*****************/
-non terminal prog;
+
+non terminal Program prog;
+non terminal Expr expr;
+non terminal MainClass mainClass;
+non terminal ClassDecl classDecl;
+non terminal LinkedList<ClassDecl> classDecls;
+non terminal AstType type;
+non terminal LinkedList<Statement> stmts;
+non terminal Statement stmt;
+non terminal LinkedList<MethodDecl> methodDecs;
+non terminal MethodDecl methodDec;
+non terminal LinkedList<VarDecl> varDecs;
+non terminal VarDecl varDec;
+non terminal LinkedList<FormalArg> formalArgs;
+non terminal LinkedList<FormalArg> formalArgsWrapper;
+non terminal FormalArg formalArg;
+non terminal LinkedList<Expr> actualArgs;
+non terminal LinkedList<Expr> actualArgsWrapper;
+non terminal String identifier;
 
 /***********************/
 /* OPERATOR PRECEDENCE */
 /***********************/
+precedence nonassoc ASS;
+precedence nonassoc AND;
+precedence left LT;
+precedence right NOT, NEW;
+precedence left DOT;
+precedence left PLUS, MINUS;
+precedence left MULT;
 
 /************************/
 /* INITIAL NON TERMINAL */
@@ -76,4 +143,84 @@ start with prog;
 /* PRODUCTION RULES */
 /********************/
 
-prog            ::=     ;
+prog            ::=       mainClass:mainClass classDecls:classDecls  {: RESULT = new Program(mainClass, classDecls); :}
+                        ;
+
+mainClass       ::=       CLASS identifier:mainClass LBR PUBLIC STATIC identifier:type identifier:name LPAREN STRINGARGS identifier:argsName RPAREN LBR stmt:mainStatement RBR RBR {: RESULT = new MainClass(mainClass, argsName, mainStatement); :}
+                        ;
+
+classDecls      ::=       classDecls:classDecls classDecl:classDecl {: classDecls.add(classDecl); RESULT = classDecls; :}
+                        | /* empty */           	{: RESULT = new LinkedList<ClassDecl>(); :}
+                        ;
+classDecl       ::=       CLASS identifier:className LBR varDecs:varDecs methodDecs:methodDecs RBR {: RESULT = new ClassDecl(className, null, varDecs, methodDecs); :}
+                        | CLASS identifier:className EXTENDS identifier:superClass LBR varDecs:varDecs methodDecs:methodDecs RBR {: RESULT = new ClassDecl(className, superClass, varDecs, methodDecs); :}
+                        ;
+
+expr            ::=     expr:e AND expr:e2                                                         {: RESULT = new AndExpr(e, e2); :}
+                        | expr:e LT expr:e2                                                        {: RESULT = new LtExpr(e, e2); :}
+                        | expr:e PLUS expr:e2                                                      {: RESULT = new AddExpr(e, e2); :}
+                        | expr:e MINUS expr:e2                                                     {: RESULT = new SubtractExpr(e, e2); :}
+                        | expr:e MULT expr:e2                                                      {: RESULT = new MultExpr(e, e2); :}
+                        | expr:e LSQBR expr:e2 RSQBR                                               {: RESULT = new ArrayAccessExpr(e, e2); :}
+                        | expr:e LENGTH                                                            {: RESULT = new ArrayLengthExpr(e); :}
+                        | expr:e DOT identifier:id LPAREN actualArgsWrapper:actualArgs RPAREN      {: RESULT = new MethodCallExpr(e, id, actualArgs); :}
+                        | NUMBER:num                                                               {: RESULT = new IntegerLiteralExpr(num); :}
+                        | TRUE                                                                     {: RESULT = new TrueExpr(); :}
+                        | FALSE                                                                    {: RESULT = new FalseExpr(); :}
+                        | identifier:id                                                            {: RESULT = new IdentifierExpr(id); :}
+                        | THIS                                                                     {: RESULT = new ThisExpr(); :}
+                        | NEW TYPEINT LSQBR expr:e RSQBR                                           {: RESULT = new NewIntArrayExpr(e); :}
+                        | NEW identifier:id LPAREN RPAREN                                          {: RESULT = new NewObjectExpr(id); :}
+                        | NOT expr:e                                                               {: RESULT = new NotExpr(e); :}
+                        | LPAREN expr:e RPAREN                                                     {: RESULT = e; :}
+                        ;
+
+methodDecs      ::=      methodDecs:methodDecs methodDec:methodDec {: methodDecs.add(methodDec); RESULT = methodDecs; :}
+                        | /* empty */           	{: RESULT = new LinkedList<MethodDecl>(); :}
+                        ;
+methodDec       ::=      PUBLIC type:type identifier:id LPAREN formalArgsWrapper:formalArgs RPAREN LBR varDecs:varDecs stmts:body RET expr:e SEMICOLON RBR {: RESULT = new MethodDecl(type, id, formalArgs, varDecs, body, e, 17); :}
+                        ;
+varDecs         ::=       varDecs:varDecs varDec:varDec  {: varDecs.add(varDec); RESULT = varDecs; :}
+                        | /* empty */           	{: RESULT = new LinkedList<VarDecl>(); :}
+                        ;
+varDec          ::=       type:type identifier:id SEMICOLON              {: RESULT = new VarDecl(type, id, 17); :}
+                        ;
+formalArgsWrapper  ::=      formalArg:formalArg formalArgs:formalArgs             {: formalArgs.addFirst(formalArg); RESULT = formalArgs; :}
+                        |   /* empty */                                           {: RESULT = new LinkedList<FormalArg>(); :}
+                        ;
+
+formalArgs      ::=       formalArgs:formalArgs COMMA formalArg:formalArg   {: formalArgs.add(formalArg); RESULT = formalArgs; :}
+                        | /* empty */                                       {: RESULT = new LinkedList<FormalArg>(); :}
+                        ;
+
+formalArg       ::=       type:type identifier:id              {: RESULT = new FormalArg(type, id, 17); :}
+                        ;
+
+actualArgsWrapper  ::=      expr:e actualArgs:actualArgs             {: actualArgs.addFirst(e); RESULT = actualArgs; :}
+                        |   /* empty */                              {: RESULT = new LinkedList<Expr>(); :}
+                        ;
+
+actualArgs      ::=       actualArgs:actualArgs COMMA expr:e         {: actualArgs.add(e); RESULT = actualArgs; :}
+                        | /* empty */                                {: RESULT = new LinkedList<Expr>(); :}
+                        ;
+
+
+type            ::=       TYPEINTARRAY           {: RESULT = new IntArrayAstType(); :}
+                        | TYPEINT                {: RESULT = new IntAstType(); :}
+                        | TYPEBOOL               {: RESULT = new BoolAstType(); :}
+                        | identifier:id          {: RESULT = new RefType(id); :}
+                        ;
+
+stmts           ::=       stmt:stmt stmts:stmts     {: stmts.addFirst(stmt); RESULT = stmts; :}
+                        | /* empty */           	{: RESULT = new LinkedList<Statement>(); :}
+                        ;
+stmt            ::=       SYSTEM LPAREN expr:expr RPAREN SEMICOLON           	            {: RESULT = new SysoutStatement(expr); :}
+                        | IF LPAREN expr:e RPAREN stmt:thenStmt ELSE stmt:elseStmt          {: RESULT = new IfStatement(e, thenStmt, elseStmt); :}
+                        | WHILE LPAREN expr:e RPAREN stmt:whileStmt                         {: RESULT = new WhileStatement(e, whileStmt); :}
+                        | identifier:id ASS expr:e SEMICOLON                                        {: RESULT = new AssignStatement(id, e); :}
+                        | identifier:id LSQBR expr:index RSQBR ASS expr:rv SEMICOLON                {: RESULT = new AssignArrayStatement(id, index, rv); :}
+                        | LBR stmts:blockStmts RBR                                          {: RESULT = new BlockStatement(blockStmts); :}
+                        ;
+
+identifier      ::=     ID:id            {: RESULT = id; :}
+                        ;

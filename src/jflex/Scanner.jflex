@@ -1,5 +1,5 @@
 /***************************/
-/* FILE NAME: LEX_FILE.lex */
+/* Based on a template by Oren Ish-Shalom */
 /***************************/
 
 /*************/
@@ -63,6 +63,13 @@ import java_cup.runtime.*;
 /***********************/
 /* MACRO DECALARATIONS */
 /***********************/
+LINETERM	    = \r|\n|\r\n
+WHITESPACE		= [\t ] | {LINETERM}
+NUMBER			= 0 | [1-9][0-9]*
+ID				= [a-zA-Z\_]+[a-zA-Z0-9\_]*
+IN_COMMENT		= \/\/[a-zA-Z0-9\(\)\[\]\{\}\?!+\-\*\/\.\,;=\"\_ \t\f]*
+MUL_COMMENT	    = \/\*~"*/"
+COMMENTS 		= {IN_COMMENT}|{MUL_COMMENT}
 
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
@@ -81,6 +88,43 @@ import java_cup.runtime.*;
 /**************************************************************/
 
 <YYINITIAL> {
-"public"            { return symbol(sym.PUBLIC); }
-<<EOF>>				{ return symbol(sym.EOF); }
+<<EOF>>				    { return symbol(sym.EOF); }
+"public"                { return symbol(sym.PUBLIC); }
+"static"                { return symbol(sym.STATIC); }
+"class"                 { return symbol(sym.CLASS); }
+"extends"               { return symbol(sym.EXTENDS); }
+"+"				        { return symbol(sym.PLUS); }
+"-"				        { return symbol(sym.MINUS); }
+"*"				        { return symbol(sym.MULT); }
+"="				        { return symbol(sym.ASS); }
+"!"  		            { return symbol(sym.NOT); }
+"while"                 { return symbol(sym.WHILE); }
+"if"                    { return symbol(sym.IF); }
+"else"                  { return symbol(sym.ELSE); }
+"true"  		        { return symbol(sym.TRUE); }
+"false"  		        { return symbol(sym.FALSE); }
+"<"			            { return symbol(sym.LT); }
+"&&"  		            { return symbol(sym.AND); }
+","			            { return symbol(sym.COMMA); }
+"("			            { return symbol(sym.LPAREN); }
+")"			            { return symbol(sym.RPAREN); }
+"{"			            { return symbol(sym.LBR); }
+"}"			            { return symbol(sym.RBR); }
+"["			            { return symbol(sym.LSQBR); }
+"]"			            { return symbol(sym.RSQBR); }
+";"			            { return symbol(sym.SEMICOLON); }
+"."			            { return symbol(sym.DOT); }
+"this"  		        { return symbol(sym.THIS); }
+"return"                { return symbol(sym.RET); }
+"String[]"              { return symbol(sym.STRINGARGS); }
+"int[]"                 { return symbol(sym.TYPEINTARRAY); }
+"int"                   { return symbol(sym.TYPEINT); }
+"boolean"               { return symbol(sym.TYPEBOOL); }
+".length"               { return symbol(sym.LENGTH); }
+"System.out.println"    { return symbol(sym.SYSTEM); }
+"new"                   { return symbol(sym.NEW); }
+{NUMBER}                { return symbol(sym.NUMBER, Integer.parseInt(yytext())); }
+{ID}		            { return symbol(sym.ID, new String(yytext())); }
+{WHITESPACE}            { /* do nothing */ }
+{COMMENTS}              { /* do nothing */ }
 }
