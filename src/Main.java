@@ -40,10 +40,10 @@ public class Main {
                     outFile.write(astPrinter.getString());
 
                 } else if (action.equals("semantic")) {
-                        if (SymbolTableUtils.isERROR()) {
+                    if (SymbolTableUtils.isERROR()) {
 //                    System.out.println(SymbolTableUtils.getERRORReasons());
-                            outFile.write("ERROR\n");
-                        }
+                        outFile.write("ERROR\n");
+                    } else {
                         AstTypesVisitor astTypeVisitor = new AstTypesVisitor();
                         astTypeVisitor.visit(prog);
                         if (astTypeVisitor.isError()) {
@@ -55,11 +55,11 @@ public class Main {
                             if (astInitVisitor.isError()) {
 //                                System.out.println(astInitVisitor.getErrorMsg());
                                 outFile.write("ERROR\n");
-                            }
-                            else{
+                            } else {
                                 outFile.write("OK\n");
                             }
                         }
+                    }
                 } else if (action.equals("compile")) {
                     // VtableCreator - create vtables + Class->data-structure(vtable-method/field -> offset) and probably more...
                     VtableCreator v = new VtableCreator();
