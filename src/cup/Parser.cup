@@ -25,7 +25,7 @@ parser code
 	// Override default error reporting in parser
 	public void report_error(String message, Object info)
 	{
-	    System.err.print("Syntax error at line " + lexer.getLine() + " of input. Parser\n");
+	    System.err.print("Syntax error at line " + lexer.getLine() + " of input.\n");
 		System.exit(1);
 	}
 :}
@@ -54,7 +54,7 @@ scan with
 	// System.out.print("\n");
 	return s;
      } catch (java.lang.Error e) {
-         System.err.print("Syntax error at line " + lexer.getLine() + " of input. Lexer\n");
+         System.err.print("Syntax error at line " + lexer.getLine() + " of input.\n");
          System.exit(1);
          return null;
      }
@@ -65,6 +65,8 @@ scan with
 /*************/
 terminal PUBLIC;
 terminal STATIC;
+terminal VOID;
+terminal MAIN;
 terminal CLASS;
 terminal EXTENDS;
 terminal PLUS;
@@ -94,7 +96,6 @@ terminal STRINGARGS;
 terminal SYSTEM;
 terminal NEW;
 terminal TYPEINT;
-terminal TYPEINTARRAY;
 terminal TYPEBOOL;
 terminal LENGTH;
 terminal int NUMBER;
@@ -127,12 +128,13 @@ non terminal String identifier;
 /* OPERATOR PRECEDENCE */
 /***********************/
 precedence nonassoc ASS;
-precedence nonassoc AND;
+precedence left AND;
 precedence left LT;
-precedence right NOT, NEW;
-precedence left DOT;
 precedence left PLUS, MINUS;
 precedence left MULT;
+precedence right NOT, NEW;
+precedence nonassoc LPAREN, RPAREN, LSQBR, RSQBR;
+precedence left DOT;
 
 /************************/
 /* INITIAL NON TERMINAL */
@@ -146,7 +148,7 @@ start with prog;
 prog            ::=       mainClass:mainClass classDecls:classDecls  {: RESULT = new Program(mainClass, classDecls); :}
                         ;
 
-mainClass       ::=       CLASS identifier:mainClass LBR PUBLIC STATIC identifier:type identifier:name LPAREN STRINGARGS identifier:argsName RPAREN LBR stmt:mainStatement RBR RBR {: RESULT = new MainClass(mainClass, argsName, mainStatement); :}
+mainClass       ::=       CLASS identifier:mainClass LBR PUBLIC STATIC VOID MAIN LPAREN STRINGARGS LSQBR RSQBR identifier:argsName RPAREN LBR stmt:mainStatement RBR RBR {: RESULT = new MainClass(mainClass, argsName, mainStatement); :}
                         ;
 
 classDecls      ::=       classDecls:classDecls classDecl:classDecl {: classDecls.add(classDecl); RESULT = classDecls; :}
@@ -162,7 +164,7 @@ expr            ::=     expr:e AND expr:e2                                      
                         | expr:e MINUS expr:e2                                                     {: RESULT = new SubtractExpr(e, e2); :}
                         | expr:e MULT expr:e2                                                      {: RESULT = new MultExpr(e, e2); :}
                         | expr:e LSQBR expr:e2 RSQBR                                               {: RESULT = new ArrayAccessExpr(e, e2); :}
-                        | expr:e LENGTH                                                            {: RESULT = new ArrayLengthExpr(e); :}
+                        | expr:e DOT LENGTH                                                        {: RESULT = new ArrayLengthExpr(e); :}
                         | expr:e DOT identifier:id LPAREN actualArgsWrapper:actualArgs RPAREN      {: RESULT = new MethodCallExpr(e, id, actualArgs); :}
                         | NUMBER:num                                                               {: RESULT = new IntegerLiteralExpr(num); :}
                         | TRUE                                                                     {: RESULT = new TrueExpr(); :}
@@ -205,7 +207,7 @@ actualArgs      ::=       actualArgs:actualArgs COMMA expr:e         {: actualAr
                         ;
 
 
-type            ::=       TYPEINTARRAY           {: RESULT = new IntArrayAstType(); :}
+type            ::=       TYPEINT LSQBR RSQBR    {: RESULT = new IntArrayAstType(); :}
                         | TYPEINT                {: RESULT = new IntAstType(); :}
                         | TYPEBOOL               {: RESULT = new BoolAstType(); :}
                         | identifier:id          {: RESULT = new RefType(id); :}
